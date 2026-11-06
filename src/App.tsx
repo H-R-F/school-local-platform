@@ -37,7 +37,7 @@ export default function App() {
       <main className="workspace-placeholder">
         <span className="workspace-eyebrow">ESPACE DU PERSONNEL</span>
         <h1>Bienvenue, {user.displayName.split(" ")[0]}</h1>
-        <p>Your {user.role === "finance" ? "Responsable financier et logistique" : user.role === "administrative" ? "Responsable administratif" : user.role === "pedagogical" ? "Responsable pédagogique" : "Directeur"} Votre espace de travail est prêt.</p>
+        <p>Votre espace de travail est prêt. Fonction : {user.role === "finance" ? "Responsable financier et logistique" : user.role === "administrative" ? "Responsable administratif" : user.role === "pedagogical" ? "Responsable pédagogique" : "Directeur"}.</p>
         <span className="workspace-note">Ceci est un aperçu de l’application. Nous allons construire les pages de chaque espace progressivement.</span>
         <button type="button" className="workspace-signout" onClick={handleSignOut}>Se déconnecter</button>
       </main>
