@@ -1,14 +1,14 @@
 import { useMemo, useState } from "react";
 import {
-  Activity, AlertTriangle, ArrowDownRight, ArrowRight, ArrowUpRight, Banknote,
-  Boxes, Bus, CalendarDays, CheckCircle2, Clock3, CreditCard, FileText,
+  Activity, AlertTriangle, ArrowRight, ArrowUpRight, Banknote,
+  Boxes, Bus, CalendarDays, Clock3, CreditCard,
   Package, Receipt, Search, ShieldAlert, Truck, Wallet, X,
 } from "lucide-react";
 import {
   financeActivities, financeMonthlyFlow, financePayments, financeQuickActions,
   financeSchoolSettings, financeExpenses, inventoryAlerts, outstandingBalances,
   recentIncidents, rechargeRequests, transportLines, upcomingTrips,
-  type FinancePeriod, type PaymentStatus,
+  type FinancePeriod,
 } from "../../data/finance-logistics-dashboard";
 import type { AuthenticatedSidebarUser, Permission } from "../../types/navigation";
 
@@ -72,7 +72,6 @@ export function FinanceLogisticsOverviewPage({ user, onNavigate }: Props) {
   const assignedStudents=activeLines.reduce((s,x)=>s+x.assigned,0);
   const quickActions=financeQuickActions.filter(x=>allowed(x.permission as Permission));
   const serviceTotals=outstandingBalances.reduce<Record<string,number>>((acc,x)=>{acc[x.service]=(acc[x.service]??0)+x.amount;return acc;},{});
-  const periodCollected=period==="month"?collected:collected;
   const chartRows=period==="month"?financeMonthlyFlow.slice(-3):period==="lastMonth"?financeMonthlyFlow.slice(-6,-3):financeMonthlyFlow;
 
   function requestAction(action:"Approuver"|"Rejeter") {
@@ -165,6 +164,6 @@ export function FinanceLogisticsOverviewPage({ user, onNavigate }: Props) {
     </section>
     <footer className="fl-footer"><span>Tableau de bord financier et logistique</span><span>Données fictives de démonstration · Non connectées à une base réelle</span></footer>
 
-    {requestDecision&&<div className="fl-modal-backdrop" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)setRequestDecision(null);}}><section className="fl-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="fl-modal-title"><button className="fl-modal-close" type="button" onClick={()=>setRequestDecision(null)} aria-label="Fermer"><X size={17}/></button><span className="fl-modal-icon"><AlertTriangle size={20}/></span><h2 id="fl-modal-title">Confirmer la décision</h2><p>Vous avez demandé à {requestDecision.action.toLocaleLowerCase("fr-FR")} la demande <strong>{requestDecision.id}</strong>.</p><p className="fl-modal-warning">Aucun service financier n’est connecté. Cette action ne sera pas exécutée et aucun statut ne sera modifié.</p><div><button type="button" onClick={()=>setRequestDecision(null)}>Annuler</button><button type="button" onClick={()=>requestAction(requestDecision.action)}>Continuer</button></div></section></div>}
+    {requestDecision&&<div className="fl-modal-backdrop" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)setRequestDecision(null);}}><section className="fl-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="fl-modal-title"><button className="fl-modal-close" type="button" onClick={()=>setRequestDecision(null)} aria-label="Fermer"><X size={17}/></button><span className="fl-modal-icon"><AlertTriangle size={20}/></span><h2 id="fl-modal-title">Confirmer la décision</h2><p>Vous avez demandé à {requestDecision.action.toLocaleLowerCase("fr-FR")} la demande <strong>{requestDecision.id}</strong>.</p><p className="fl-modal-warning">Aucun service financier n’est connecté. Cette action ne sera pas exécutée et aucun statut ne sera modifié.</p><div><button type="button" onClick={()=>setRequestDecision(null)}>Annuler</button><button type="button" onClick={()=>{if(requestDecision)requestAction(requestDecision.action);}}>Continuer</button></div></section></div>}
   </main>;
 }
