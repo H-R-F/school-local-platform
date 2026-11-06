@@ -1,12 +1,10 @@
 import {
-  Activity, Archive, Award, Banknote, Bell, BookOpen, BriefcaseBusiness,
-  CalendarDays, ChartNoAxesCombined, ClipboardCheck, ClipboardList, Clock3,
+  Archive, Award, Banknote, Bell, BookOpen, BriefcaseBusiness, Bus,
+  Building2, CalendarCheck, CalendarDays, CalendarRange, ChartColumn,
+  ChartNoAxesCombined, ClipboardCheck, ClipboardPenLine, Clock3, ContactRound,
   FileClock, FileText, GraduationCap, HandCoins, LayoutDashboard, Library,
-  Megaphone, MessageSquare, Package, Receipt, Settings, ShieldCheck, Stethoscope,
-  Truck, Users, Wallet, Warehouse, UserCog, CalendarCheck, Bus, School,
-  BookMarked, ClipboardPenLine, Tags, UserRoundCheck, Building2, ContactRound,
-  ChartColumn, CalendarRange, BadgeCheck, NotebookTabs, FolderKanban, ScrollText,
-  type LucideIcon,
+  Megaphone, MessageSquare, NotebookTabs, Receipt, School, Settings, ShieldCheck,
+  Stethoscope, Tags, Truck, UserCog, UserRoundCheck, Users, Wallet, Warehouse,
 } from "lucide-react";
 import type { NavigationGroup, StaffRole } from "../types/navigation";
 
