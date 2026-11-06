@@ -126,7 +126,7 @@ export const subjectsRepository={
   const existing=raw.assignments.filter(a=>a.subjectId===subjectId);
   if(!raw.academicYears.some(y=>y.id===academicYearId&&y.status!=="Archivée"&&y.status!=="Terminée"))throw new SubjectsRepositoryError("Sélectionnez une année scolaire ouverte.");
   if(inputs.some(input=>input.academicYearId!==academicYearId))throw new SubjectsRepositoryError("Les affectations enregistrées doivent appartenir à l’année scolaire sélectionnée.");
-  const retained=existing.filter(a=>a.academicYearId!==academicYearId||inputs.some(i=>i.programId===a.programId&&i.levelId===a.levelId)).map(a=>a.academicYearId===academicYearId?{...a,active:false,updatedAt:now}:a);
+  const retained=existing.filter(a=>a.academicYearId!==academicYearId||!inputs.some(i=>i.programId===a.programId&&i.levelId===a.levelId)).map(a=>a.academicYearId===academicYearId?{...a,active:false,updatedAt:now}:a);
   const next=inputs.map(input=>{const old=existing.find(a=>a.programId===input.programId&&a.levelId===input.levelId&&a.academicYearId===academicYearId);return old?{...old,...input,active:true,updatedAt:now}:{id:`ASG-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,subjectId,...input,active:true,createdAt:now,updatedAt:now};});
   write(ASSIGNMENT_KEY,[...raw.assignments.filter(a=>a.subjectId!==subjectId),...retained,...next]);return this.list();
  },
