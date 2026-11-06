@@ -15,6 +15,7 @@ import { StudentsPage } from "./components/students/StudentsPage";
 import { ParentsPage } from "./components/parents/ParentsPage";
 import { TeachersPage } from "./components/teachers/TeachersPage";
 import { EmployeesPage } from "./components/employees/EmployeesPage";
+import { RolesPermissionsPage } from "./components/roles-permissions/RolesPermissionsPage";
 import { schoolBranding } from "./config/school";
 import { getDemoStaffById } from "./data/demo-accounts";
 import type { AuthenticatedSidebarUser } from "./types/navigation";
@@ -73,6 +74,7 @@ export default function App() {
   const isParentsPage = currentPath === "/parents";
   const isTeachersPage = currentPath === "/teachers";
   const isEmployeesPage = currentPath === "/employees";
+  const isRolesPermissionsPage = currentPath === "/roles-permissions";
 
   return (
     <div className="sidebar-demo">
