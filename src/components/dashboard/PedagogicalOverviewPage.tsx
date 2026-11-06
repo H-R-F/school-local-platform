@@ -1,9 +1,8 @@
 import { useMemo, useState } from "react";
 import {
   Activity, ArrowRight, Award, BookOpen, CalendarDays, CheckCircle2,
-  ClipboardCheck, Clock3, FileText, GraduationCap, LineChart, Medal,
-  NotebookPen, School, Search, ShieldAlert, Star, TrendingDown, TrendingUp,
-  Users, XCircle,
+  ClipboardCheck, Clock3, FileText, GraduationCap, Medal,
+  NotebookPen, Search, ShieldAlert, Star, TrendingUp,
 } from "lucide-react";
 import {
   academicAlerts, badgeOverview, contentReviews, gradeSubmissions,
