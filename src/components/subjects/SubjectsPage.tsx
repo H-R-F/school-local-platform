@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState, type FormEvent } from "react";
-import { AlertCircle, BookOpen, Check, ChevronDown, ChevronLeft, ChevronRight, Eye, Filter, GraduationCap, MoreHorizontal, Pencil, Plus, Search, ShieldCheck, SlidersHorizontal, Users, X } from "lucide-react";
+import { useEffect, useMemo, useState, type CSSProperties, type FormEvent } from "react";
+import { AlertCircle, BookOpen, Check, ChevronDown, ChevronLeft, ChevronRight, Eye, Filter, GraduationCap, MoreHorizontal, Pencil, Plus, Search, ShieldCheck, X } from "lucide-react";
 import { subjectsRepository, type SubjectAssignmentInput, type SubjectCategory, type SubjectInput, type SubjectRecord, type SubjectsData } from "../../services/subjects";
 import type { EducationalCycle, EntityStatus } from "../../services/sectors-programs";
 import type { AuthenticatedSidebarUser } from "../../types/navigation";
@@ -11,7 +11,6 @@ type Pending = {subject:SubjectRecord;status:EntityStatus}|null;
 const cycles:EducationalCycle[]=["Enseignement primaire","Enseignement secondaire collégial","Enseignement secondaire qualifiant"];
 const categories:SubjectCategory[]=["Langues","Sciences","Sciences humaines et sociales","Autres matières"];
 const cycleName=(v:EducationalCycle)=>v==="Enseignement primaire"?"Primaire":v==="Enseignement secondaire collégial"?"Secondaire collégial":"Secondaire qualifiant";
-const dateName=(v:string)=>new Intl.DateTimeFormat("fr-FR",{month:"short",year:"numeric"}).format(new Date(v+"T12:00:00"));
 function Status({status}:{status:EntityStatus}){return <span className={`sb-status ${status==="Actif"?"sb-status--active":"sb-status--inactive"}`}><i/>{status}</span>}
 function SubjectForm({initial,saving,error,onCancel,onSubmit}:{initial?:SubjectRecord;saving:boolean;error:string;onCancel:()=>void;onSubmit:(v:SubjectInput)=>void}){
  const[name,setName]=useState(initial?.name??"");const[code,setCode]=useState(initial?.code??"");const[category,setCategory]=useState<SubjectCategory>(initial?.category??"Sciences");const[description,setDescription]=useState(initial?.description??"");const[hours,setHours]=useState(initial?.defaultWeeklyHours==null?"":String(initial.defaultWeeklyHours));const[coefficient,setCoefficient]=useState(initial?.defaultCoefficient==null?"":String(initial.defaultCoefficient));const[validation,setValidation]=useState<Record<string,string>>({});
@@ -57,9 +56,8 @@ export function SubjectsPage({user,onNavigate}:Props){
  function saveAssignments(yearId:string,v:SubjectAssignmentInput[]){if(!canManage||modal?.type!=="assign")return;void mutate(()=>subjectsRepository.saveAssignments(modal.subject.id,yearId,v),"Les affectations de la matière ont été mises à jour.");}
  function toggle(row:SubjectRecord){setPending({subject:row,status:row.status==="Actif"?"Inactif":"Actif"});}
  async function confirmStatus(){if(!pending)return;const p=pending;await mutate(()=>subjectsRepository.setStatus(p.subject.id,p.status),p.status==="Actif"?"La matière a été activée.":"La matière a été désactivée.");}
- const currentSubject=modal?.type==="details"||modal?.type==="edit"||modal?.type==="assign"?modal.subject:null;
  if(!canRead)return <main className="sb-page"><div className="sb-access"><ShieldCheck size={30}/><h1>Accès non autorisé</h1><p>Votre compte ne dispose pas de l'autorisation nécessaire pour consulter le catalogue des matières.</p><button className="sb-button sb-button--secondary" onClick={()=>onNavigate("/overview")}>Retour à l'accueil</button></div></main>;
- return <main className="sb-page" style={{"--school-primary":schoolBranding.primaryColor} as React.CSSProperties}>
+ return <main className="sb-page" style={{"--school-primary":schoolBranding.primaryColor} as CSSProperties}>
  <header className="sb-header"><div><div className="sb-breadcrumb">Gestion académique <i>/</i> <strong>Matières</strong></div><h1>Matières</h1><p>Gérez le catalogue des matières et leurs affectations aux programmes et niveaux de votre établissement.</p></div>{canManage&&<button className="sb-button sb-button--primary" onClick={()=>{setError("");setModal({type:"create"});}}><Plus size={15}/>Créer une matière</button>}</header>
  {success&&<div className="sb-success"><Check size={14}/><span>{success}</span><button onClick={()=>setSuccess("")}><X size={13}/></button></div>}{loadError&&<div className="sb-error sb-page-error"><AlertCircle size={14}/><span>{loadError}</span><button onClick={()=>void refresh()}>Réessayer</button></div>}
  <section className="sb-kpis"><article><span><BookOpen size={17}/></span><div><small>TOTAL DES MATIÈRES</small><strong>{loading?"—":data?.subjects.length??0}</strong><em>Catalogue de l'établissement</em></div></article><article><span className="sb-kpi-green"><Check size={17}/></span><div><small>MATIÈRES ACTIVES</small><strong>{loading?"—":activeCount}</strong><em>Matières disponibles</em></div></article><article><span className="sb-kpi-violet"><GraduationCap size={17}/></span><div><small>PROGRAMMES UTILISANT DES MATIÈRES</small><strong>{loading?"—":programCount}</strong><em>Programmes avec au moins une affectation</em></div></article></section>
