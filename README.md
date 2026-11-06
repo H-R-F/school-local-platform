@@ -1,53 +1,52 @@
-# School Local Platform
+# Plateforme locale de gestion scolaire
 
-Frontend-only desktop interface for school staff, maintained separately from the Laravel demo/reference repository.
+Application frontend autonome destinée au personnel d’un établissement scolaire. Ce dépôt est indépendant du dépôt de démonstration Laravel.
 
-## Stack
+## Technologies
 
-- React 19 + TypeScript
+- React 19 et TypeScript
 - Vite
 - Tailwind CSS 4
 - Lucide React
 
-## Run locally
+## Lancer le projet
 
 ```bash
 npm install
 npm run dev
 ```
 
-## Sidebar
+## Barre latérale
 
-- One shared sidebar for Director, Administrative Manager, Pedagogical Manager, and Finance & Logistics Manager.
-- Navigation definitions, role defaults, school branding, development session, and UI components are separated.
-- Navigation visibility requires both an allowed role and the matching effective permission.
-- Empty permission lists show no navigation items; Archive requires the Director role and `archive.view`.
-- School name, optional logo, location, and primary/secondary colors are configurable.
-- Active navigation follows the current URL path. Links use the planned route paths for the modules.
-- Groups expand independently, and the group containing the active route opens automatically.
-- Sidebar scrolls independently and supports expanded and icon-only modes with native tooltips.
-- The development-only mock identity is isolated in `src/dev/mock-session.ts`.
+- Une barre latérale partagée par quatre fonctions : Directeur, Responsable administratif, Responsable pédagogique et Responsable financier et logistique.
+- La navigation, les autorisations par défaut, l’identité visuelle de l’établissement et les composants sont séparés.
+- Un élément de navigation apparaît uniquement si le rôle et l’autorisation correspondante le permettent.
+- Les Archives sont réservées au Directeur disposant de l’autorisation `archive.view`.
+- Le nom, le logo, la localisation et les couleurs de l’établissement sont configurables.
+- La page active est déterminée à partir du chemin de navigation.
+- Les groupes peuvent être développés indépendamment. Le groupe de la page active s’ouvre automatiquement.
+- La barre latérale possède son propre défilement et peut être réduite en mode icônes.
 
-## Staff sign-in preview
+## Connexion de démonstration
 
-The root route shows the staff sign-in screen. This is simulated frontend authentication only.
+La page d’accueil affiche le formulaire de connexion du personnel. L’authentification est simulée côté frontend.
 
-All demo accounts use password `demo1234`:
+Tous les comptes de démonstration utilisent le mot de passe `demo1234` :
 
-| Role | Email |
+| Fonction | Adresse e-mail |
 |---|---|
-| Director | `director@northstar.edu` |
-| Administrative Manager | `admin@northstar.edu` |
-| Pedagogical Manager | `pedagogy@northstar.edu` |
-| Finance & Logistics Manager | `finance@northstar.edu` |
+| Directeur | `director@northstar.edu` |
+| Responsable administratif | `admin@northstar.edu` |
+| Responsable pédagogique | `pedagogy@northstar.edu` |
+| Responsable financier et logistique | `finance@northstar.edu` |
 
-Choose a demo account on the sign-in page to fill the email and password. The selected account determines the staff identity, role, and permission-filtered sidebar. The demo session is remembered in local storage and can be cleared with Sign out.
+Sélectionnez un compte sur la page de connexion pour remplir automatiquement l’adresse e-mail et le mot de passe. Le compte sélectionné détermine l’identité, la fonction et les éléments affichés dans la barre latérale. La session de démonstration est conservée dans le stockage local du navigateur. Le bouton « Se déconnecter » permet de la fermer.
 
-## Important
+## Limites actuelles
 
-This repository has no backend, database, or real authentication yet. Demo credentials are public and must never be used as real security. The role and permissions are resolved from local demo data only. When a backend is added, replace this demo flow with server-side credential verification and a secure session. Frontend visibility is not authorization: every protected route and operation must be enforced by the backend.
+Ce dépôt ne contient ni backend, ni base de données, ni véritable système d’authentification. Les identifiants de démonstration sont publics et ne doivent jamais être utilisés comme mécanisme de sécurité réel. Les rôles et autorisations proviennent actuellement de données locales. Lors de l’ajout du backend, l’authentification devra être vérifiée côté serveur et la session devra être sécurisée. La visibilité des pages côté frontend ne remplace pas le contrôle des autorisations côté serveur.
 
-## Build
+## Vérifier la compilation
 
 ```bash
 npm run build
