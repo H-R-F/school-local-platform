@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { AlertCircle, CalendarDays, Check, ChevronRight, ClipboardCheck, FilterX, Search, ShieldAlert, Users, X, Eye, Clock3, Send, BookOpen, GraduationCap, CheckCircle2, XCircle, FileText, Info } from "lucide-react";
+import { AlertCircle, CalendarDays, Check, ChevronRight, ClipboardCheck, FilterX, Search, ShieldAlert, Users, X, Eye, Clock3, Send, GraduationCap, CheckCircle2, XCircle, FileText, Info } from "lucide-react";
 import { academicYearRepository } from "../../services/academic-years";
 import { classesGroupsRepository } from "../../services/classes-groups";
 import { subjectsRepository } from "../../services/subjects";
@@ -57,13 +57,13 @@ function buildDemoSubmissions(academic: AcademicData, years: YearData, subjects:
     const cls = classes[index % classes.length];
     const subject = subjectRows.find(row => row.assignments.some(a => a.academicYearId === cls.academicYearId && a.programId === cls.programId && a.levelId === cls.levelId)) ?? subjectRows[index % subjectRows.length];
     const teacher = teacherRows.find(row => row.assignmentsResolved.some(a => a.academicYearId === cls.academicYearId && a.classId === cls.id && a.subjectId === subject.id)) ?? teacherRows[index % teacherRows.length];
-    const grades = template.grades.map((grade, i) => ({ ...grade, status: index === 0 && i === 3 ? "Manquante" as const : grade.status, grade: index === 0 && i === 3 ? null : grade.grade }));
+    const grades = Array.from({ length: Math.max(1, cls.enrolledCount || template.grades.length) }, (_, i) => { const sample = template.grades[i % template.grades.length]; const missing = index === 0 && i === 3; return { ...sample, id: `${index}-${i + 1}`, studentCode: `ELV-${String(24081 + i).padStart(5, "0")}`, studentName: i < template.grades.length ? sample.studentName : `${sample.studentName} ${Math.floor(i / template.grades.length) + 1}`, status: missing ? "Manquante" as const : "Saisie" as const, grade: missing ? null : sample.grade }; });
     return {
       id: `DEMO-SUB-2026-${String(index + 1).padStart(3, "0")}`, classId: cls.id, className: cls.name, groupName: cls.groups[0]?.name ?? "",
       subjectId: subject.id, subjectName: subject.name, teacherId: teacher.id, teacherName: teacher.fullName,
       yearId: cls.academicYearId, yearName: activeYear.name, programId: cls.programId, levelId: cls.levelId,
       period: template.period, submittedAt: template.submittedAt, validation: template.validation, publication: template.publication,
-      studentCount: cls.enrolledCount || grades.length, grades, completion: template.completion,
+      studentCount: grades.length, grades, completion: Math.round(grades.filter(g => g.grade !== null).length / grades.length * 100),
       reviewedBy: "reviewedBy" in template ? template.reviewedBy : undefined,
       reviewedAt: "reviewedAt" in template ? template.reviewedAt : undefined,
       rejectionReason: "rejectionReason" in template ? template.rejectionReason : undefined,
@@ -137,7 +137,7 @@ export function GradesValidationPage({ user }: Props) {
   const counts = useMemo(() => ({
     all: submissions.filter(row => (!yearId || row.yearId === yearId) && (!period || row.period === period) && (!programId || row.programId === programId) && (!levelId || row.levelId === levelId) && (!classId || row.classId === classId) && (!subjectId || row.subjectId === subjectId) && (!teacherId || row.teacherId === teacherId)).length,
     pending: submissions.filter(row => row.validation === "pending" && (!yearId || row.yearId === yearId) && (!period || row.period === period) && (!programId || row.programId === programId) && (!levelId || row.levelId === levelId) && (!classId || row.classId === classId) && (!subjectId || row.subjectId === subjectId) && (!teacherId || row.teacherId === teacherId)).length,
-    approved: submissions.filter(row => row.validation === "approved" && row.publication === "unpublished" && (!yearId || row.yearId === yearId) && (!period || row.period === period) && (!programId || row.programId === programId) && (!levelId || row.levelId === levelId) && (!classId || row.classId === classId) && (!subjectId || row.subjectId === subjectId) && (!teacherId || row.teacherId === teacherId)).length,
+    approved: submissions.filter(row => row.validation === "approved" && (!yearId || row.yearId === yearId) && (!period || row.period === period) && (!programId || row.programId === programId) && (!levelId || row.levelId === levelId) && (!classId || row.classId === classId) && (!subjectId || row.subjectId === subjectId) && (!teacherId || row.teacherId === teacherId)).length,
     rejected: submissions.filter(row => row.validation === "rejected" && (!yearId || row.yearId === yearId) && (!period || row.period === period) && (!programId || row.programId === programId) && (!levelId || row.levelId === levelId) && (!classId || row.classId === classId) && (!subjectId || row.subjectId === subjectId) && (!teacherId || row.teacherId === teacherId)).length,
     published: submissions.filter(row => row.publication === "published" && (!yearId || row.yearId === yearId) && (!period || row.period === period) && (!programId || row.programId === programId) && (!levelId || row.levelId === levelId) && (!classId || row.classId === classId) && (!subjectId || row.subjectId === subjectId) && (!teacherId || row.teacherId === teacherId)).length,
   }), [submissions, yearId, period, programId, levelId, classId, subjectId, teacherId]);
@@ -149,7 +149,7 @@ export function GradesValidationPage({ user }: Props) {
   const confirmDemoAction = () => {
     if (!selected) return;
     const now = new Date().toISOString();
-    if (dialog === "approve") updateDemo(selected.id, { validation: "approved", reviewedBy: user.name || "Utilisateur de démonstration", reviewedAt: now });
+    if (dialog === "approve") updateDemo(selected.id, { validation: "approved", reviewedBy: user.displayName || "Utilisateur de démonstration", reviewedAt: now });
     if (dialog === "reject" && rejectReason.trim()) updateDemo(selected.id, { validation: "rejected", publication: "unpublished", reviewedBy: user.name || "Utilisateur de démonstration", reviewedAt: now, rejectionReason: rejectReason.trim() });
     if (dialog === "publish" && selected.validation === "approved") updateDemo(selected.id, { publication: "published", publishedBy: user.name || "Utilisateur de démonstration", publishedAt: now });
     setActionMessage("Action appliquée uniquement à cette démonstration locale. Aucune donnée réelle n’a été enregistrée.");
