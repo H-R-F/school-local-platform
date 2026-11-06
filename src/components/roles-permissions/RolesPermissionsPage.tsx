@@ -63,6 +63,7 @@ const initials = (name:string) => name.split(/\\s+/).slice(0,2).map(part=>part[0
 const roleColors:Record<StaffRole,string>={director:"violet",administrative:"blue",pedagogical:"teal",finance:"amber"};
 export function RolesPermissionsPage({user}:Props) {
  const canManage = user.permissions.includes("people.roles.manage");
+ if (!canManage) return <main className="rp-page"><div className="rp-info"><LockKeyhole size={16}/>Accès non autorisé. Vous ne disposez pas de la permission de consulter la gestion des rôles.</div></main>;
  const [selected,setSelected]=useState<StaffRole>("director");
  const [tab,setTab]=useState<RoleTab>("permissions");
  const [search,setSearch]=useState("");
