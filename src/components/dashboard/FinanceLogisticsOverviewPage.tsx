@@ -121,17 +121,17 @@ export function FinanceLogisticsOverviewPage({ user, onNavigate }: Props) {
         <div className="fl-service-breakdown">{Object.entries(serviceTotals).map(([service,total])=><div key={service}><span>{service}</span><b>{money(total)}</b></div>)}</div>
         <div className="fl-table-wrap"><table className="fl-table"><thead><tr><th>Élève</th><th>Classe</th><th>Service</th><th>Montant dû</th><th>Dernier paiement</th><th/></tr></thead><tbody>{outstandingBalances.map(row=><tr key={row.id}><td>{row.student}</td><td>{row.className}</td><td>{row.service}</td><td><b>{money(row.amount)}</b></td><td>{formatDate(row.lastPayment)}</td><td><button type="button" aria-label={`Voir le solde de ${row.student}`} onClick={()=>onNavigate(`/student-balances?student=${row.id}`)}><ArrowRight size={14}/></button></td></tr>)}</tbody></table></div>
       </article>)} 
-      {allowed("finance.expenses.manage") && ({allowed("finance.balances.view") && (<article className="fl-panel"><SectionTitle eyebrow="À TRAITER" title="Demandes en attente"/>
+      {allowed("finance.balances.view") && (<article className="fl-panel"><SectionTitle eyebrow="À TRAITER" title="Demandes en attente"/>
         {requestNotice&&<div className="fl-notice" role="status"><AlertTriangle size={15}/><span>{requestNotice}</span><button type="button" onClick={()=>setRequestNotice("")} aria-label="Fermer"><X size={14}/></button></div>}
         <div className="fl-request-list">{rechargeRequests.map(row=><div key={row.id}><div className="fl-request-main"><strong>{row.student}</strong><small>{row.id} · {row.service} · {formatDate(row.date)}</small></div><b>{money(row.amount)}</b><span className="fl-status fl-status--warning">{row.status}</span><div className="fl-request-actions"><button type="button" onClick={()=>onNavigate(`/student-balances?tab=requests&request=${row.id}`)}>Examiner</button><button type="button" onClick={()=>setRequestDecision({id:row.id,action:"Approuver"})} disabled={!allowed("finance.balances.view")}>Approuver</button><button type="button" onClick={()=>setRequestDecision({id:row.id,action:"Rejeter"})} disabled={!allowed("finance.balances.view")}>Rejeter</button></div></div>)}</div>
         <p className="fl-footnote">Les décisions sont désactivées côté transaction : aucun service API financier n’est connecté à cette version.</p>
       </article>)} 
     </section>
 
-    <section className="fl-panel"><SectionTitle eyebrow="SUIVI DES SORTIES DE FONDS" title="Aperçu des dépenses" action={allowed("finance.expenses.manage")?{label:"Gérer les dépenses",run:()=>onNavigate("/expenses")}:undefined}/>
+    {allowed("finance.expenses.manage") && (<section className="fl-panel"><SectionTitle eyebrow="SUIVI DES SORTIES DE FONDS" title="Aperçu des dépenses" action={allowed("finance.expenses.manage")?{label:"Gérer les dépenses",run:()=>onNavigate("/expenses")}:undefined}/>
       <div className="fl-expense-categories">{["Énergie","Transport","Fournitures","Maintenance","Services"].map(category=><div key={category}><span>{category}</span><b>{money(financeExpenses.filter(x=>x.category===category).reduce((s,x)=>s+x.amount,0))}</b></div>)}</div>
       <div className="fl-table-wrap"><table className="fl-table"><thead><tr><th>Description</th><th>Catégorie</th><th>Montant</th><th>Date</th><th>Statut</th><th/></tr></thead><tbody>{financeExpenses.slice(0,4).map(row=><tr key={row.id}><td>{row.label}</td><td>{row.category}</td><td><b>{money(row.amount)}</b></td><td>{formatDate(row.date)}</td><td><span className={`fl-status ${statusClass(row.status)}`}>{row.status}</span></td><td><button type="button" onClick={()=>onNavigate(`/expenses?expense=${row.id}`)} aria-label={`Voir la dépense ${row.id}`}><ArrowRight size={14}/></button></td></tr>)}</tbody></table></div>
-    </section>
+    </section>) }
 
     <section className="fl-main-grid">
       {allowed("logistics.transport.manage") && (<article className="fl-panel"><SectionTitle eyebrow="MOBILITÉ SCOLAIRE" title="Gestion du transport" action={allowed("logistics.transport.manage")?{label:"Gérer le transport",run:()=>onNavigate("/transport")}:undefined}/>
