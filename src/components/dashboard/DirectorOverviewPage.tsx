@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import {
-  Activity, AlertCircle, ArrowDownRight, ArrowRight, ArrowUpRight, BadgeCheck,
-  Banknote, BookOpenCheck, CalendarDays, CheckCircle2, ChevronDown, CircleAlert,
+  Activity, AlertCircle, ArrowRight, ArrowUpRight, BadgeCheck,
+  Banknote, BookOpenCheck, CalendarDays, CircleAlert,
   Clock3, GraduationCap, LayoutDashboard, Receipt, ShieldAlert, TrendingUp,
   UserRound, Users, Wallet, X,
 } from "lucide-react";
@@ -111,7 +111,7 @@ export function DirectorOverviewPage({ user, onNavigate }: Props) {
     {showDemoNotice && <div className="dash-demo-notice"><span><AlertCircle size={16}/><span><strong>Données de démonstration</strong> — Ces chiffres illustrent le tableau de bord et ne proviennent pas encore d’une base de données réelle.</span></span><button type="button" onClick={() => setShowDemoNotice(false)} aria-label="Fermer l’avertissement"><X size={16}/></button></div>}
 
     <section className="dash-kpi-grid" aria-label="Indicateurs clés">
-      {directorKpis.map((item, index) => <article className="dash-kpi-card" key={item.id}>
+      {directorKpis.map(item => <article className="dash-kpi-card" key={item.id}>
         <div className="dash-kpi-top"><span>{item.label}</span><KpiIcon name={item.icon}/></div>
         <strong className="dash-kpi-value">{item.value}</strong>
         <div className="dash-kpi-bottom"><span>{item.detail}</span><span className={`dash-kpi-trend dash-kpi-trend--${item.direction}`}>{item.direction === "up" ? <ArrowUpRight size={13}/> : <Activity size={13}/>} {item.trend}</span></div>
@@ -124,6 +124,10 @@ export function DirectorOverviewPage({ user, onNavigate }: Props) {
         <div className="dash-academic-summary"><strong>14,6<span>/20</span></strong><span className="dash-positive"><ArrowUpRight size={14}/> +0,4 pt</span><small>Moyenne générale · Trimestre en cours</small></div>
         <div className="dash-chart-title">Moyenne par niveau</div>
         <BarChart data={academicLevels.map(item => ({ label: item.label, value: item.value }))}/>
+        <div className="dash-subchart">
+          <div className="dash-chart-title">Comparaison des classes</div>
+          <BarChart data={classPerformance} />
+        </div>
         <div className="dash-subchart">
           <div className="dash-chart-title">Évolution par trimestre</div>
           <TrendChart data={academicTrend}/>
