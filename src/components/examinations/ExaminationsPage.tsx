@@ -205,7 +205,7 @@ export function ExaminationsPage({ user, onNavigate }: Props) {
 
   if (!canView) return <main className="ex-page" style={{ "--school-primary": schoolBranding.primaryColor } as CSSProperties}><div className="ex-access"><ShieldCheck size={28}/><h1>Accès non autorisé</h1><p>Votre compte ne dispose pas de l'autorisation nécessaire pour consulter l'organisation des examens.</p><button onClick={() => onNavigate("/overview")}>Retour au tableau de bord</button></div></main>;
 
-  return <main className="ex-page">
+  return <main className="ex-page" style={{ "--school-primary": schoolBranding.primaryColor } as CSSProperties}>
     <header className="ex-header"><div><div className="ex-breadcrumb">Opérations pédagogiques <i>/</i><strong>Examens</strong></div><h1>Examens</h1><p>Planifiez les sessions d'examen, organisez les horaires et gérez la logistique des épreuves.</p></div><button className="ex-button ex-button--primary" onClick={openNewSession}><Plus size={15}/>Créer une session d'examens</button></header>
     <div className="ex-demo-note"><Info size={14}/><span>Mode démonstration · Les sessions, épreuves et salles affichées sont fictives. Les actions restent locales et ne sont pas enregistrées sur un serveur.</span></div>
     {notice && <div className="ex-notice"><Check size={14}/><span>{notice}</span><button onClick={() => setNotice("")} aria-label="Fermer"><X size={14}/></button></div>}
