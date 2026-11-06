@@ -28,9 +28,24 @@ npm run dev
 - Sidebar scrolls independently and supports expanded and icon-only modes with native tooltips.
 - The development-only mock identity is isolated in `src/dev/mock-session.ts`.
 
+## Staff sign-in preview
+
+The root route shows the staff sign-in screen. This is simulated frontend authentication only.
+
+All demo accounts use password `demo1234`:
+
+| Role | Email |
+|---|---|
+| Director | `director@northstar.edu` |
+| Administrative Manager | `admin@northstar.edu` |
+| Pedagogical Manager | `pedagogy@northstar.edu` |
+| Finance & Logistics Manager | `finance@northstar.edu` |
+
+Choose a demo account on the sign-in page to fill the email and password. The selected account determines the staff identity, role, and permission-filtered sidebar. The demo session is remembered in local storage and can be cleared with Sign out.
+
 ## Important
 
-This repository currently has no router, application pages, authentication, backend, or database. Sidebar anchors use the planned route paths and will resolve when those pages and routing are implemented. Replace the mock user with the authenticated session and its resolved permission set when available. Frontend visibility is not authorization: every protected route and operation must be enforced by the backend.
+This repository has no backend, database, or real authentication yet. Demo credentials are public and must never be used as real security. The role and permissions are resolved from local demo data only. When a backend is added, replace this demo flow with server-side credential verification and a secure session. Frontend visibility is not authorization: every protected route and operation must be enforced by the backend.
 
 ## Build
 
