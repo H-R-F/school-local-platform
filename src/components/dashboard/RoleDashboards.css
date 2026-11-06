@@ -308,3 +308,24 @@
  .admin-task>button{grid-column:3;grid-row:1}
 }
 @media(prefers-reduced-motion:reduce){:where(.administrative-dashboard,.pedagogical-dashboard,.finance-logistics-dashboard) *{transition:none!important;animation:none!important}}
+
+/* Higher-specificity page heading rules intentionally win over the shared shell defaults. */
+.administrative-dashboard .admin-dash-welcome h1,
+.pedagogical-dashboard .ped-welcome h1,
+.finance-logistics-dashboard .fl-welcome h1{
+  margin:0!important;color:#14213A!important;font:650 25px/1.25 Inter,"Segoe UI",sans-serif!important;letter-spacing:-.035em!important
+}
+.administrative-dashboard .admin-dash-welcome>div>p,
+.pedagogical-dashboard .ped-welcome>div>p,
+.finance-logistics-dashboard .fl-welcome>div>p{
+  margin:6px 0 10px!important;color:#64748B!important;font:400 13px/1.55 Inter,"Segoe UI",sans-serif!important
+}
+[dir="rtl"] .administrative-dashboard,
+[dir="rtl"] .pedagogical-dashboard,
+[dir="rtl"] .finance-logistics-dashboard{font-family:"IBM Plex Sans Arabic","Noto Sans Arabic",Tahoma,sans-serif!important}
+[dir="rtl"] .administrative-dashboard .admin-dash-welcome,
+[dir="rtl"] .pedagogical-dashboard .ped-welcome,
+[dir="rtl"] .finance-logistics-dashboard .fl-welcome{direction:rtl}
+[dir="rtl"] .administrative-dashboard .admin-registration-table,
+[dir="rtl"] .pedagogical-dashboard .ped-table,
+[dir="rtl"] .finance-logistics-dashboard .fl-table{text-align:right}
