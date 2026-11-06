@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { AlertCircle, Check, ChevronDown, ChevronRight, CircleHelp, LockKeyhole, Plus, Search, ShieldCheck, Users, X } from "lucide-react";
+import { AlertCircle, Check, ChevronDown, ChevronRight, CircleHelp, LockKeyhole, Plus, Search, ShieldCheck, Users } from "lucide-react";
 import { demoAccounts, getRoleLabel } from "../../data/demo-accounts";
 import { roleDefaultPermissions } from "../../data/role-permissions";
 import type { AuthenticatedSidebarUser, Permission, StaffRole } from "../../types/navigation";
