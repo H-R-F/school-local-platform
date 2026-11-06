@@ -14,7 +14,7 @@ function Status({status}:{status:EntityStatus}){return <span className={`lv-stat
 function LevelForm({initial,programId,structure,levels,saving,error,onCancel,onSubmit}:{initial?:LevelRecord;programId?:string;structure:SectorProgramData;levels:LevelRecord[];saving:boolean;error:string;onCancel:()=>void;onSubmit:(value:LevelInput)=>void}){
  const [cycle,setCycle]=useState<EducationalCycle>(initial?.cycle??structure.sectors.find(s=>s.id===structure.programs.find(p=>p.id===(initial?.programId??programId))?.sectorId)?.cycle??"Enseignement secondaire qualifiant");
  const sectors=structure.sectors.filter(s=>s.cycle===cycle);
- const [sectorId,setSectorId]=useState(initial?.sectorId??sectors[0]?.id??"");
+ const [sectorId,setSectorId]=useState(initial?.sectorId??structure.programs.find(p=>p.id===programId)?.sectorId??sectors[0]?.id??"");
  const programs=structure.programs.filter(p=>p.sectorId===sectorId&&p.status==="Actif");
  const [selectedProgram,setSelectedProgram]=useState(initial?.programId??programId??programs[0]?.id??"");
  const [name,setName]=useState(initial?.name??"");
