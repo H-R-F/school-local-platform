@@ -43,7 +43,18 @@ function write<T>(key:string,rows:T[]):T[]{try{localStorage.setItem(key,JSON.str
 async function loadRaw(){
  const [academicYears,classData,departmentData,subjectData]=await Promise.all([academicYearRepository.list(),classesGroupsRepository.list(),departmentsRepository.list(),subjectsRepository.list()]);
  const teachers=read(KEY,DEMO);
- const assignments=read(ASSIGNMENTS_KEY,[]);
+ const seedAssignments: Array<TeachingAssignment & {teacherId:string}> = [];
+ for(const item of [{teacherId:"EMP-001",limit:2},{teacherId:"EMP-004",limit:1}]){
+  let added=0;
+  for(const cls of classData.classes.filter(c=>c.status==="Actif")){
+   if(added>=item.limit)break;
+   const subject=subjectData.subjects.find(s=>s.status==="Actif"&&s.assignments.some(a=>a.academicYearId===cls.academicYearId&&a.programId===cls.programId&&a.levelId===cls.levelId));
+   if(!subject)continue;
+   seedAssignments.push({id:"TAS-SEED-"+item.teacherId+"-"+cls.id,teacherId:item.teacherId,academicYearId:cls.academicYearId,programId:cls.programId,levelId:cls.levelId,classId:cls.id,groupId:cls.groups.find(g=>g.status==="Actif")?.id??null,subjectId:subject.id,weeklyHours:2,active:true,createdAt:"2025-09-01T09:00:00.000Z"});
+   added++;
+  }
+ }
+ const assignments=read(ASSIGNMENTS_KEY,seedAssignments);
  return {academicYears,classes:classData.classes,departments:departmentData.departments,subjects:subjectData.subjects,teachers,assignments};
 }
 function build(raw:Awaited<ReturnType<typeof loadRaw>>):TeachersData{
