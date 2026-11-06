@@ -10,12 +10,12 @@ interface AppSidebarProps {
   user: AuthenticatedSidebarUser;
   school: SchoolBranding;
   currentPath?: string;
-  onNavigate?: (route: string) => void;
+  onNavigate?: (route: string) => void;\n  onExit?: () => void;
 }
 function normalizePath(path: string): string {
   return path.length > 1 && path.endsWith("/") ? path.slice(0, -1) : path;
 }
-export function AppSidebar({user,school,currentPath,onNavigate}:AppSidebarProps) {
+export function AppSidebar({user,school,currentPath,onNavigate,onExit}:AppSidebarProps) {
   const [collapsed,setCollapsed]=useState(false);
   const [search,setSearch]=useState("");
   const path=normalizePath(currentPath ?? window.location.pathname);
