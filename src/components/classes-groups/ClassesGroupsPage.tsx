@@ -83,7 +83,7 @@ export function ClassesGroupsPage({user,onNavigate}:Props){
  function toggleClass(row:ClassRecord){setPending({kind:"class",id:row.id,name:row.name,status:row.status==="Actif"?"Inactif":"Actif"})}
  function toggleGroup(row:SchoolGroup){setPending({kind:"group",id:row.id,name:row.name,status:row.status==="Actif"?"Inactif":"Actif"})}
  async function confirmStatus(){if(!pending)return;const p=pending;await mutate(()=>p.kind==="class"?classesGroupsRepository.setStatus(p.id,p.status):classesGroupsRepository.setGroupStatus(p.id,p.status),p.kind==="class"?"Le statut de la classe a été modifié.":"Le statut du groupe a été modifié.")}
- const selected=modal?.type==="details"||modal?.type==="edit-class"?modal.row:null;
+ const selected:ClassRecord|null=modal&&(modal.type==="details"||modal.type==="edit-class")?modal.row:null;
  const css={"--school-primary":schoolBranding.primaryColor} as CSSProperties;
  if(!canRead)return <main className="cg-page" style={css}><div className="cg-access"><ShieldCheck size={30}/><h1>Accès non autorisé</h1><p>Votre compte ne dispose pas de l'autorisation nécessaire pour consulter les classes et les groupes.</p><button className="cg-button cg-button--secondary" onClick={()=>onNavigate("/overview")}>Retour à l'accueil</button></div></main>;
  return <main className="cg-page" style={css}>
