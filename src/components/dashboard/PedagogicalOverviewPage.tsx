@@ -7,7 +7,7 @@ import {
 import {
   academicAlerts, badgeOverview, contentReviews, gradeSubmissions,
   pedagogicalActivities, pedagogicalKpis, pedagogicalQuickActions,
-  performanceByClass, performanceByLevel, performanceTrends, teacherReports,
+  performanceByClass, performanceByLevel, performanceTrends, performanceTrendsByTerm, teacherReports,
   timetableOverview, type ContentKind,
 } from "../../data/pedagogical-dashboard";
 import type { AuthenticatedSidebarUser, Permission } from "../../types/navigation";
@@ -61,7 +61,7 @@ export function PedagogicalOverviewPage({ user, onNavigate }: Props) {
   const selectedContent = contentReviews.filter(item => item.kind === (reviewTab === "Cours" ? "Cours" : "Exercice"));
   const chartLevels = performanceByLevel[level];
   const chartClasses = performanceByClass[level];
-  const trend = performanceTrends[year];
+  const trend = year === "2026–2027" ? performanceTrendsByTerm[term] : performanceTrends[year];
   const availableQuickActions = pedagogicalQuickActions.filter(action => allowed(action.permission as Permission));
   const reviewCounts = useMemo(() => ({
     courses: contentReviews.filter(x => x.kind === "Cours" && x.status === "En attente").length,
