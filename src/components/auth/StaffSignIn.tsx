@@ -9,7 +9,7 @@ interface Props { onSignIn: (user: AuthenticatedSidebarUser) => void }
 export function StaffSignIn({ onSignIn }: Props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowMot de passe] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -41,7 +41,7 @@ export function StaffSignIn({ onSignIn }: Props) {
           <p>Gérez plus simplement les activités pédagogiques, administratives et financières de votre établissement.</p>
           <div className="auth-trust-row"><ShieldCheck size={17}/><span>Espace privé réservé au personnel autorisé</span></div>
         </div>
-        <div className="auth-brand-bottom"><span>{schoolBranding.location}</span><span>School Local Platform</span></div>
+        <div className="auth-brand-bottom"><span>{schoolBranding.location}</span><span>Plateforme locale de gestion scolaire</span></div>
         <div className="auth-decoration auth-decoration--one"/><div className="auth-decoration auth-decoration--two"/>
       </section>
 
@@ -58,7 +58,7 @@ export function StaffSignIn({ onSignIn }: Props) {
             <label htmlFor="staff-email">Adresse e-mail professionnelle</label>
             <div className="auth-input-wrap"><Mail size={17}/><input id="staff-email" type="email" autoComplete="username" placeholder="vous@ecole.ma" value={email} onChange={event=>setEmail(event.target.value)} required/></div>
             <div className="auth-password-label"><label htmlFor="staff-password">Mot de passe</label><button type="button" className="auth-text-button" onClick={()=>setError("Veuillez contacter l’administrateur de votre établissement pour réinitialiser votre mot de passe.")}>Mot de passe oublié ?</button></div>
-            <div className="auth-input-wrap"><LockKeyhole size={17}/><input id="staff-password" type={showPassword?"text":"password"} autoComplete="current-password" placeholder="Saisissez votre mot de passe" value={password} onChange={event=>setPassword(event.target.value)} required/><button type="button" className="auth-password-toggle" onClick={()=>setShowMot de passe(value=>!value)} aria-label={showPassword?"Masquer le mot de passe":"Afficher le mot de passe"}>{showPassword?<EyeOff size={17}/>:<Eye size={17}/>}</button></div>
+            <div className="auth-input-wrap"><LockKeyhole size={17}/><input id="staff-password" type={showPassword?"text":"password"} autoComplete="current-password" placeholder="Saisissez votre mot de passe" value={password} onChange={event=>setPassword(event.target.value)} required/><button type="button" className="auth-password-toggle" onClick={()=>setShowPassword(value=>!value)} aria-label={showPassword?"Masquer le mot de passe":"Afficher le mot de passe"}>{showPassword?<EyeOff size={17}/>:<Eye size={17}/>}</button></div>
             {error&&<div className="auth-error" role="alert">{error}</div>}
             <button className="auth-submit" type="submit" disabled={submitting}>{submitting?"Connexion en cours...":"Se connecter à l’espace"}<ArrowRight size={17}/></button>
           </form>
