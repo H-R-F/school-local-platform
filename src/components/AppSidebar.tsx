@@ -32,7 +32,7 @@ export function AppSidebar({user,school,currentPath,onNavigate}:AppSidebarProps)
   useEffect(()=>{
     if(!activeGroupId)return;
     setExpandedGroups(current=>({...current,[activeGroupId]:true}));
-  },[activeGroupId]);
+  },[activeGroupId,path]);
   const toggleGroup=(id:string)=>setExpandedGroups(current=>({...current,[id]:!(current[id]??id===activeGroupId)}));
   const cssVariables={
     "--school-primary":school.primaryColor,
