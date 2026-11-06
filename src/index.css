@@ -122,3 +122,144 @@ button{cursor:pointer}
 .sidebar-exit{margin-left:auto;padding:7px 9px;color:#7f8c9a;font-size:10px;background:transparent;border:1px solid #e8edf1;border-radius:5px}
 .sidebar-exit:hover{color:#a34c4c;background:#fff7f7;border-color:#efdada}
 .sidebar--collapsed .sidebar-exit{display:none}
+
+
+/* Tableau de bord de direction */
+.workspace-placeholder{margin-left:258px;min-height:100vh;padding:70px 64px;background:#f7f9fb}
+.workspace-signout{margin-top:20px;padding:9px 13px;color:#52677b;background:#fff;border:1px solid #e2e8ee;border-radius:6px}
+.director-dashboard{--dash-ink:#26384b;--dash-muted:#7f8d9c;--dash-line:#e9edf2;--dash-blue:#285d8d;min-height:100vh;margin-left:258px;padding:30px 34px 24px;background:#f6f8fa;color:var(--dash-ink);font-size:12px}
+.dash-welcome{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:20px}
+.dash-breadcrumb{display:flex;align-items:center;gap:7px;margin-bottom:12px;color:#8b98a6;font-size:10px}
+.dash-breadcrumb svg{color:#6c8ba5}.dash-breadcrumb span{color:#c1c9d1}
+.dash-welcome h1{margin:0;color:#26384b;font:700 27px "Manrope",sans-serif;letter-spacing:-.045em}
+.dash-welcome p{margin:7px 0 12px;color:#758494;font-size:12px}
+.dash-context{display:flex;align-items:center;gap:15px;color:#718398;font-size:10px}
+.dash-context span{display:flex;align-items:center;gap:6px}.dash-date{text-transform:capitalize}
+.dash-range-select{display:flex;flex-direction:column;gap:6px;color:#7b8998;font-size:10px;font-weight:600}
+.dash-select-wrap{position:relative;display:flex;align-items:center}
+.dash-select-wrap select{width:170px;height:36px;padding:0 32px 0 11px;color:#3d5267;font:500 11px "DM Sans",sans-serif;background:#fff;border:1px solid #e3e9ef;border-radius:6px;appearance:none;outline:0}
+.dash-select-wrap svg{position:absolute;right:10px;color:#8292a1;pointer-events:none}
+.dash-demo-notice{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:15px;padding:10px 13px;color:#7a673c;background:#fff9ec;border:1px solid #f0e4c8;border-radius:6px;font-size:10px}
+.dash-demo-notice>span{display:flex;align-items:center;gap:9px}.dash-demo-notice svg{flex:0 0 auto;color:#b38a3e}.dash-demo-notice strong{font-weight:700}
+.dash-demo-notice button{display:grid;place-items:center;padding:2px;color:#a28a5d;background:none;border:0}
+.dash-kpi-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:11px;margin-bottom:16px}
+.dash-kpi-card{min-width:0;padding:14px 14px 12px;background:#fff;border:1px solid #e9edf1;border-radius:7px;box-shadow:0 1px 2px #1c344408}
+.dash-kpi-top{display:flex;align-items:center;justify-content:space-between;gap:6px;color:#778697;font-size:10px;font-weight:600}
+.dash-kpi-icon{display:grid;place-items:center;width:30px;height:30px;flex:0 0 30px;color:#557c9a;background:#eef4f8;border-radius:7px}
+.dash-kpi-value{display:block;overflow:hidden;margin:10px 0 7px;color:#293e52;font:700 21px "Manrope",sans-serif;letter-spacing:-.045em;text-overflow:ellipsis;white-space:nowrap}
+.dash-kpi-bottom{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:5px;color:#98a3ae;font-size:9px}
+.dash-kpi-trend{display:inline-flex;align-items:center;gap:2px;color:#668c78;font-weight:700;white-space:nowrap}
+.dash-kpi-trend--neutral{color:#8b96a2}
+.dash-grid{display:grid;gap:14px;margin-bottom:14px}
+.dash-grid--academic{grid-template-columns:minmax(0,1.48fr) minmax(310px,.82fr)}
+.dash-grid--attendance{grid-template-columns:minmax(310px,.78fr) minmax(0,1.52fr)}
+.dash-grid--operations{grid-template-columns:minmax(300px,.82fr) minmax(0,1.18fr)}
+.dash-grid--monitoring{grid-template-columns:minmax(0,1.25fr) minmax(310px,.75fr)}
+.dash-panel{min-width:0;padding:17px 18px;background:#fff;border:1px solid #e9edf1;border-radius:7px;box-shadow:0 1px 2px #1c344408}
+.dash-section-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+.dash-section-heading h2{margin:4px 0 0;color:#304358;font:700 14px "Manrope",sans-serif;letter-spacing:-.025em}
+.dash-eyebrow{color:#94a1ad;font-size:8px;font-weight:700;letter-spacing:.12em}
+.dash-text-action,.dash-panel-link{display:inline-flex;align-items:center;gap:6px;padding:4px 0;color:#527a99;font-size:10px;font-weight:600;background:none;border:0;white-space:nowrap}
+.dash-text-action:hover,.dash-panel-link:hover{color:#244f72}
+.dash-academic-summary{display:grid;grid-template-columns:auto auto 1fr;align-items:center;gap:9px;margin-bottom:13px}
+.dash-academic-summary>strong{color:#2b455c;font:700 25px "Manrope",sans-serif}.dash-academic-summary>strong span{color:#91a0ad;font-size:13px}
+.dash-academic-summary>small{grid-column:1/-1;color:#8d9aa7;font-size:9px}
+.dash-positive{display:inline-flex;align-items:center;gap:2px;color:#548568;font-size:9px;font-weight:700}
+.dash-chart-title{margin:12px 0 7px;color:#697c8e;font-size:10px;font-weight:700}
+.dash-bars{display:flex;height:140px;padding-top:7px}
+.dash-bars-scale{display:flex;flex-direction:column;justify-content:space-between;width:35px;padding:0 0 20px;color:#a1acb7;font-size:8px}
+.dash-bars-grid{display:flex;align-items:stretch;justify-content:space-around;gap:12px;flex:1;border-bottom:1px solid #e9edf2;background:repeating-linear-gradient(to bottom,transparent 0,transparent 34px,#f0f3f6 35px)}
+.dash-bar-column{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:5px;min-width:0;flex:1}
+.dash-bar-value{color:#72869a;font-size:8px}
+.dash-bar-track{display:flex;align-items:flex-end;justify-content:center;width:100%;max-width:35px;height:82px}
+.dash-bar-track span{display:block;width:100%;min-height:4px;background:#7298b3;border-radius:4px 4px 0 0}
+.dash-bar-column:nth-child(2n) .dash-bar-track span{background:#9ab2c4}
+.dash-bar-label{height:17px;color:#8c99a6;font-size:8px;white-space:nowrap}
+.dash-subchart{margin-top:9px;padding-top:4px;border-top:1px solid #f0f2f5}
+.dash-trend-chart{height:130px}
+.dash-trend-chart svg{display:block;width:100%;height:105px;overflow:visible}
+.dash-chart-gridline{stroke:#edf1f4;stroke-width:1;stroke-dasharray:3 4}
+.dash-trend-area{fill:#e8f0f6;opacity:.8}
+.dash-trend-line{fill:none;stroke:#477da2;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.dash-trend-dot{fill:#fff;stroke:#477da2;stroke-width:2}
+.dash-trend-labels{display:flex;justify-content:space-between;padding:0 5px;color:#929eaa;font-size:8px}
+.dash-class-strip{display:flex;align-items:center;flex-wrap:wrap;gap:6px 9px;margin-top:5px;padding:9px 10px;color:#8996a4;font-size:9px;background:#f7f9fb;border-radius:5px}
+.dash-class-strip strong{margin-right:7px;color:#536a7e;font-size:9px}
+.dash-student-total{display:flex;align-items:baseline;gap:8px;margin:3px 0 13px}.dash-student-total strong{color:#2e455a;font:700 25px "Manrope",sans-serif}.dash-student-total span{color:#8b98a6;font-size:10px}
+.dash-donut-wrap{display:flex;align-items:center;justify-content:space-around;gap:16px;padding:6px 0 16px}
+.dash-donut{display:grid;place-items:center;width:126px;height:126px;flex:0 0 126px;border-radius:50%;position:relative}
+.dash-donut:before{position:absolute;inset:13px;content:"";background:#fff;border-radius:50%}
+.dash-donut>div{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px}.dash-donut strong{color:#334b60;font:700 19px "Manrope",sans-serif}.dash-donut span{color:#8d99a6;font-size:9px}
+.dash-legend{display:flex;flex-direction:column;gap:12px;min-width:100px}.dash-legend>div{display:grid;grid-template-columns:9px 1fr auto;align-items:center;gap:7px;color:#7b8997;font-size:10px}.dash-legend strong{color:#43596e;font-size:10px}
+.dash-legend-dot{width:8px;height:8px;border-radius:50%}
+.dash-divider{height:1px;margin:0 0 12px;background:#edf0f3}
+.dash-level-list{display:flex;flex-direction:column;gap:10px}
+.dash-level-list>div>div:first-child{display:flex;justify-content:space-between;margin-bottom:5px;color:#748494;font-size:9px}.dash-level-list strong{color:#4d6276}
+.dash-level-track{height:5px;overflow:hidden;background:#edf1f4;border-radius:10px}.dash-level-track span{display:block;height:100%;background:#789bb5;border-radius:10px}
+.dash-panel-link{margin-top:14px}
+.dash-attendance-summary{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:1px 0 13px}
+.dash-attendance-summary>div{display:flex;flex-direction:column;gap:4px}.dash-attendance-summary strong{color:#2e475d;font:700 26px "Manrope",sans-serif}.dash-attendance-summary span{color:#8c99a6;font-size:9px}
+.dash-attendance-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:11px 0;border-top:1px solid #edf0f3;border-bottom:1px solid #edf0f3}
+.dash-attendance-stats>div{display:grid;grid-template-columns:8px auto;align-items:center;gap:3px 6px}.dash-attendance-stats i,.dash-attendance-legend i{width:7px;height:7px;border-radius:50%}
+.is-present{background:#78a88b}.is-absent{background:#d78383}.is-late{background:#d8b36a}
+.dash-attendance-stats strong{color:#465d70;font-size:14px}.dash-attendance-stats span{grid-column:2;color:#8d99a5;font-size:8px}
+.dash-attendance-legend{display:flex;gap:14px;margin:11px 0;color:#84919e;font-size:8px}
+.dash-attendance-legend span{display:flex;align-items:center;gap:5px}
+.dash-attendance-bars{display:flex;align-items:flex-end;justify-content:space-around;gap:13px;height:112px;padding:0 8px;border-bottom:1px solid #edf0f3}
+.dash-attendance-column{display:flex;flex-direction:column;align-items:center;gap:5px;height:100%;flex:1}
+.dash-attendance-stack{display:flex;flex-direction:column-reverse;justify-content:flex-start;width:100%;max-width:22px;height:88px;margin-top:auto;overflow:hidden;border-radius:3px 3px 0 0}
+.dash-attendance-stack span{display:block;min-height:2px}.dash-attendance-column small{height:14px;color:#94a0ac;font-size:8px}
+.dash-risk-summary{display:flex;align-items:center;gap:9px;margin:-2px 0 12px;color:#8794a1;font-size:9px}
+.dash-risk-summary>strong{color:#334b60;font:700 23px "Manrope",sans-serif}.dash-risk-badge{display:inline-flex;align-items:center;gap:4px;margin-left:auto;padding:5px 7px;color:#9a7440;background:#fbf5e9;border-radius:4px;font-size:8px;font-weight:700;white-space:nowrap}
+.dash-risk-table-wrap{overflow-x:auto}
+.dash-risk-table{width:100%;border-collapse:collapse;text-align:left;white-space:nowrap}
+.dash-risk-table th{padding:8px 8px;color:#96a1ac;font-size:8px;font-weight:700;background:#f8fafb;border-top:1px solid #edf0f3;border-bottom:1px solid #edf0f3}
+.dash-risk-table td{padding:10px 8px;color:#647689;font-size:9px;border-bottom:1px solid #f0f2f5}
+.dash-student-cell{display:flex;align-items:center;gap:7px}
+.dash-student-cell>span{display:grid;place-items:center;width:27px;height:27px;flex:0 0 27px;color:#57758d;font-size:8px;font-weight:700;background:#edf3f7;border-radius:50%}
+.dash-student-cell>div{display:flex;flex-direction:column;gap:3px}.dash-student-cell strong{color:#465b6f;font-size:9px}.dash-student-cell small,.dash-reason{color:#9aa5af;font-size:8px}
+.dash-risk-tag{display:inline-flex;padding:4px 6px;font-size:8px;font-weight:700;border-radius:4px}
+.dash-risk-tag--amber{color:#98733c;background:#fbf4e7}.dash-risk-tag--red{color:#a45b5b;background:#fbefef}.dash-risk-tag--green{color:#58836b;background:#edf6f0}
+.dash-reason{display:block;margin-top:4px}
+.dash-status{display:inline-flex;padding:4px 6px;font-size:8px;border-radius:4px}.dash-status--done{color:#548168;background:#edf6f0}.dash-status--progress{color:#8c7445;background:#faf5e9}.dash-status--pending{color:#a45b5b;background:#fbefef}
+.dash-icon-action{display:grid;place-items:center;width:26px;height:26px;color:#7690a4;background:#f5f8fa;border:0;border-radius:5px}.dash-icon-action:hover{color:#285d8d;background:#eaf1f6}
+.dash-approval-list{display:flex;flex-direction:column}
+.dash-approval-item{display:flex;align-items:center;gap:10px;width:100%;padding:12px 2px;text-align:left;background:#fff;border:0;border-bottom:1px solid #eff2f5}
+.dash-approval-item:last-child{border-bottom:0}.dash-approval-item:hover .dash-approval-copy strong{color:#285d8d}
+.dash-approval-icon{display:grid;place-items:center;width:34px;height:34px;flex:0 0 34px;color:#6486a0;background:#eff4f7;border-radius:7px}
+.dash-approval-copy{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1}.dash-approval-copy strong{color:#4c6175;font-size:10px}.dash-approval-copy small{color:#99a4ae;font-size:8px}
+.dash-approval-count{display:grid;place-items:center;min-width:26px;height:25px;padding:0 6px;color:#8e6f3e;font-size:10px;background:#faf4e9;border-radius:5px}
+.dash-muted-arrow{color:#a8b2bc}
+.dash-finance-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:2px 0 15px;border-bottom:1px solid #edf0f3}
+.dash-finance-metrics>div{display:flex;flex-direction:column;gap:6px;min-width:0}.dash-finance-metrics span{color:#8a97a4;font-size:9px}.dash-finance-metrics strong{overflow:hidden;color:#344d62;font:700 16px "Manrope",sans-serif;text-overflow:ellipsis;white-space:nowrap}.dash-finance-metrics small{display:flex;align-items:center;gap:2px;color:#96a1ab;font-size:8px;white-space:nowrap}
+.dash-revenue-head{display:flex;justify-content:space-between;gap:10px;margin:13px 0 7px;color:#697c8e;font-size:9px;font-weight:700}.dash-revenue-head small{color:#9aa5af;font-size:8px;font-weight:400}
+.dash-revenue-bars{display:flex;align-items:flex-end;justify-content:space-around;gap:14px;height:100px;padding:0 10px;border-bottom:1px solid #edf0f3}
+.dash-revenue-bars>div{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;height:100%;flex:1}
+.dash-revenue-bars span{color:#8192a1;font-size:8px}.dash-revenue-bars i{display:block;width:100%;max-width:36px;min-height:4px;background:#83a5bd;border-radius:4px 4px 0 0}.dash-revenue-bars>div:nth-child(2n) i{background:#a8bdcc}
+.dash-revenue-bars small{height:13px;color:#9aa5af;font-size:8px}
+.dash-activity-list{display:flex;flex-direction:column}
+.dash-activity-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #f0f2f5}
+.dash-activity-item:last-child{border-bottom:0}
+.dash-activity-icon{display:grid;place-items:center;width:31px;height:31px;flex:0 0 31px;border-radius:7px}
+.dash-activity-icon--student{color:#587f9d;background:#eef4f8}.dash-activity-icon--payment{color:#5e8c74;background:#eff6f1}.dash-activity-icon--grade{color:#8877a6;background:#f3f0f8}.dash-activity-icon--attendance{color:#a07d4b;background:#faf4e9}.dash-activity-icon--course{color:#648d91;background:#eef6f5}.dash-activity-icon--employee{color:#71839c;background:#f0f3f7}
+.dash-activity-item>div{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}.dash-activity-item strong{color:#506579;font-size:10px}.dash-activity-item p{margin:0;color:#8593a0;font-size:9px}.dash-activity-item small{color:#a1abb4;font-size:8px}
+.dash-activity-item time{padding-top:2px;color:#9aa5af;font-size:8px;white-space:nowrap}
+.dash-alert-list{display:flex;flex-direction:column;gap:9px}
+.dash-alert{display:flex;align-items:flex-start;gap:9px;padding:11px 10px;border:1px solid transparent;border-radius:6px}
+.dash-alert--critical{color:#a85c5c;background:#fff5f4;border-color:#f6e4e2}.dash-alert--warning{color:#9b7a45;background:#fff9ed;border-color:#f3ead7}.dash-alert--info{color:#5e7e9c;background:#f2f7fb;border-color:#e5eef5}
+.dash-alert-icon{display:grid;place-items:center;width:25px;height:25px;flex:0 0 25px}
+.dash-alert>div{min-width:0}.dash-alert strong{display:block;color:#566a7d;font-size:10px}.dash-alert p{margin:4px 0 7px;color:#8593a0;font-size:9px;line-height:1.5}
+.dash-alert button{display:inline-flex;align-items:center;gap:4px;padding:0;color:inherit;font-size:9px;font-weight:700;background:none;border:0}
+.dash-footer{display:flex;justify-content:space-between;gap:12px;padding:5px 2px 0;color:#a1abb5;font-size:8px}
+.dash-modal-backdrop{position:fixed;z-index:50;inset:0;display:grid;place-items:center;padding:20px;background:#1d2f4055}
+.dash-student-modal{position:relative;width:min(100%,420px);padding:27px;background:#fff;border:1px solid #e7edf2;border-radius:10px;box-shadow:0 18px 55px #1d2f4026}
+.dash-modal-close{position:absolute;top:13px;right:13px;display:grid;place-items:center;width:30px;height:30px;color:#82909d;background:#f5f7f9;border:0;border-radius:6px}
+.dash-modal-avatar{display:grid;place-items:center;width:48px;height:48px;margin-bottom:16px;color:#527590;font-weight:700;background:#edf3f7;border-radius:50%}
+.dash-student-modal h2{margin:6px 0;color:#30475c;font:700 20px "Manrope",sans-serif}.dash-student-modal>p{color:#82909d;font-size:11px;line-height:1.6}
+.dash-modal-reason{margin:15px 0;padding:12px;color:#657a8d;background:#f6f8fa;border-radius:6px;font-size:11px}
+.dash-modal-note{padding-top:10px;border-top:1px solid #edf0f3}
+.dash-primary-button{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:39px;margin-top:17px;color:#fff;background:#285d8d;border:0;border-radius:6px;font-size:11px;font-weight:700}
+@media(max-width:1320px){.dash-kpi-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.dash-grid--academic{grid-template-columns:minmax(0,1.25fr) minmax(290px,.75fr)}.director-dashboard{padding:26px 24px}}
+@media(max-width:1050px){.dash-grid--academic,.dash-grid--attendance,.dash-grid--operations,.dash-grid--monitoring{grid-template-columns:1fr}.dash-grid--academic>article:first-child{min-height:0}}
+@media(max-width:760px){.director-dashboard{margin-left:72px;padding:22px 16px}.dash-welcome{align-items:flex-start;flex-direction:column}.dash-range-select{align-self:flex-start}.dash-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.dash-footer{flex-direction:column}.dash-finance-metrics{grid-template-columns:1fr 1fr}.dash-risk-table{min-width:620px}}
+@media(max-width:480px){.director-dashboard{margin-left:0;padding:18px 12px}.dash-kpi-grid{gap:8px}.dash-kpi-card{padding:11px}.dash-kpi-value{font-size:18px}.dash-panel{padding:14px 12px}.dash-context{align-items:flex-start;flex-direction:column;gap:6px}.dash-attendance-stats{gap:4px}.dash-attendance-bars{gap:7px}.dash-demo-notice{align-items:flex-start}.dash-donut{width:110px;height:110px;flex-basis:110px}.dash-donut-wrap{gap:9px}.dash-risk-summary{flex-wrap:wrap}.dash-finance-metrics{grid-template-columns:1fr}.dash-finance-metrics>div{padding:7px 0;border-bottom:1px solid #f0f2f5}}
