@@ -25,7 +25,6 @@ function AssignmentManager({subject,data,saving,error,onCancel,onSave}:{subject:
  useEffect(()=>{setSelected(Object.fromEntries(subject.assignments.filter(a=>a.academicYearId===yearId).map(a=>[`${a.programId}::${a.levelId}`,{weeklyHours:a.weeklyHours==null?"":String(a.weeklyHours),coefficient:a.coefficient==null?"":String(a.coefficient),academicYearId:yearId}])));},[yearId,subject.id]);
  const sectors=data.structure.sectors.filter(s=>s.status==="Actif"&&(cycle==="all"||s.cycle===cycle));
  const programs=data.structure.programs.filter(p=>p.status==="Actif"&&(sectorId==="all"||p.sectorId===sectorId)&&(cycle==="all"||data.structure.sectors.find(s=>s.id===p.sectorId)?.cycle===cycle));
- const availableLevels=data.levels.filter(l=>l.status==="Actif"&&(programId==="all"||l.programId===programId));
  const activeAssignments=subject.assignments;
  function toggle(program:string,level:string){const key=`${program}::${level}`;setSelected(old=>{const next={...old};if(next[key])delete next[key];else next[key]={weeklyHours:subject.defaultWeeklyHours==null?"":String(subject.defaultWeeklyHours),coefficient:subject.defaultCoefficient==null?"":String(subject.defaultCoefficient),academicYearId:yearId};return next;});}
  function patch(key:string,field:"weeklyHours"|"coefficient"|"academicYearId",value:string){setSelected(old=>({...old,[key]:{...old[key],[field]:value}}));}
