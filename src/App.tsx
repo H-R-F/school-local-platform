@@ -107,6 +107,8 @@ export default function App() {
         <TeachersPage user={user} onNavigate={navigate} />
       ) : isEmployeesPage ? (
         <EmployeesPage user={user} onNavigate={navigate} />
+      ) : isRolesPermissionsPage ? (
+        <RolesPermissionsPage user={user} onNavigate={navigate} />
       ) : (
         <main className="workspace-placeholder">
           <span className="workspace-eyebrow">ESPACE DU PERSONNEL</span>
