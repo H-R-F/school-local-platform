@@ -10,7 +10,8 @@ interface AppSidebarProps {
   user: AuthenticatedSidebarUser;
   school: SchoolBranding;
   currentPath?: string;
-  onNavigate?: (route: string) => void;\n  onExit?: () => void;
+  onNavigate?: (route: string) => void;
+  onExit?: () => void;
 }
 function normalizePath(path: string): string {
   return path.length > 1 && path.endsWith("/") ? path.slice(0, -1) : path;
@@ -59,6 +60,7 @@ export function AppSidebar({user,school,currentPath,onNavigate,onExit}:AppSideba
     <div className="sidebar-footer">
       <div className="sidebar-user-avatar" title={user.displayName}>{user.initials}</div>
       {!collapsed&&<div className="sidebar-user-copy"><strong>{user.displayName}</strong><span>{user.role==="finance"?"Finance & Logistics Manager":user.role==="administrative"?"Administrative Manager":user.role==="pedagogical"?"Pedagogical Manager":"Director"}</span></div>}
+      {onExit && <button type="button" className="sidebar-exit" onClick={onExit}>Sign out</button>}
     </div>
   </aside>;
 }
