@@ -10,7 +10,7 @@ export default function App() {
 
   return (
     <div className="app-frame">
-      <AppSidebar role={role} onRoleChange={setRole} activeItem={activeItem} onNavigate={setActiveItem} />
+      <AppSidebar role={role} activeItem={activeItem} onNavigate={setActiveItem} />
       <main className="preview-main">
         <header className="preview-toolbar">
           <div className="breadcrumb"><span>Workspace</span><span className="breadcrumb-slash">/</span><strong>{activeItem}</strong></div>
