@@ -72,7 +72,7 @@ export function FinanceLogisticsOverviewPage({ user, onNavigate }: Props) {
   const assignedStudents=activeLines.reduce((s,x)=>s+x.assigned,0);
   const quickActions=financeQuickActions.filter(x=>allowed(x.permission as Permission));
   const serviceTotals=outstandingBalances.reduce<Record<string,number>>((acc,x)=>{acc[x.service]=(acc[x.service]??0)+x.amount;return acc;},{});
-  const chartRows=period==="month"?financeMonthlyFlow.slice(-3):period==="lastMonth"?financeMonthlyFlow.slice(-6,-3):financeMonthlyFlow;
+  const chartRows=financeMonthlyFlow.filter(row=>{const monthDate=new Date(row.date+"T12:00:00");return monthDate>=new Date(periodRange.start.getFullYear(),periodRange.start.getMonth(),1)&&monthDate<=new Date(periodRange.end.getFullYear(),periodRange.end.getMonth()+1,0);});
 
   function requestAction(action:"Approuver"|"Rejeter") {
     if(!requestDecision)return;
