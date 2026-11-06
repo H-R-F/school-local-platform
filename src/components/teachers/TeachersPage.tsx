@@ -1,6 +1,6 @@
 import {useEffect,useMemo,useState,type FormEvent} from "react";
-import {AlertCircle,BookOpen,BriefcaseBusiness,Check,ChevronDown,ChevronLeft,ChevronRight,Clock3,Download,FileText,GraduationCap,MoreHorizontal,Plus,Search,Shield,Upload,UserRound,X} from "lucide-react";
-import {teachersRepository,type TeacherRecord,type TeacherInput,type TeacherEmploymentStatus,type TeacherAccountStatus,type TeacherAssignmentInput, type TeachersData} from "../../services/teachers";
+import {AlertCircle,BriefcaseBusiness,Check,ChevronLeft,ChevronRight,Download,FileText,GraduationCap,MoreHorizontal,Plus,Search,Shield,Upload,UserRound,X} from "lucide-react";
+import {teachersRepository,type TeacherRecord,type TeacherInput,type TeacherEmploymentStatus,type TeacherAccountStatus, type TeachersData} from "../../services/teachers";
 import type {AuthenticatedSidebarUser} from "../../types/navigation";
 import "./teachers.css";
 
@@ -22,6 +22,7 @@ function TeacherForm({teacher,data,saving,error,onCancel,onSave}:{teacher?:Teach
  </div><footer><button type="button" className="te-btn subtle" onClick={onCancel}>Annuler</button><button className="te-btn primary" disabled={saving}>{saving?"Enregistrement…":"Enregistrer"}</button></footer></form>;
 }
 export function TeachersPage({user,onNavigate}:Props){
+ void onNavigate;
  const canRead=user.permissions.includes("people.teachers.view");
  const canManage=user.role==="director"||user.role==="administrative";
  const canAssignments=canManage||user.role==="pedagogical";
