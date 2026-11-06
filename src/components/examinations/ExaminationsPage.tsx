@@ -152,7 +152,6 @@ export function ExaminationsPage({ user, onNavigate }: Props) {
   };
   const selectedPanel = panel?.type === "session" ? getSession(panel.id) : panel?.type === "exam" ? exams.find(e => e.id === panel.id) : undefined;
   const activeSessionExams = activeSession ? exams.filter(e => e.sessionId === activeSession.id && !e.cancelled) : [];
-  const activeSessionClasses = activeSession ? activeSession.classIds.map(getClass).filter(Boolean) : [];
   const roomAvailabilityDate = activeSessionExams[0]?.date ?? activeSession?.startDate ?? "2026-11-10";
   const selectedRoomAvailability = (room: ExamRoom) => {
     const atDate = activeSessionExams.filter(e => e.date === roomAvailabilityDate && e.roomId === room.id && !e.cancelled);
