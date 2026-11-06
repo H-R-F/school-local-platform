@@ -530,3 +530,128 @@ button{cursor:pointer}
 @media(max-width:1050px){.ped-performance-grid{grid-template-columns:1fr 1fr}.ped-performance-grid>article:last-child{grid-column:1/-1}.ped-ops-grid{grid-template-columns:1fr}}
 @media(max-width:760px){.pedagogical-dashboard{margin-left:72px;padding:20px 15px}.ped-welcome{align-items:flex-start;flex-direction:column}.ped-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.ped-queue-summary{gap:12px;flex-wrap:wrap}.ped-search{width:100%;margin:0}.ped-content-grid{grid-template-columns:1fr}.ped-performance-grid{grid-template-columns:1fr}.ped-performance-grid>article:last-child{grid-column:auto}.ped-footer{flex-direction:column}.ped-table{min-width:850px}.ped-quick-actions{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:480px){.pedagogical-dashboard{margin-left:0;padding:17px 11px}.ped-panel{padding:14px 11px}.ped-kpis{gap:7px}.ped-kpi{padding:10px}.ped-kpi>strong{font-size:18px}.ped-welcome h1{font-size:24px}.ped-context{flex-direction:column;gap:6px}.ped-section-title{align-items:flex-start}.ped-queue-summary>div{flex:1}.ped-report-summary{gap:5px}.ped-timetable-stats{grid-template-columns:1fr 1fr}.ped-schedule-list>div{grid-template-columns:74px 1fr}.ped-schedule-list>div>span{grid-column:2}.ped-quick-actions{grid-template-columns:1fr}.ped-activity-list time{white-space:normal}}
+
+
+/* Vue d'ensemble — Responsable financier et logistique */
+.finance-logistics-dashboard{--fl-ink:#30475b;--fl-muted:#8795a2;--fl-line:#e8edf1;margin-left:258px;min-height:100vh;padding:29px 32px 24px;background:#f6f8fa;color:var(--fl-ink);font-size:12px}
+.fl-welcome{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:16px}
+.fl-breadcrumb{display:flex;align-items:center;gap:7px;margin-bottom:9px;color:#8c9aa6;font-size:10px}.fl-breadcrumb span{color:#c2cbd2}
+.fl-welcome h1{margin:0;color:#30475b;font:700 27px "Manrope",sans-serif;letter-spacing:-.04em}
+.fl-welcome p{margin:7px 0 10px;color:#788897;font-size:11px}
+.fl-context{display:flex;gap:14px;flex-wrap:wrap;color:#8795a1;font-size:9px;text-transform:capitalize}
+.fl-context span{display:inline-flex;align-items:center;gap:5px}
+.fl-period-control{display:flex;flex-direction:column;gap:5px;min-width:190px;padding:10px 12px;background:#fff;border:1px solid var(--fl-line);border-radius:6px}
+.fl-period-control label{color:#8997a3;font-size:8px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.fl-period-control select,.fl-custom-range input{padding:6px 8px;color:#52697c;background:#fafbfd;border:1px solid #e8edf1;border-radius:4px;font:500 9px "DM Sans",sans-serif}
+.fl-custom-range{display:flex;align-items:center;gap:5px}.fl-custom-range input{min-width:0;width:50%}.fl-custom-range span{color:#8c99a5;font-size:8px}
+.fl-kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.fl-kpi{min-width:0;padding:12px 13px;background:#fff;border:1px solid var(--fl-line);border-radius:7px;box-shadow:0 1px 2px #24394a08}
+.fl-kpi>div{display:flex;align-items:center;justify-content:space-between;gap:6px;color:#7e8d9b;font-size:9px;font-weight:600}
+.fl-kpi>div>i{display:grid;place-items:center;width:29px;height:29px;flex:0 0 29px;border-radius:7px;font-style:normal}
+.fl-icon--blue{color:#557d9d;background:#edf4f8}.fl-icon--amber{color:#9b7b48;background:#faf5e9}.fl-icon--violet{color:#7c75a1;background:#f2f0f8}.fl-icon--red{color:#a65e5e;background:#faeeee}
+.fl-kpi>strong{display:block;margin:9px 0 5px;color:#30485e;font:700 19px "Manrope",sans-serif;letter-spacing:-.04em;overflow-wrap:anywhere}
+.fl-kpi>small{display:flex;align-items:center;gap:4px;min-height:20px;color:#929eaa;font-size:8px;line-height:1.4}
+.fl-main-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:13px;align-items:stretch}
+.fl-panel{min-width:0;margin-bottom:13px;padding:16px 17px;background:#fff;border:1px solid var(--fl-line);border-radius:7px;box-shadow:0 1px 2px #24394a08}
+.fl-section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:13px}
+.fl-section-title>div>span{color:#97a3ad;font-size:8px;font-weight:700;letter-spacing:.12em}
+.fl-section-title h2{margin:4px 0 0;color:#30475b;font:700 14px "Manrope",sans-serif;letter-spacing:-.02em}
+.fl-section-title>button{display:inline-flex;align-items:center;gap:6px;padding:4px 0;color:#547e9d;font-size:9px;font-weight:600;background:none;border:0;white-space:nowrap}
+.fl-finance-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.fl-finance-summary>div{display:flex;flex-direction:column;gap:5px;min-width:0;padding:9px;background:#f8fafb;border:1px solid #edf0f3;border-radius:5px}
+.fl-finance-summary span{color:#8795a1;font-size:8px;line-height:1.4}
+.fl-finance-summary strong{color:#435b70;font:700 13px "Manrope",sans-serif;overflow-wrap:anywhere}
+.fl-finance-summary .fl-positive{color:#5f896e}.fl-finance-summary .fl-negative{color:#a6635b}
+.fl-chart{margin-top:13px;padding:10px 9px 3px;border:1px solid #edf0f3;border-radius:6px}
+.fl-chart-legend{display:flex;gap:15px;flex-wrap:wrap;color:#82919e;font-size:8px}
+.fl-chart-legend span{display:inline-flex;align-items:center;gap:6px}.fl-chart-legend i{display:inline-block;width:8px;height:8px;border-radius:2px}
+.fl-legend-payments{background:#7698b2}.fl-legend-expenses{background:#c4b49a}
+.fl-chart-bars{display:flex;align-items:flex-end;justify-content:space-around;gap:12px;height:145px;padding:12px 8px 0;background:repeating-linear-gradient(to bottom,transparent 0,transparent 34px,#f0f3f5 35px)}
+.fl-chart-month{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;height:100%;min-width:0;flex:1}
+.fl-chart-pair{display:flex;align-items:flex-end;justify-content:center;gap:5px;width:100%;height:100%}
+.fl-chart-column{position:relative;display:flex;align-items:flex-end;justify-content:center;width:25px;height:100%}
+.fl-chart-column>b{position:absolute;top:-13px;display:none;color:#8393a0;font-size:7px;white-space:nowrap}
+.fl-chart-column:hover>b{display:block}
+.fl-chart-column>i{display:block;width:100%;min-height:3px;border-radius:3px 3px 0 0}
+.fl-bar-payments{background:#7698b2}.fl-bar-expenses{background:#c4b49a}
+.fl-chart-month>small{color:#8b99a5;font-size:8px}
+.fl-footnote{margin:10px 0 0;color:#98a4ae;font-size:8px;line-height:1.5}
+.fl-payment-filters{display:flex;gap:7px;margin-bottom:8px}
+.fl-payment-filters label{display:flex;align-items:center;gap:6px;flex:1;min-width:0;height:30px;padding:0 8px;color:#98a5af;border:1px solid #e8edf1;border-radius:5px}
+.fl-payment-filters input{width:100%;min-width:0;color:#52697c;background:none;border:0;outline:0;font:400 9px "DM Sans",sans-serif}
+.fl-payment-filters select{max-width:105px;padding:0 6px;color:#6f8293;background:#fafbfd;border:1px solid #e8edf1;border-radius:5px;font:400 9px "DM Sans",sans-serif}
+.fl-payment-list>div{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid #eff2f4}
+.fl-payment-list>div:last-child{border:0}
+.fl-payment-icon{display:grid;place-items:center;width:29px;height:29px;flex:0 0 29px;color:#6386a0;background:#eef4f7;border-radius:6px}
+.fl-payment-list>div>div:nth-child(2){display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}
+.fl-payment-list strong{overflow:hidden;color:#53697c;font-size:9px;text-overflow:ellipsis;white-space:nowrap}
+.fl-payment-list small{overflow:hidden;color:#98a4ad;font-size:7px;text-overflow:ellipsis;white-space:nowrap}
+.fl-payment-list>div>div:nth-child(3){display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.fl-payment-list b{color:#53697c;font-size:9px}
+.fl-payment-list>div>button,.fl-table td>button{display:grid;place-items:center;width:25px;height:25px;color:#7890a4;background:#f3f6f8;border:0;border-radius:4px}
+.fl-status{display:inline-flex;align-items:center;padding:4px 7px;border-radius:4px;font-size:8px;white-space:nowrap}
+.fl-status--good{color:#568169;background:#edf5ef}.fl-status--warning{color:#92713d;background:#faf4e7}.fl-status--danger{color:#a05d5d;background:#faeeee}
+.fl-empty{padding:15px;color:#8b99a5;text-align:center;font-size:10px}
+.fl-show-more{display:inline-flex;align-items:center;gap:6px;margin-top:7px;padding:0;color:#567f9d;font-size:9px;font-weight:600;background:none;border:0}
+.fl-balance-total{display:flex;align-items:baseline;gap:10px;padding:10px 12px;background:#faf7ef;border:1px solid #f0e9d9;border-radius:5px}
+.fl-balance-total strong{color:#8f7448;font:700 20px "Manrope",sans-serif}.fl-balance-total span{color:#9a8a6e;font-size:8px}
+.fl-service-breakdown{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.fl-service-breakdown>div{display:flex;gap:7px;padding:6px 8px;background:#f8fafb;border:1px solid #edf0f3;border-radius:4px;font-size:8px}
+.fl-service-breakdown span{color:#82919e}.fl-service-breakdown b{color:#566d80}
+.fl-table-wrap{width:100%;overflow-x:auto}
+.fl-table{width:100%;border-collapse:collapse;text-align:left;white-space:nowrap}
+.fl-table th{padding:8px 7px;color:#96a2ac;font-size:8px;font-weight:700;background:#f8fafb;border-top:1px solid #edf0f3;border-bottom:1px solid #edf0f3}
+.fl-table td{padding:9px 7px;color:#718292;font-size:8px;border-bottom:1px solid #f0f2f5}
+.fl-table td b{color:#53697c;font-size:8px}
+.fl-request-list>div{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px 9px;padding:11px 0;border-bottom:1px solid #eff2f4}
+.fl-request-main{display:flex;flex-direction:column;gap:3px;min-width:0}
+.fl-request-main strong{color:#52697c;font-size:9px}.fl-request-main small{color:#97a3ad;font-size:8px}
+.fl-request-list>div> b{color:#53697c;font-size:10px}
+.fl-request-list>div>.fl-status{grid-column:1/-1;justify-self:start}
+.fl-request-actions{display:flex;grid-column:1/-1;gap:6px}
+.fl-request-actions button{padding:6px 8px;color:#5c7890;background:#f2f6f8;border:1px solid #e8edf1;border-radius:4px;font-size:8px}
+.fl-request-actions button:last-child{color:#a16661;background:#fbf4f3}
+.fl-request-actions button:disabled{opacity:.45;cursor:not-allowed}
+.fl-notice{display:flex;align-items:flex-start;gap:7px;margin-bottom:8px;padding:9px;color:#896c3f;background:#fbf6e9;border:1px solid #f0e5c9;border-radius:5px;font-size:8px;line-height:1.45}
+.fl-notice>svg{flex:0 0 auto}.fl-notice span{flex:1}.fl-notice button{padding:0;color:inherit;background:none;border:0}
+.fl-expense-categories{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;margin-bottom:12px}
+.fl-expense-categories>div{display:flex;flex-direction:column;gap:5px;padding:9px;background:#f8fafb;border:1px solid #edf0f3;border-radius:5px}
+.fl-expense-categories span{color:#8795a1;font-size:8px}.fl-expense-categories b{color:#53697c;font:700 11px "Manrope",sans-serif}
+.fl-transport-summary,.fl-stock-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-bottom:11px}
+.fl-transport-summary>div,.fl-stock-summary>div{display:flex;flex-direction:column;gap:4px;padding:9px;background:#f8fafb;border:1px solid #edf0f3;border-radius:5px}
+.fl-transport-summary strong,.fl-stock-summary strong{color:#40596e;font:700 17px "Manrope",sans-serif}
+.fl-transport-summary span,.fl-stock-summary span{color:#8997a3;font-size:8px}
+.fl-trip-list>div{display:flex;align-items:center;gap:9px;padding:11px 0;border-bottom:1px solid #eff2f4}
+.fl-trip-date{display:flex;flex-direction:column;align-items:center;justify-content:center;width:35px;height:39px;flex:0 0 35px;color:#5d7e98;background:#eff4f7;border-radius:5px}
+.fl-trip-date b{font:700 15px "Manrope",sans-serif}.fl-trip-date small{font-size:8px;text-transform:capitalize}
+.fl-trip-list>div>div{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1}
+.fl-trip-list strong{color:#53697c;font-size:9px}.fl-trip-list small{color:#98a4ad;font-size:8px;line-height:1.4}
+.fl-incident-list>div{display:flex;align-items:center;gap:7px;padding:10px 0;border-bottom:1px solid #eff2f4}
+.fl-incident-icon{display:grid;place-items:center;width:29px;height:29px;flex:0 0 29px;border-radius:6px}
+.fl-incident-icon.is-danger{color:#a35e5e;background:#faeeee}.fl-incident-icon.is-warning{color:#9b7b48;background:#faf5e9}
+.fl-incident-list>div>div{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1}
+.fl-incident-list strong{color:#53697c;font-size:9px}.fl-incident-list small{color:#98a4ad;font-size:8px;line-height:1.4}
+.fl-activity-list>div{display:flex;align-items:flex-start;gap:8px;padding:9px 0;border-bottom:1px solid #eff2f4}
+.fl-activity-list>div>span{display:grid;place-items:center;width:28px;height:28px;flex:0 0 28px;color:#6888a0;background:#eff4f7;border-radius:6px}
+.fl-activity-list>div>div{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}
+.fl-activity-list strong{color:#566c80;font-size:9px}.fl-activity-list small{color:#96a2ac;font-size:8px}.fl-activity-list time{color:#9ca7b0;font-size:7px;white-space:nowrap}
+.fl-quick-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.fl-quick-actions button{display:flex;align-items:center;gap:7px;min-width:0;padding:9px;color:#607589;text-align:left;background:#f8fafb;border:1px solid #edf0f3;border-radius:6px;font-size:8px}
+.fl-quick-actions button:hover{color:#2e6188;background:#f0f5f8;border-color:#dce7ef}
+.fl-quick-actions button>span{display:grid;place-items:center;width:27px;height:27px;flex:0 0 27px;color:#63849e;background:#eaf1f6;border-radius:5px}
+.fl-quick-actions button>svg{margin-left:auto;flex:0 0 auto;color:#a0acb6}
+.fl-footer{display:flex;justify-content:space-between;gap:12px;padding:4px 2px 0;color:#a1abb5;font-size:8px}
+.fl-modal-backdrop{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:20px;background:#1f2e3d66}
+.fl-confirm-modal{position:relative;width:min(420px,100%);padding:24px;background:#fff;border:1px solid #e7edf1;border-radius:9px;box-shadow:0 18px 55px #1c2c3d30}
+.fl-modal-close{position:absolute;top:13px;right:13px;display:grid;place-items:center;width:28px;height:28px;color:#8493a0;background:#f5f7f9;border:0;border-radius:5px}
+.fl-modal-icon{display:grid;place-items:center;width:38px;height:38px;color:#9b7843;background:#faf4e8;border-radius:8px}
+.fl-confirm-modal h2{margin:13px 0 7px;color:#30475b;font:700 17px "Manrope",sans-serif}
+.fl-confirm-modal p{color:#778896;font-size:10px;line-height:1.6}
+.fl-confirm-modal .fl-modal-warning{padding:9px;color:#8d7043;background:#faf5e9;border-radius:5px}
+.fl-confirm-modal>div{display:flex;justify-content:flex-end;gap:7px;margin-top:16px}
+.fl-confirm-modal>div button{padding:8px 12px;color:#65798b;background:#f3f6f8;border:1px solid #e8edf1;border-radius:5px;font-size:9px}
+.fl-confirm-modal>div button:last-child{color:#fff;background:#526f87;border-color:#526f87}
+@media(max-width:1370px){.finance-logistics-dashboard{padding:25px 23px}.fl-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:1050px){.fl-main-grid{grid-template-columns:1fr}.fl-finance-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){.finance-logistics-dashboard{margin-left:72px;padding:19px 14px}.fl-welcome{align-items:flex-start;flex-direction:column}.fl-period-control{width:100%}.fl-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.fl-expense-categories{grid-template-columns:repeat(3,minmax(0,1fr))}.fl-footer{flex-direction:column}.fl-table{min-width:650px}}
+@media(max-width:480px){.finance-logistics-dashboard{margin-left:0;padding:16px 10px}.fl-panel{padding:13px 10px}.fl-kpis{gap:7px}.fl-kpi{padding:9px}.fl-kpi>strong{font-size:16px}.fl-welcome h1{font-size:24px}.fl-context{flex-direction:column;gap:6px}.fl-section-title{align-items:flex-start}.fl-finance-summary{gap:5px}.fl-finance-summary strong{font-size:11px}.fl-expense-categories{grid-template-columns:repeat(2,minmax(0,1fr))}.fl-trip-list>div{align-items:flex-start;flex-wrap:wrap}.fl-trip-list>div>.fl-status{margin-left:44px}.fl-incident-list>div{flex-wrap:wrap}.fl-incident-list>div>div{flex-basis:calc(100% - 45px)}.fl-quick-actions{grid-template-columns:1fr}.fl-activity-list time{white-space:normal}}
