@@ -10,7 +10,6 @@ type Pending={kind:"class"|"group";id:string;name:string;status:ClassStatus}|nul
 type StatusFilter="Tous les statuts"|EntityStatus;
 const cycles:EducationalCycle[]=["Enseignement primaire","Enseignement secondaire collégial","Enseignement secondaire qualifiant"];
 const cycleLabel=(v:EducationalCycle)=>v==="Enseignement primaire"?"Enseignement primaire":v==="Enseignement secondaire collégial"?"Secondaire collégial":"Secondaire qualifiant";
-const dateLabel=(v:string)=>new Intl.DateTimeFormat("fr-FR",{day:"2-digit",month:"2-digit",year:"numeric"}).format(new Date(v+"T12:00:00"));
 function Status({value}:{value:ClassStatus}){return <span className={`cg-status ${value==="Actif"?"cg-status--active":"cg-status--inactive"}`}><i/>{value}</span>}
 function Capacity({row}:{row:ClassRecord}){const ratio=row.capacity?row.enrolledCount/row.capacity:0;const tone=ratio>=1?"full":ratio>=.9?"near":"normal";return <div className="cg-capacity"><div><strong>{row.enrolledCount} / {row.capacity}</strong><small>élèves</small></div><span className={`cg-capacity-track cg-capacity-track--${tone}`}><i style={{width:`${Math.min(100,ratio*100)}%`}}/></span><small className={`cg-capacity-note cg-capacity-note--${tone}`}>{ratio>=1?"Capacité atteinte":ratio>=.9?"Presque complet":`${row.availablePlaces} places disponibles`}</small></div>}
 function ClassForm({data,initial,saving,error,onCancel,onSubmit}:{data:ClassesData;initial?:ClassRecord;saving:boolean;error:string;onCancel:()=>void;onSubmit:(v:ClassInput)=>void}){
