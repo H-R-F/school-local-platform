@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./DirectorOverviewPage.css";
 import {
   Activity, AlertCircle, ArrowRight, ArrowUpRight, BadgeCheck,
@@ -105,6 +105,15 @@ export function DirectorOverviewPage({ user, onNavigate }: Props) {
   const today = new Intl.DateTimeFormat("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(new Date());
   const greeting = new Date().getHours() < 12 ? "Bonjour" : new Date().getHours() < 18 ? "Bon après-midi" : "Bonsoir";
   const selected = studentsAtRisk.find(student => student.id === selectedStudent);
+
+  useEffect(() => {
+    if (!selectedStudent) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setSelectedStudent(null);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedStudent]);
 
   return <main className="director-dashboard">
     <div className="dash-welcome">
