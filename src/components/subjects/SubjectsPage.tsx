@@ -4,6 +4,7 @@ import { subjectsRepository, type SubjectAssignmentInput, type SubjectCategory, 
 import type { EducationalCycle, EntityStatus } from "../../services/sectors-programs";
 import type { AuthenticatedSidebarUser } from "../../types/navigation";
 import { schoolBranding } from "../../config/school";
+import "./subjects.css";
 
 interface Props { user:AuthenticatedSidebarUser; onNavigate:(route:string)=>void }
 type Modal = {type:"create"}|{type:"edit";subject:SubjectRecord}|{type:"details";subject:SubjectRecord}|{type:"assign";subject:SubjectRecord}|null;
