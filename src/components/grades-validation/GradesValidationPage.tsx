@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { AlertCircle, BookOpen, CalendarDays, CheckCircle2, ChevronRight, ClipboardCheck, Clock3, FilterX, GraduationCap, Search, ShieldAlert, Users, XCircle } from "lucide-react";
+import { AlertCircle, CalendarDays, ChevronRight, ClipboardCheck, FilterX, Search, ShieldAlert, Users, X } from "lucide-react";
 import { academicYearRepository } from "../../services/academic-years";
 import { classesGroupsRepository } from "../../services/classes-groups";
 import { subjectsRepository } from "../../services/subjects";
@@ -32,7 +32,6 @@ export function GradesValidationPage({ user }: Props) {
   const [teachers, setTeachers] = useState<TeacherData | null>(null);
   const [tab, setTab] = useState<WorkflowTab>("all");
   const [yearId, setYearId] = useState("");
-  const [periodId, setPeriodId] = useState("");
   const [programId, setProgramId] = useState("");
   const [levelId, setLevelId] = useState("");
   const [classId, setClassId] = useState("");
@@ -99,10 +98,9 @@ export function GradesValidationPage({ user }: Props) {
     ));
   }, [teachers, yearId, classId, subjectId]);
 
-  const hasFilters = Boolean(yearId || periodId || programId || levelId || classId || subjectId || teacherId || search);
+  const hasFilters = Boolean(yearId || programId || levelId || classId || subjectId || teacherId || search);
   const clearFilters = () => {
     setYearId("");
-    setPeriodId("");
     setProgramId("");
     setLevelId("");
     setClassId("");
@@ -134,7 +132,7 @@ export function GradesValidationPage({ user }: Props) {
       <div className="gv-filter-heading"><div><strong>Filtres</strong><span>Affinez la recherche dans les soumissions</span></div><button type="button" onClick={clearFilters} disabled={!hasFilters}><FilterX size={14}/>Réinitialiser</button></div>
       <div className="gv-filters">
         <label><span>Année scolaire</span><select value={yearId} onChange={e => {setYearId(e.target.value);setProgramId("");setLevelId("");setClassId("");setSubjectId("");setTeacherId("");}}><option value="">Toutes les années</option>{years.map(row => <option key={row.id} value={row.id}>{row.name}</option>)}</select></label>
-        <label><span>Période / Semestre</span><select value={periodId} onChange={e => setPeriodId(e.target.value)} disabled><option value="">Non configuré</option></select></label>
+        <label><span>Période / Semestre</span><select value="" disabled aria-label="Période non configurée"><option value="">Non configuré dans le projet</option></select></label>
         <label><span>Programme</span><select value={programId} onChange={e => {setProgramId(e.target.value);setLevelId("");setClassId("");setSubjectId("");setTeacherId("");}}><option value="">Tous les programmes</option>{programs.map(row => <option key={row.id} value={row.id}>{row.name}</option>)}</select></label>
         <label><span>Niveau</span><select value={levelId} onChange={e => {setLevelId(e.target.value);setClassId("");setSubjectId("");setTeacherId("");}}><option value="">Tous les niveaux</option>{levels.map(row => <option key={row.id} value={row.id}>{row.name}</option>)}</select></label>
         <label><span>Classe</span><select value={classId} onChange={e => {setClassId(e.target.value);setSubjectId("");setTeacherId("");}}><option value="">Toutes les classes</option>{availableClasses.map(row => <option key={row.id} value={row.id}>{row.name}</option>)}</select></label>
