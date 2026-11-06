@@ -16,7 +16,7 @@ type ExamStatus = "À venir" | "En cours" | "Terminée" | "Annulée";
 type SessionStatus = "À venir" | "En cours" | "Terminée";
 type ExamRoom = { id: string; name: string; building: string; capacity: number; status: "Opérationnelle" | "Indisponible" };
 type ExamSession = { id: string; name: string; yearId: string; yearName: string; period: string; startDate: string; endDate: string; description: string; classIds: string[]; programNames: string[]; levelNames: string[] };
-type ExamRecord = { id: string; sessionId: string; classId: string; groupId: string; subjectId: string; date: string; startTime: string; endTime: string; roomId: string; instructions: string; cancelled: boolean };
+type ExamRecord = { id: string; sessionId: string; classId: string; groupId: string; subjectId: string; date: string; startTime: string; endTime: string; roomId: string; instructions: string; cancelled?: boolean };
 type Panel = { type: "session" | "exam"; id: string } | null;
 type FormState = { type: "session" | "exam"; id?: string } | null;
 const ROOM_FIXTURES: ExamRoom[] = [
@@ -182,7 +182,7 @@ export function ExaminationsPage({ user, onNavigate }: Props) {
     if (examForm.endTime <= examForm.startTime) { setFormError("L'heure de fin doit être postérieure à l'heure de début."); return; }
     const candidate = { ...examForm, groupId: examForm.groupId, instructions: examForm.instructions, sessionId: session.id };
     const found = conflicts(candidate);
-    const errors = [found.outOfRange && "Hors période de session : choisissez une date comprise dans les dates de la session.", found.roomConflict && "Salle déjà occupée : un autre examen utilise cette salle sur ce créneau.", found.classConflict && "Chevauchement de classe : cette classe ou ce groupe a déjà une épreuve sur ce créneau."].filter(Boolean);
+    const errors = [found.outOfRange && `Hors période de session : la session s’étend du ${dateLabel(session.startDate)} au ${dateLabel(session.endDate)}.`, found.roomConflict && `Salle déjà occupée : ${subjectName(found.roomConflict.subjectId)} le ${dateLabel(found.roomConflict.date)}, de ${found.roomConflict.startTime} à ${found.roomConflict.endTime}.`, found.classConflict && `Chevauchement de classe : ${subjectName(found.classConflict.subjectId)} pour ${className(found.classConflict.classId)}, de ${found.classConflict.startTime} à ${found.classConflict.endTime}.`].filter(Boolean);
     if (errors.length) { setFormError(errors.join(" ")); return; }
     const duplicate = exams.some(e => !e.cancelled && e.sessionId === session.id && e.classId === cls.id && e.subjectId === subject.id && e.groupId === examForm.groupId && e.id !== form?.id);
     if (duplicate) { setFormError("Une épreuve identique est déjà programmée pour cette classe et cette session."); return; }
