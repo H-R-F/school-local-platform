@@ -176,7 +176,7 @@
 @media(max-width:390px){.ay-overview-stats{grid-template-columns:1fr}.ay-stat-card{min-height:72px}}
 @media(prefers-reduced-motion:reduce){.ay-page *, .ay-page *::before,.ay-page *::after{animation:none!important;transition:none!important}}
 [dir="rtl"] .ay-page{direction:rtl;margin-left:0!important;margin-right:248px!important}
-[dir="rtl"] .ay-breadcrumb,. [dir="rtl"] .ay-current-dates{direction:rtl}
+[dir="rtl"] .ay-breadcrumb,[dir="rtl"] .ay-current-dates{direction:rtl}
 [dir="rtl"] .ay-table{text-align:right}
 [dir="rtl"] .ay-action-menu{right:auto;left:0}
 [dir="rtl"] .ay-modal-heading{padding:0 0 14px 35px}
