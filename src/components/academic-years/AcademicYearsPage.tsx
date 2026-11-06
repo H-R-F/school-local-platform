@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import {
   AlertCircle, ArrowDown, ArrowUp, ArrowUpDown, CalendarDays, Check,
   ChevronLeft, ChevronRight, CircleHelp, Clock3, Eye, MoreHorizontal,
@@ -6,12 +6,12 @@ import {
 } from "lucide-react";
 import {
   academicYearRepository,
-  AcademicYearRepositoryError,
   type AcademicYear,
   type AcademicYearInput,
   type AcademicYearStatus,
 } from "../../services/academic-years";
 import type { AuthenticatedSidebarUser } from "../../types/navigation";
+import { schoolBranding } from "../../config/school";
 
 interface Props {
   user: AuthenticatedSidebarUser;
@@ -41,7 +41,7 @@ function AcademicYearForm({ initial, saving, error, onCancel, onSubmit }: {
   const [startDate, setStartDate] = useState(initial?.startDate ?? "");
   const [endDate, setEndDate] = useState(initial?.endDate ?? "");
   const [validation, setValidation] = useState("");
-  function submit(event: React.FormEvent<HTMLFormElement>) {
+  function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!name.trim() || !startDate || !endDate) {
       setValidation("Veuillez renseigner tous les champs obligatoires.");
@@ -153,7 +153,7 @@ export function AcademicYearsPage({ user, onNavigate }: Props) {
     finally {setSaving(false);}
   }
 
-  if(!canRead) return <main className="ay-page"><div className="ay-access-denied"><ShieldCheck size={26}/><h1>Accès non autorisé</h1><p>Votre compte ne dispose pas de l’autorisation nécessaire pour consulter les années scolaires.</p><button type="button" className="ay-button ay-button--secondary" onClick={()=>onNavigate("/overview")}>Retour au tableau de bord</button></div></main>;
+  if(!canRead) return <main className="ay-page" style={{ "--school-primary": schoolBranding.primaryColor } as React.CSSProperties}><div className="ay-access-denied"><ShieldCheck size={26}/><h1>Accès non autorisé</h1><p>Votre compte ne dispose pas de l’autorisation nécessaire pour consulter les années scolaires.</p><button type="button" className="ay-button ay-button--secondary" onClick={()=>onNavigate("/overview")}>Retour au tableau de bord</button></div></main>;
 
   return <main className="ay-page">
     <header className="ay-page-header"><div><div className="ay-breadcrumb"><span>Gestion académique</span><i>/</i><strong>Années scolaires</strong></div><h1>Années scolaires</h1><p>Gérez les années scolaires de votre établissement et leur statut opérationnel.</p></div>{canCreate&&<button type="button" className="ay-button ay-button--primary" onClick={()=>{setFormError("");setModal({type:"create"});}}><Plus size={16}/> Créer une année scolaire</button>}</header>
