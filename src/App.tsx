@@ -35,11 +35,11 @@ export default function App() {
     <div className="sidebar-demo">
       <AppSidebar user={user} school={schoolBranding} onExit={handleSignOut} />
       <main className="workspace-placeholder">
-        <span className="workspace-eyebrow">STAFF WORKSPACE</span>
-        <h1>Welcome, {user.displayName.split(" ")[0]}</h1>
-        <p>Your {user.role === "finance" ? "Finance & Logistics Manager" : user.role === "administrative" ? "Administrative Manager" : user.role === "pedagogical" ? "Pedagogical Manager" : "Director"} workspace is ready.</p>
-        <span className="workspace-note">This is a frontend preview. We'll build each workspace page next.</span>
-        <button type="button" className="workspace-signout" onClick={handleSignOut}>Sign out</button>
+        <span className="workspace-eyebrow">ESPACE DU PERSONNEL</span>
+        <h1>Bienvenue, {user.displayName.split(" ")[0]}</h1>
+        <p>Your {user.role === "finance" ? "Responsable financier et logistique" : user.role === "administrative" ? "Responsable administratif" : user.role === "pedagogical" ? "Responsable pédagogique" : "Directeur"} Votre espace de travail est prêt.</p>
+        <span className="workspace-note">Ceci est un aperçu de l’application. Nous allons construire les pages de chaque espace progressivement.</span>
+        <button type="button" className="workspace-signout" onClick={handleSignOut}>Se déconnecter</button>
       </main>
     </div>
   );
