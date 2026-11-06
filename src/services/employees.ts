@@ -30,8 +30,8 @@ function validate(v:EmployeeInput,rows:Employee[],id?:string){
  if(!/^[A-Z0-9][A-Z0-9_-]{1,19}$/i.test(v.employeeCode.trim()))throw new EmployeesRepositoryError("Le matricule doit contenir de 2 à 20 caractères : lettres, chiffres, tirets ou soulignés.");
  if(!v.jobTitle.trim())throw new EmployeesRepositoryError("Le poste est obligatoire.");
  if(rows.some(x=>x.id!==id&&x.employeeCode.toUpperCase()===v.employeeCode.trim().toUpperCase()))throw new EmployeesRepositoryError("Ce matricule est déjà utilisé.");
- if(v.email&&!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(v.email))throw new EmployeesRepositoryError("L'adresse e-mail n'est pas valide.");
- if(v.phone&&!/^\\+?[0-9 ()-]{8,20}$/.test(v.phone))throw new EmployeesRepositoryError("Le numéro de téléphone n'est pas valide.");
+ if(v.email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.email))throw new EmployeesRepositoryError("L'adresse e-mail n'est pas valide.");
+ if(v.phone&&!/^\+?[0-9 ()-]{8,20}$/.test(v.phone))throw new EmployeesRepositoryError("Le numéro de téléphone n'est pas valide.");
  if(rows.some(x=>x.id!==id&&v.email&&x.email.toLowerCase()===v.email.trim().toLowerCase()))throw new EmployeesRepositoryError("Un dossier utilise déjà cette adresse e-mail. Vérifiez qu'il ne s'agit pas d'un doublon.");
 }
 export const employeesRepository={
