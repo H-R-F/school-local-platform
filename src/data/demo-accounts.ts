@@ -17,10 +17,10 @@ export function authenticateDemoStaff(email: string, password: string): Authenti
 
 export function getRoleLabel(role: StaffRole): string {
   const labels: Record<StaffRole, string> = {
-    director: "Director",
-    administrative: "Administrative Manager",
-    pedagogical: "Pedagogical Manager",
-    finance: "Finance & Logistics Manager"
+    director: "Directeur",
+    administrative: "Responsable administratif",
+    pedagogical: "Responsable pédagogique",
+    finance: "Responsable financier et logistique"
   };
   return labels[role];
 }
