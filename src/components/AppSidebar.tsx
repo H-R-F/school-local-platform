@@ -53,7 +53,7 @@ export function AppSidebar({user,school,currentPath,onNavigate}:AppSidebarProps)
     </div>}
     <nav className="nav-scroll" aria-label="School navigation">
       {visibleGroups.map(group=><SidebarGroup key={group.id} group={group} activePath={path} collapsed={collapsed}
-        expanded={expandedGroups[group.id]??group.id===activeGroupId} onToggle={()=>toggleGroup(group.id)} onNavigate={onNavigate}/>)}
+        expanded={search.trim().length>0 || (expandedGroups[group.id]??group.id===activeGroupId)} onToggle={()=>toggleGroup(group.id)} onNavigate={onNavigate}/>)}
       {visibleGroups.length===0&&!collapsed&&<p className="nav-empty">No matching pages available.</p>}
     </nav>
     <div className="sidebar-footer">
