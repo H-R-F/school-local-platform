@@ -26,6 +26,7 @@ function SectionTitle({ eyebrow, title, action }: { eyebrow:string; title:string
 }
 function FinancialChart({ rows }: { rows: typeof financeMonthlyFlow }) {
   const max = Math.max(...rows.map(x=>Math.max(x.payments,x.expenses)),1);
+  if (rows.length === 0) return <p className="fl-empty">Aucune donnée mensuelle disponible pour cette période.</p>;
   return <div className="fl-chart">
     <div className="fl-chart-legend"><span><i className="fl-legend-payments"/>Paiements encaissés</span><span><i className="fl-legend-expenses"/>Dépenses</span></div>
     <div className="fl-chart-bars">{rows.map(row=><div className="fl-chart-month" key={row.month}>
