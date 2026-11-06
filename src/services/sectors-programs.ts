@@ -63,6 +63,7 @@ const demo: SectorProgramData = {
     {id:"SEC-LSH",name:"Lettres et Sciences Humaines",code:"LSH",description:"Parcours littéraire et humaniste axé sur les langues, la littérature, l'histoire, la géographie et la philosophie.",cycle:QUALIFIANT,status:"Actif"},
     {id:"SEC-SEG",name:"Sciences Économiques et Gestion",code:"SEG",description:"Parcours orienté vers les sciences économiques et la gestion.",cycle:QUALIFIANT,status:"Actif"},
     {id:"SEC-EO",name:"Enseignement Originel",code:"EO",description:"Parcours mettant l'accent sur l'éducation islamique, la langue arabe et les disciplines associées.",cycle:QUALIFIANT,status:"Actif"},
+    {id:"SEC-PENDING",name:"Filière en attente de paramétrage",code:"A-CONFIG",description:"Emplacement de démonstration à configurer uniquement lorsqu’une filière est autorisée pour l’établissement.",cycle:QUALIFIANT,status:"Actif"},
   ],
   programs: [
     {id:"PR-TC-SCI",sectorId:"SEC-TC",name:"Tronc Commun Sciences",code:"TC-SCI",description:"Enseignement commun à dominante scientifique.",levelId:"LV-TC",classCount:4,status:"Actif"},
