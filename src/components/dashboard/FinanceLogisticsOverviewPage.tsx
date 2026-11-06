@@ -107,25 +107,25 @@ export function FinanceLogisticsOverviewPage({ user, onNavigate }: Props) {
         <FinancialChart rows={chartRows}/>
         <p className="fl-footnote">Les montants encaissés excluent les demandes en attente. Le mouvement net correspond aux paiements confirmés moins les dépenses payées ; il ne représente pas un bénéfice comptable.</p>
       </article>
-      <article className="fl-panel"><SectionTitle eyebrow="DERNIÈRES TRANSACTIONS" title="Paiements récents" action={allowed("finance.registers.view")?{label:"Voir tous les paiements",run:()=>onNavigate("/payment-registers")}:undefined}/>
+      {allowed("finance.registers.view") && (<article className="fl-panel"><SectionTitle eyebrow="DERNIÈRES TRANSACTIONS" title="Paiements récents" action={allowed("finance.registers.view")?{label:"Voir tous les paiements",run:()=>onNavigate("/payment-registers")}:undefined}/>
         <div className="fl-payment-filters"><label><Search size={14}/><input value={paymentSearch} onChange={e=>setPaymentSearch(e.target.value)} placeholder="Élève ou référence…"/></label><select aria-label="Filtrer par statut" value={paymentStatus} onChange={e=>setPaymentStatus(e.target.value)}><option>Tous</option><option>Payé</option><option>En attente</option><option>Partiel</option><option>Échoué</option></select></div>
         <div className="fl-payment-list">{visiblePayments.map(row=><div key={row.id}><span className="fl-payment-icon"><CreditCard size={15}/></span><div><strong>{row.student}</strong><small>{row.id} · {row.service} · {formatDate(row.date)}</small></div><div><b>{money(row.amount)}</b><span className={`fl-status ${statusClass(row.status)}`}>{row.status}</span></div><button type="button" aria-label={`Voir le paiement ${row.id}`} onClick={()=>onNavigate(`/payments?payment=${row.id}`)}><ArrowRight size={14}/></button></div>)}</div>
         {filteredPayments.length===0&&<p className="fl-empty">Aucun paiement trouvé.</p>}
         {filteredPayments.length>5&&<button className="fl-show-more" onClick={()=>setShowAllPayments(v=>!v)} type="button">{showAllPayments?"Réduire":"Afficher tous les résultats"}<ArrowRight size={13}/></button>}
-      </article>
+      </article>)} 
     </section>
 
     <section className="fl-main-grid">
-      <article className="fl-panel"><SectionTitle eyebrow="SUIVI DES CRÉANCES" title="Soldes impayés" action={allowed("finance.balances.view")?{label:"Gérer les soldes",run:()=>onNavigate("/student-balances")}:undefined}/>
+      {allowed("finance.balances.view") && (<article className="fl-panel"><SectionTitle eyebrow="SUIVI DES CRÉANCES" title="Soldes impayés" action={allowed("finance.balances.view")?{label:"Gérer les soldes",run:()=>onNavigate("/student-balances")}:undefined}/>
         <div className="fl-balance-total"><strong>{money(outstandingTotal)}</strong><span>{outstandingBalances.length} élèves concernés</span></div>
         <div className="fl-service-breakdown">{Object.entries(serviceTotals).map(([service,total])=><div key={service}><span>{service}</span><b>{money(total)}</b></div>)}</div>
         <div className="fl-table-wrap"><table className="fl-table"><thead><tr><th>Élève</th><th>Classe</th><th>Service</th><th>Montant dû</th><th>Dernier paiement</th><th/></tr></thead><tbody>{outstandingBalances.map(row=><tr key={row.id}><td>{row.student}</td><td>{row.className}</td><td>{row.service}</td><td><b>{money(row.amount)}</b></td><td>{formatDate(row.lastPayment)}</td><td><button type="button" aria-label={`Voir le solde de ${row.student}`} onClick={()=>onNavigate(`/student-balances?student=${row.id}`)}><ArrowRight size={14}/></button></td></tr>)}</tbody></table></div>
-      </article>
-      <article className="fl-panel"><SectionTitle eyebrow="À TRAITER" title="Demandes en attente"/>
+      </article>)} 
+      {allowed("finance.expenses.manage") && ({allowed("finance.balances.view") && (<article className="fl-panel"><SectionTitle eyebrow="À TRAITER" title="Demandes en attente"/>
         {requestNotice&&<div className="fl-notice" role="status"><AlertTriangle size={15}/><span>{requestNotice}</span><button type="button" onClick={()=>setRequestNotice("")} aria-label="Fermer"><X size={14}/></button></div>}
         <div className="fl-request-list">{rechargeRequests.map(row=><div key={row.id}><div className="fl-request-main"><strong>{row.student}</strong><small>{row.id} · {row.service} · {formatDate(row.date)}</small></div><b>{money(row.amount)}</b><span className="fl-status fl-status--warning">{row.status}</span><div className="fl-request-actions"><button type="button" onClick={()=>onNavigate(`/student-balances?tab=requests&request=${row.id}`)}>Examiner</button><button type="button" onClick={()=>setRequestDecision({id:row.id,action:"Approuver"})} disabled={!allowed("finance.balances.view")}>Approuver</button><button type="button" onClick={()=>setRequestDecision({id:row.id,action:"Rejeter"})} disabled={!allowed("finance.balances.view")}>Rejeter</button></div></div>)}</div>
         <p className="fl-footnote">Les décisions sont désactivées côté transaction : aucun service API financier n’est connecté à cette version.</p>
-      </article>
+      </article>)} 
     </section>
 
     <section className="fl-panel"><SectionTitle eyebrow="SUIVI DES SORTIES DE FONDS" title="Aperçu des dépenses" action={allowed("finance.expenses.manage")?{label:"Gérer les dépenses",run:()=>onNavigate("/expenses")}:undefined}/>
@@ -134,24 +134,24 @@ export function FinanceLogisticsOverviewPage({ user, onNavigate }: Props) {
     </section>
 
     <section className="fl-main-grid">
-      <article className="fl-panel"><SectionTitle eyebrow="MOBILITÉ SCOLAIRE" title="Gestion du transport" action={allowed("logistics.transport.manage")?{label:"Gérer le transport",run:()=>onNavigate("/transport")}:undefined}/>
+      {allowed("logistics.transport.manage") && (<article className="fl-panel"><SectionTitle eyebrow="MOBILITÉ SCOLAIRE" title="Gestion du transport" action={allowed("logistics.transport.manage")?{label:"Gérer le transport",run:()=>onNavigate("/transport")}:undefined}/>
         <div className="fl-transport-summary"><div><strong>{activeLines.length}</strong><span>Lignes actives</span></div><div><strong>{assignedStudents}</strong><span>Élèves affectés</span></div><div><strong>{transportLines.filter(x=>x.status!=="Active").length}</strong><span>À vérifier</span></div></div>
-        <div className="fl-table-wrap"><table className="fl-table"><thead><tr><th>Ligne</th><th>Élèves affectés</th><th>Capacité</th><th>Statut</th><th/></tr></thead><tbody>{transportLines.map(row=><tr key={row.id}><td>{row.name}</td><td>{row.assigned}</td><td>{row.capacity===null?"Non renseignée":`${row.assigned} / ${row.capacity} (${Math.round(row.assigned/row.capacity*100)} %)`}</td><td><span className={`fl-status ${statusClass(row.status)}`}>{row.status}</span></td><td><button type="button" onClick={()=>onNavigate(`/transport?line=${row.id}`)} aria-label={`Voir ${row.name}`}><ArrowRight size={14}/></button></td></tr>)}</tbody></table></div>
-      </article>
-      <article className="fl-panel"><SectionTitle eyebrow="CALENDRIER LOGISTIQUE" title="Sorties et excursions à venir" action={allowed("logistics.trips.manage")?{label:"Gérer les sorties",run:()=>onNavigate("/trips-outings")}:undefined}/>
+        <div className="fl-table-wrap"><table className="fl-table"><thead><tr><th>Ligne</th><th>Élèves affectés</th><th>Capacité</th><th>Statut</th><th/></tr></thead><tbody>{transportLines.map(row=><tr key={row.id}><td>{row.name}</td><td>{row.assigned}</td><td>{row.capacity===null?"Non renseignée":`${row.assigned} / ${row.capacity} (${Math.round(row.assigned/row.capacity*100)} %)`}</td><td><span className={`fl-status ${statusClass(row.status)}`}>{row.status}</span></td><td><button type="button" onClick={()=>onNavigate(`/transport?line=${row.id}`)} aria-label={`Voir ${row.name}`})} ><ArrowRight size={14}/></button></td></tr>)}</tbody></table></div>
+      </article>)} 
+      {allowed("logistics.trips.manage") && (<article className="fl-panel"><SectionTitle eyebrow="CALENDRIER LOGISTIQUE" title="Sorties et excursions à venir" action={allowed("logistics.trips.manage")?{label:"Gérer les sorties",run:()=>onNavigate("/trips-outings")}:undefined}/>
         <div className="fl-trip-list">{[...upcomingTrips].sort((a,b)=>a.date.localeCompare(b.date)).map(row=><div key={row.id}><span className="fl-trip-date"><b>{new Date(row.date+"T12:00:00").getDate()}</b><small>{new Intl.DateTimeFormat("fr-FR",{month:"short"}).format(new Date(row.date+"T12:00:00"))}</small></span><div><strong>{row.title}</strong><small>{row.destination} · {row.students} élèves · {row.transport}</small></div><span className={`fl-status ${statusClass(row.status)}`}>{row.status}</span></div>)}</div>
-      </article>
+      </article>)} 
     </section>
 
     <section className="fl-main-grid">
-      <article className="fl-panel"><SectionTitle eyebrow="RESSOURCES ET FOURNITURES" title="État du stock" action={allowed("logistics.inventory.manage")?{label:"Gérer le stock",run:()=>onNavigate("/inventory")}:undefined}/>
+      {allowed("logistics.inventory.manage") && (<article className="fl-panel"><SectionTitle eyebrow="RESSOURCES ET FOURNITURES" title="État du stock" action={allowed("logistics.inventory.manage")?{label:"Gérer le stock",run:()=>onNavigate("/inventory")}:undefined}/>
         <div className="fl-stock-summary"><div><strong>248</strong><span>Articles référencés</span></div><div><strong>{lowStock.length}</strong><span>Stocks à surveiller</span></div><div><strong>12</strong><span>Ajouts récents</span></div></div>
         <div className="fl-table-wrap"><table className="fl-table"><thead><tr><th>Article</th><th>Quantité</th><th>Seuil minimum</th><th>État</th><th/></tr></thead><tbody>{inventoryAlerts.map(row=><tr key={row.id}><td>{row.item}</td><td>{row.quantity}</td><td>{row.minimum}</td><td><span className={`fl-status ${statusClass(row.status)}`}>{row.status}</span></td><td><button type="button" onClick={()=>onNavigate(`/inventory?item=${row.id}`)} aria-label={`Voir ${row.item}`}><ArrowRight size={14}/></button></td></tr>)}</tbody></table></div>
-      </article>
-      <article className="fl-panel"><SectionTitle eyebrow="SÉCURITÉ ET SUIVI" title="Incidents récents" action={allowed("logistics.incidents.manage")?{label:"Voir les incidents",run:()=>onNavigate("/accidents-incidents")}:undefined}/>
+      </article>)} 
+      {allowed("logistics.incidents.manage") && (<article className="fl-panel"><SectionTitle eyebrow="SÉCURITÉ ET SUIVI" title="Incidents récents" action={allowed("logistics.incidents.manage")?{label:"Voir les incidents",run:()=>onNavigate("/accidents-incidents")}:undefined}/>
         <div className="fl-incident-list">{recentIncidents.map(row=><div key={row.id}><span className={`fl-incident-icon ${row.severity==="Élevée"?"is-danger":"is-warning"}`}><ShieldAlert size={16}/></span><div><strong>{row.category}</strong><small>{row.id} · {formatDate(row.date)} · {row.summary}</small></div><span className={`fl-status ${statusClass(row.severity)}`}>{row.severity}</span><span className={`fl-status ${statusClass(row.status)}`}>{row.status}</span></div>)}</div>
         <p className="fl-footnote">Informations limitées au suivi logistique autorisé. Aucun détail médical ou confidentiel n’est affiché.</p>
-      </article>
+      </article>)} 
     </section>
 
     <section className="fl-main-grid">
