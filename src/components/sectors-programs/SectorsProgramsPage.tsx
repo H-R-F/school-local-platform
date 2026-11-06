@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState, type CSSProperties, type FormEvent } from "react";
 import {
-  AlertCircle, ArrowRight, BookOpen, Check, ChevronDown, CircleHelp, Code2,
+  AlertCircle, BookOpen, Check, ChevronDown, CircleHelp,
   Eye, Filter, GraduationCap, Layers3, MoreHorizontal, Pencil, Plus, Search,
-  ShieldCheck, ToggleLeft, ToggleRight, X,
+  ShieldCheck, ToggleRight, X,
 } from "lucide-react";
 import {
   sectorsProgramsRepository,
@@ -30,7 +30,7 @@ function SectorForm({initial,saving,error,onCancel,onSubmit}:{initial?:Sector;sa
   const [name,setName]=useState(initial?.name??"");
   const [code,setCode]=useState(initial?.code??"");
   const [description,setDescription]=useState(initial?.description??"");
-  const [cycle,setCycle]=useState<EducationalCycle>(initial?.cycle??"Enseignement secondaire qualifiant");
+  const [cycle]=useState<EducationalCycle>(initial?.cycle??"Enseignement secondaire qualifiant");
   const [status,setStatus]=useState<EntityStatus>(initial?.status??"Actif");
   const [validation,setValidation]=useState("");
   function submit(event:FormEvent<HTMLFormElement>){event.preventDefault();if(!name.trim()||!code.trim()||!description.trim()){setValidation("Veuillez renseigner tous les champs obligatoires.");return;}if(cycle!=="Enseignement secondaire qualifiant"){setValidation("Les filières spécialisées sont réservées au secondaire qualifiant.");return;}setValidation("");onSubmit({name,code,description,cycle,status});}
@@ -39,7 +39,7 @@ function SectorForm({initial,saving,error,onCancel,onSubmit}:{initial?:Sector;sa
     <label>Nom de la filière <em>*</em><input autoFocus value={name} onChange={e=>setName(e.target.value)} placeholder="Ex. : Sciences Expérimentales" maxLength={100}/></label>
     <label>Code <em>*</em><input value={code} onChange={e=>setCode(e.target.value.toUpperCase())} placeholder="Ex. : SC-EXP" maxLength={20}/></label>
     <label>Description <em>*</em><textarea rows={3} value={description} onChange={e=>setDescription(e.target.value)} placeholder="Présentez brièvement ce parcours éducatif…"/></label>
-    <label>Cycle éducatif <em>*</em><select value={cycle} onChange={e=>setCycle(e.target.value as EducationalCycle)}>{cycles.map(item=><option key={item} value={item}>{item}</option>)}</select></label>
+    <label>Cycle éducatif <em>*</em><select value={cycle} disabled><option value="Enseignement secondaire qualifiant">Enseignement secondaire qualifiant</option></select></label>
     <label>Statut<select value={status} onChange={e=>setStatus(e.target.value as EntityStatus)}>{statuses.map(item=><option key={item}>{item}</option>)}</select></label>
     {(validation||error)&&<div className="sp-form-error"><AlertCircle size={15}/>{validation||error}</div>}
     <div className="sp-modal-actions"><button type="button" className="sp-button sp-button--secondary" onClick={onCancel} disabled={saving}>Annuler</button><button type="submit" className="sp-button sp-button--primary" disabled={saving}>{saving?"Enregistrement…":initial?"Enregistrer les modifications":"Créer la filière"}</button></div>
