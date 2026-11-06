@@ -105,3 +105,12 @@ export const pedagogicalQuickActions = [
   { id: "timetables", label: "Gérer les emplois du temps", route: "/timetables", permission: "pedagogy.schedule.view", icon: "timetable" },
   { id: "badges", label: "Gérer les badges", route: "/badges-recognition", permission: "pedagogy.recognition.manage", icon: "badges" },
 ] as const;
+
+
+export const performanceTrendsByTerm: Record<string, { label: string; value: number }[]> = {
+  "1er semestre": [{ label: "Sept.", value: 13.6 }, { label: "Oct.", value: 13.9 }, { label: "Nov.", value: 14.2 }],
+  "2e semestre": [{ label: "Janv.", value: 14.0 }, { label: "Mars", value: 14.3 }, { label: "Juin", value: 14.7 }],
+  "Trimestre 1": [{ label: "Sept.", value: 13.6 }, { label: "Oct.", value: 13.9 }, { label: "Nov.", value: 14.2 }],
+  "Trimestre 2": [{ label: "Déc.", value: 13.8 }, { label: "Janv.", value: 14.0 }, { label: "Févr.", value: 14.1 }],
+  "Trimestre 3": [{ label: "Mars", value: 14.3 }, { label: "Avril", value: 14.5 }, { label: "Juin", value: 14.7 }],
+};
