@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { AppSidebar } from "./components/AppSidebar";
 import { StaffSignIn } from "./components/auth/StaffSignIn";
 import { DirectorOverviewPage } from "./components/dashboard/DirectorOverviewPage";
+import { AdministrativeOverviewPage } from "./components/dashboard/AdministrativeOverviewPage";
 import { schoolBranding } from "./config/school";
 import { getDemoStaffById } from "./data/demo-accounts";
 import type { AuthenticatedSidebarUser } from "./types/navigation";
@@ -47,12 +48,15 @@ export default function App() {
   if (!user) return <StaffSignIn onSignIn={handleSignIn} />;
 
   const isDirectorOverview = user.role === "director" && currentPath === "/overview";
+  const isAdministrativeOverview = user.role === "administrative" && currentPath === "/overview";
 
   return (
     <div className="sidebar-demo">
       <AppSidebar user={user} school={schoolBranding} currentPath={currentPath} onNavigate={navigate} onExit={handleSignOut} />
       {isDirectorOverview ? (
         <DirectorOverviewPage user={user} onNavigate={navigate} />
+      ) : isAdministrativeOverview ? (
+        <AdministrativeOverviewPage user={user} onNavigate={navigate} />
       ) : (
         <main className="workspace-placeholder">
           <span className="workspace-eyebrow">ESPACE DU PERSONNEL</span>
