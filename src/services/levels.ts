@@ -116,8 +116,18 @@ export const levelsRepository = {
     const data=await sectorsProgramsRepository.list();const rows=readStore(data);const current=rows.find(row=>row.id===id);
     if(!current)throw new LevelRepositoryError("Ce niveau n’existe plus. Actualisez la page.");
     if(!Number.isInteger(order)||order<1)throw new LevelRepositoryError("L’ordre doit être un nombre entier supérieur ou égal à 1.");
-    if(rows.some(row=>row.programId===current.programId&&row.id!==id&&row.order===order))throw new LevelRepositoryError("Cette position est déjà utilisée dans ce programme.");
-    return join(writeStore(rows.map(row=>row.id===id?{...row,order,updatedAt:new Date().toISOString()}:row)),data);
+    const siblings=rows.filter(row=>row.programId===current.programId&&row.id!==id).sort((a,b)=>a.order-b.order);
+    const maxOrder=siblings.reduce((max,row)=>Math.max(max,row.order),0)+1;
+    if(order>maxOrder)throw new LevelRepositoryError(`L’ordre ne peut pas dépasser ${maxOrder} dans ce programme.`);
+    const now=new Date().toISOString();
+    const reordered=rows.map(row=>{
+      if(row.id===id)return {...row,order,updatedAt:now};
+      if(row.programId!==current.programId)return row;
+      if(current.order<order&&row.order>current.order&&row.order<=order)return {...row,order:row.order-1,updatedAt:now};
+      if(current.order>order&&row.order>=order&&row.order<current.order)return {...row,order:row.order+1,updatedAt:now};
+      return row;
+    });
+    return join(writeStore(reordered),data);
   },
   async setStatus(id:string,status:EntityStatus):Promise<LevelRecord[]> {
     const data=await sectorsProgramsRepository.list();const rows=readStore(data);const current=rows.find(row=>row.id===id);
