@@ -17,6 +17,7 @@ export interface AuthenticatedSidebarUser {
 }
 export interface SchoolBranding {
   name: string; location?: string; logoUrl?: string; primaryColor: string; secondaryColor?: string;
+  currency?: string; academicYear?: string; academicYearStart?: string;
 }
 export interface NavigationItem {
   id: string; label: string; icon: LucideIcon; route: string; permission: Permission; roles: readonly StaffRole[];
