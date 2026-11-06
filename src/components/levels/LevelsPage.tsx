@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type CSSProperties, type FormEvent } from "react";
 import { AlertCircle, ArrowDown, ArrowUp, ArrowUpDown, BookOpen, Check, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, Eye, Filter, GraduationCap, Layers3, MoreHorizontal, Pencil, Plus, Search, ShieldCheck, SlidersHorizontal, X } from "lucide-react";
 import { levelsRepository, type LevelInput, type LevelRecord } from "../../services/levels";
 import { sectorsProgramsRepository, type EducationalCycle, type SectorProgramData, type EntityStatus } from "../../services/sectors-programs";
@@ -61,12 +61,12 @@ export function LevelsPage({user,onNavigate}:Props){
  useEffect(()=>{setPage(1);},[search,sectorFilter,programFilter,statusFilter,pageSize]);
  const activeCount=levels.filter(l=>l.status==="Actif").length,programCount=new Set(levels.map(l=>l.programId)).size;
  async function mutate(action:()=>Promise<LevelRecord[]>,message:string){setSaving(true);setError("");try{setLevels(await action());setNotice(message);setModal(null);setPending(null);setOrderTarget(null);}catch(e){setError(e instanceof Error?e.message:"L’opération a échoué.");}finally{setSaving(false);}}
- function save(input:LevelInput){if(!canCreate&&!modal?.type?.startsWith("edit"))return;if(modal?.type==="edit"){const target=modal.level;void mutate(()=>levelsRepository.update(target.id,input),"Le niveau a été modifié.");}else void mutate(()=>levelsRepository.create(input),"Le niveau a été créé.");}
+ function save(input:LevelInput){if(modal?.type==="edit"){if(!canUpdate)return;const target=modal.level;void mutate(()=>levelsRepository.update(target.id,input),"Le niveau a été modifié.");}else{if(!canCreate)return;void mutate(()=>levelsRepository.create(input),"Le niveau a été créé.");}}
  function changeStatus(){if(!pending||!canStatus)return;const change=pending;void mutate(()=>levelsRepository.setStatus(change.level.id,change.status),change.status==="Actif"?"Le niveau a été activé.":"Le niveau a été désactivé.");}
  function changeOrder(e:FormEvent){e.preventDefault();if(!orderTarget)return;void mutate(()=>levelsRepository.changeOrder(orderTarget.id,Number(orderValue)),"L’ordre du niveau a été mis à jour.");}
  if(!canRead)return <main className="lv-page"><div className="lv-access"><ShieldCheck size={27}/><h1>Accès non autorisé</h1><p>Votre compte ne dispose pas de l’autorisation nécessaire pour consulter les niveaux scolaires.</p><button className="lv-button lv-button--secondary" onClick={()=>onNavigate("/overview")}>Retour au tableau de bord</button></div></main>;
  const programsWithLevels=programCount;
- return <main className="lv-page" style={{"--school-primary":schoolBranding.primaryColor} as React.CSSProperties}>
+ return <main className="lv-page" style={{"--school-primary":schoolBranding.primaryColor} as CSSProperties}>
   <header className="lv-header"><div><div className="lv-breadcrumb"><span>Gestion académique</span><i>/</i><strong>Niveaux</strong></div><h1>Niveaux scolaires</h1><p>Gérez les niveaux scolaires au sein des programmes académiques de votre établissement.</p></div>{canCreate&&<button className="lv-button lv-button--primary" onClick={()=>{setError("");setModal({type:"create"});}}><Plus size={15}/> Créer un niveau</button>}</header>
   {notice&&<div className="lv-notice"><Check size={15}/><span>{notice}</span><button onClick={()=>setNotice("")} aria-label="Fermer"><X size={14}/></button></div>}
   {loadError&&<div className="lv-error"><AlertCircle size={15}/><span>{loadError}</span><button onClick={()=>void load()}>Réessayer</button></div>}
