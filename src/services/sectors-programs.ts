@@ -151,6 +151,7 @@ export const sectorsProgramsRepository = {
   async setProgramStatus(id:string,status:EntityStatus):Promise<SectorProgramData> {
     const data=read(); const program=data.programs.find(item=>item.id===id);
     if(!program) throw new SectorProgramError("Ce programme n'existe plus.");
+    if(status==="Actif"&&data.sectors.find(item=>item.id===program.sectorId)?.status!=="Actif") throw new SectorProgramError("Impossible d’activer un programme dans une filière inactive. Réactivez d’abord la filière.");
     if(status==="Inactif"&&program.classCount>0) throw new SectorProgramError("Ce programme est associé à des classes. Les associations doivent être réaffectées avant sa désactivation.");
     return write({...data,programs:data.programs.map(item=>item.id===id?{...item,status}:item)});
   },
