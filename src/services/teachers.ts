@@ -66,7 +66,7 @@ function build(raw:Awaited<ReturnType<typeof loadRaw>>):TeachersData{
    if(!year||!c||!subject)return [];
    return [{...a,academicYearName:year.name,programName:c.programName,levelName:c.levelName,className:c.name,groupName:group?.name??"—",subjectName:subject.name,subjectCode:subject.code}];
   });
-  return {...t,departmentName:raw.departments.find(d=>d.id===t.departmentId)?.name??"Non affecté",assignments:assignmentsResolved};
+  return {...t,departmentName:raw.departments.find(d=>d.id===t.departmentId)?.name??"Non affecté",assignments:assignmentsResolved,assignmentsResolved};
  }).sort((a,b)=>a.fullName.localeCompare(b.fullName,"fr"));
  return {teachers,departments:raw.departments,academicYears:raw.academicYears,classes:raw.classes,subjects:raw.subjects};
 }
