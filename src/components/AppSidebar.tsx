@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import {
-  ChevronDown, ChevronLeft, ChevronRight, Command, Search, PanelLeftClose,
+  ChevronDown, ChevronRight, Command, Search, PanelLeftClose,
   PanelLeftOpen, School, Sparkles,
 } from "lucide-react";
 import { navigation, roleLabels } from "../data/navigation";
@@ -8,12 +8,11 @@ import type { NavigationGroup, StaffRole } from "../types/navigation";
 
 interface AppSidebarProps {
   role: StaffRole;
-  onRoleChange: (role: StaffRole) => void;
   activeItem: string;
   onNavigate: (label: string) => void;
 }
 
-export function AppSidebar({ role, onRoleChange, activeItem, onNavigate }: AppSidebarProps) {
+export function AppSidebar({ role, activeItem, onNavigate }: AppSidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [search, setSearch] = useState("");
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
