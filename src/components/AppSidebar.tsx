@@ -43,24 +43,24 @@ export function AppSidebar({user,school,currentPath,onNavigate,onExit}:AppSideba
     <div className="sidebar-top">
       <SidebarBrand school={school} collapsed={collapsed}/>
       <button type="button" className="sidebar-collapse-button" onClick={()=>setCollapsed(value=>!value)}
-        aria-label={collapsed?"Expand sidebar":"Collapse sidebar"} title={collapsed?"Expand sidebar":"Collapse sidebar"}>
+        aria-label={collapsed?"Développer le menu":"Réduire le menu"} title={collapsed?"Développer le menu":"Réduire le menu"}>
         {collapsed?<PanelLeftOpen size={17}/>:<PanelLeftClose size={17}/>}
       </button>
     </div>
     {!collapsed&&<div className="sidebar-search">
       <Search size={15} aria-hidden="true"/>
-      <input type="search" value={search} onChange={event=>setSearch(event.target.value)} placeholder="Search navigation" aria-label="Search navigation"/>
-      {search&&<button type="button" onClick={()=>setSearch("")} aria-label="Clear search">×</button>}
+      <input type="search" value={search} onChange={event=>setSearch(event.target.value)} placeholder="Rechercher dans le menu" aria-label="Rechercher dans le menu"/>
+      {search&&<button type="button" onClick={()=>setSearch("")} aria-label="Effacer la recherche">×</button>}
     </div>}
-    <nav className="nav-scroll" aria-label="School navigation">
+    <nav className="nav-scroll" aria-label="Navigation de l’établissement">
       {visibleGroups.map(group=><SidebarGroup key={group.id} group={group} activePath={path} collapsed={collapsed}
         expanded={search.trim().length>0 || (expandedGroups[group.id]??group.id===activeGroupId)} onToggle={()=>toggleGroup(group.id)} onNavigate={onNavigate}/>)}
-      {visibleGroups.length===0&&!collapsed&&<p className="nav-empty">No matching pages available.</p>}
+      {visibleGroups.length===0&&!collapsed&&<p className="nav-empty">Aucune page ne correspond à votre recherche.</p>}
     </nav>
     <div className="sidebar-footer">
       <div className="sidebar-user-avatar" title={user.displayName}>{user.initials}</div>
-      {!collapsed&&<div className="sidebar-user-copy"><strong>{user.displayName}</strong><span>{user.role==="finance"?"Finance & Logistics Manager":user.role==="administrative"?"Administrative Manager":user.role==="pedagogical"?"Pedagogical Manager":"Director"}</span></div>}
-      {onExit && <button type="button" className="sidebar-exit" onClick={onExit}>Sign out</button>}
+      {!collapsed&&<div className="sidebar-user-copy"><strong>{user.displayName}</strong><span>{user.role==="finance"?"Responsable financier et logistique":user.role==="administrative"?"Responsable administratif":user.role==="pedagogical"?"Responsable pédagogique":"Directeur"}</span></div>}
+      {onExit && <button type="button" className="sidebar-exit" onClick={onExit}>Se déconnecter</button>}
     </div>
   </aside>;
 }
