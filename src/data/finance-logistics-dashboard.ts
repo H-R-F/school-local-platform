@@ -82,12 +82,12 @@ export const financeActivities = [
 ];
 
 export const financeMonthlyFlow = [
-  { month: "Juin", payments: 84000, expenses: 51000 },
-  { month: "Juil.", payments: 62000, expenses: 48000 },
-  { month: "Août", payments: 96000, expenses: 57000 },
-  { month: "Sept.", payments: 128000, expenses: 76000 },
-  { month: "Oct.", payments: 146000, expenses: 89000 },
-  { month: "Nov.", payments: 82400, expenses: 42350 },
+  { month: "Juin", date: "2026-06-01", payments: 84000, expenses: 51000 },
+  { month: "Juil.", date: "2026-07-01", payments: 62000, expenses: 48000 },
+  { month: "Août", date: "2026-08-01", payments: 96000, expenses: 57000 },
+  { month: "Sept.", date: "2026-09-01", payments: 128000, expenses: 76000 },
+  { month: "Oct.", date: "2026-10-01", payments: 146000, expenses: 89000 },
+  { month: "Nov.", date: "2026-11-01", payments: 82400, expenses: 42350 },
 ];
 
 export const financeQuickActions = [
