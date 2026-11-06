@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import type { CSSProperties } from "react";
 import {
   AlertCircle, CalendarDays, CalendarRange, Check, ChevronLeft, ChevronRight, Clock3,
   DoorOpen, Eye, GraduationCap, Info, LayoutGrid, List, MapPin,
@@ -7,6 +8,7 @@ import {
 import { academicYearRepository } from "../../services/academic-years";
 import { classesGroupsRepository } from "../../services/classes-groups";
 import { subjectsRepository } from "../../services/subjects";
+import { schoolBranding } from "../../config/school";
 import type { AuthenticatedSidebarUser } from "../../types/navigation";
 import "./ExaminationsPage.css";
 
@@ -187,7 +189,7 @@ export function ExaminationsPage({ user, onNavigate }: Props) {
     if (errors.length) { setFormError(errors.join(" ")); return; }
     const duplicate = exams.some(e => !e.cancelled && e.sessionId === session.id && e.classId === cls.id && e.subjectId === subject.id && e.groupId === examForm.groupId && e.id !== form?.id);
     if (duplicate) { setFormError("Une épreuve identique est déjà programmée pour cette classe et cette session."); return; }
-    if (found.overCapacity && !window.confirm(`Capacité insuffisante : ${found.expected} élèves pour ${found.capacity} places. Confirmer malgré cet avertissement ?`)) return;
+    if (found.overCapacity) { setFormError(`Capacité insuffisante : ${found.expected} élèves pour ${found.capacity} places. Choisissez une salle adaptée avant de programmer cette épreuve.`); return; }
     const row: ExamRecord = { ...candidate, id: form?.id ?? "DEMO-EX-" + Date.now(), cancelled: false };
     setExams(old => form?.id ? old.map(e => e.id === form.id ? row : e) : [...old, row]);
     setForm(null); setNotice("L'épreuve a été ajoutée à la démonstration locale."); setPanel({ type: "exam", id: row.id });
@@ -201,7 +203,7 @@ export function ExaminationsPage({ user, onNavigate }: Props) {
   const activeRoomCounts = ROOM_FIXTURES.map(r => ({ room: r, assigned: exams.filter(e => e.roomId === r.id && !e.cancelled && getSession(e.sessionId)?.yearId === yearId && (sessionId === "all" || e.sessionId === sessionId)).length }));
   const roomFilterOptions = ROOM_FIXTURES.filter(r => r.status === "Opérationnelle");
 
-  if (!canView) return <main className="ex-page"><div className="ex-access"><ShieldCheck size={28}/><h1>Accès non autorisé</h1><p>Votre compte ne dispose pas de l'autorisation nécessaire pour consulter l'organisation des examens.</p><button onClick={() => onNavigate("/overview")}>Retour au tableau de bord</button></div></main>;
+  if (!canView) return <main className="ex-page" style={{ "--school-primary": schoolBranding.primaryColor } as CSSProperties}><div className="ex-access"><ShieldCheck size={28}/><h1>Accès non autorisé</h1><p>Votre compte ne dispose pas de l'autorisation nécessaire pour consulter l'organisation des examens.</p><button onClick={() => onNavigate("/overview")}>Retour au tableau de bord</button></div></main>;
 
   return <main className="ex-page">
     <header className="ex-header"><div><div className="ex-breadcrumb">Opérations pédagogiques <i>/</i><strong>Examens</strong></div><h1>Examens</h1><p>Planifiez les sessions d'examen, organisez les horaires et gérez la logistique des épreuves.</p></div><button className="ex-button ex-button--primary" onClick={openNewSession}><Plus size={15}/>Créer une session d'examens</button></header>
