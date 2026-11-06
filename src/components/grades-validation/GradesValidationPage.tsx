@@ -150,8 +150,8 @@ export function GradesValidationPage({ user }: Props) {
     if (!selected) return;
     const now = new Date().toISOString();
     if (dialog === "approve") updateDemo(selected.id, { validation: "approved", reviewedBy: user.displayName || "Utilisateur de démonstration", reviewedAt: now });
-    if (dialog === "reject" && rejectReason.trim()) updateDemo(selected.id, { validation: "rejected", publication: "unpublished", reviewedBy: user.name || "Utilisateur de démonstration", reviewedAt: now, rejectionReason: rejectReason.trim() });
-    if (dialog === "publish" && selected.validation === "approved") updateDemo(selected.id, { publication: "published", publishedBy: user.name || "Utilisateur de démonstration", publishedAt: now });
+    if (dialog === "reject" && rejectReason.trim()) updateDemo(selected.id, { validation: "rejected", publication: "unpublished", reviewedBy: user.displayName || "Utilisateur de démonstration", reviewedAt: now, rejectionReason: rejectReason.trim() });
+    if (dialog === "publish" && selected.validation === "approved") updateDemo(selected.id, { publication: "published", publishedBy: user.displayName || "Utilisateur de démonstration", publishedAt: now });
     setActionMessage("Action appliquée uniquement à cette démonstration locale. Aucune donnée réelle n’a été enregistrée.");
     closeDialog();
   };
@@ -192,8 +192,8 @@ export function GradesValidationPage({ user }: Props) {
         <div className="gv-table-scroll"><table><thead><tr><th>Classe</th><th>Matière</th><th>Enseignant</th><th>Période scolaire</th><th>Élèves</th><th>Date de soumission</th><th>Statut de validation</th><th>Statut de publication</th><th>Actions</th></tr></thead><tbody>
           {filtered.map(row => <tr key={row.id} onClick={() => setSelectedId(row.id)} tabIndex={0} onKeyDown={e => {if(e.key === "Enter" || e.key === " "){e.preventDefault();setSelectedId(row.id);}}}>
             <td><strong>{row.className}</strong>{row.groupName && <small>{row.groupName}</small>}</td><td><strong>{row.subjectName}</strong><small>{row.id}</small></td><td>{row.teacherName}</td><td><strong>{row.yearName}</strong><small>{row.period}</small></td><td><span className="gv-student-count"><Users size={12}/>{row.studentCount}</span></td><td>{dateTime(row.submittedAt)}</td>
-            <td><span className={`gv-status gv-validation ${row.validation}`}>{row.validation === "pending" ? <Clock3 size={11}/> : row.validation === "approved" ? <CheckCircle2 size={11}/> : <XCircle size={11}/ >}{statusLabel(row.validation)}</span></td>
-            <td><span className={`gv-status gv-publication ${row.publication}`}>{row.publication === "published" ? <CheckCircle2 size={11}/> : <Clock3 size={11}/ >}{row.publication === "published" ? "Publiée" : "Non publiée"}</span></td>
+            <td><span className={`gv-status gv-validation ${row.validation}`}>{row.validation === "pending" ? <Clock3 size={11}/> : row.validation === "approved" ? <CheckCircle2 size={11}/> : <XCircle size={11}/>}{statusLabel(row.validation)}</span></td>
+            <td><span className={`gv-status gv-publication ${row.publication}`}>{row.publication === "published" ? <CheckCircle2 size={11}/> : <Clock3 size={11}/>}{row.publication === "published" ? "Publiée" : "Non publiée"}</span></td>
             <td><button className="gv-view-button" type="button" onClick={e => {e.stopPropagation();setSelectedId(row.id);}}><Eye size={13}/>Consulter</button></td>
           </tr>)}
         </tbody></table></div>}
