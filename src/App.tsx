@@ -9,6 +9,7 @@ import { AcademicYearsPage } from "./components/academic-years/AcademicYearsPage
 import { SectorsProgramsPage } from "./components/sectors-programs/SectorsProgramsPage";
 import { LevelsPage } from "./components/levels/LevelsPage";
 import { ClassesGroupsPage } from "./components/classes-groups/ClassesGroupsPage";
+import { SubjectsPage } from "./components/subjects/SubjectsPage";
 import { schoolBranding } from "./config/school";
 import { getDemoStaffById } from "./data/demo-accounts";
 import type { AuthenticatedSidebarUser } from "./types/navigation";
@@ -61,6 +62,7 @@ export default function App() {
   const isSectorsProgramsPage = currentPath === "/sectors-programs";
   const isLevelsPage = currentPath === "/levels";
   const isClassesGroupsPage = currentPath === "/classes-groups";
+  const isSubjectsPage = currentPath === "/subjects";
 
   return (
     <div className="sidebar-demo">
@@ -81,6 +83,8 @@ export default function App() {
         <LevelsPage user={user} onNavigate={navigate} />
       ) : isClassesGroupsPage ? (
         <ClassesGroupsPage user={user} onNavigate={navigate} />
+      ) : isSubjectsPage ? (
+        <SubjectsPage user={user} onNavigate={navigate} />
       ) : (
         <main className="workspace-placeholder">
           <span className="workspace-eyebrow">ESPACE DU PERSONNEL</span>
