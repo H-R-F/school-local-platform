@@ -24,3 +24,6 @@ export function getRoleLabel(role: StaffRole): string {
   };
   return labels[role];
 }
+export function getDemoStaffById(id: string): AuthenticatedSidebarUser | null {
+  return demoAccounts.find(account => account.user.id === id)?.user ?? null;
+}
