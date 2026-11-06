@@ -238,3 +238,36 @@ button{transition:background-color 120ms ease-out,border-color 120ms ease-out,co
   [dir="rtl"] .sidebar-demo>main:not(.auth-page),[dir="rtl"] .workspace-placeholder,[dir="rtl"] .st-page,[dir="rtl"] .pa-page,[dir="rtl"] .te-page,[dir="rtl"] .em-page,[dir="rtl"] .dp-page,[dir="rtl"] .sb-page,[dir="rtl"] .rp-page,[dir="rtl"] .ay-page,[dir="rtl"] .sp-page,[dir="rtl"] .lv-page,[dir="rtl"] .cg-page,[dir="rtl"] .dash-page{margin-right:0!important}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important}}
+
+/* Dashboard roots use their own role-specific class names. */
+.director-dashboard,.administrative-dashboard,.pedagogical-dashboard,.finance-logistics-dashboard{
+  display:block;min-height:100vh;margin-left:248px!important;padding:24px!important;
+  color:var(--app-text)!important;background:var(--app-bg)!important;
+  font-family:Inter,"Segoe UI",system-ui,sans-serif!important;font-size:14px!important;
+}
+.director-dashboard h1,.administrative-dashboard h1,.pedagogical-dashboard h1,.finance-logistics-dashboard h1{
+  color:var(--app-text)!important;font:600 24px/32px Inter,"Segoe UI",sans-serif!important;letter-spacing:-.025em!important;
+}
+.director-dashboard .dash-panel,.administrative-dashboard .admin-dash-panel,
+.pedagogical-dashboard .ped-panel,.finance-logistics-dashboard .fl-panel{
+  background:var(--app-surface)!important;border:1px solid var(--app-border)!important;
+  border-radius:var(--app-radius-card)!important;box-shadow:var(--app-shadow-card)!important;
+}
+.director-dashboard .dash-kpi-card,.administrative-dashboard .admin-dash-kpi,
+.pedagogical-dashboard .ped-kpi,.finance-logistics-dashboard .fl-kpi{
+  background:var(--app-surface)!important;border:1px solid var(--app-border)!important;
+  border-radius:var(--app-radius-card)!important;box-shadow:var(--app-shadow-card)!important;
+}
+.director-dashboard .dash-kpi-value,.administrative-dashboard .admin-dash-kpi strong,
+.pedagogical-dashboard .ped-kpi strong,.finance-logistics-dashboard .fl-kpi strong{
+  font-variant-numeric:tabular-nums;
+}
+@media(max-width:900px){
+ .director-dashboard,.administrative-dashboard,.pedagogical-dashboard,.finance-logistics-dashboard{margin-left:72px!important;padding:20px!important}
+}
+@media(max-width:640px){
+ .director-dashboard,.administrative-dashboard,.pedagogical-dashboard,.finance-logistics-dashboard{margin-left:0!important;padding:16px!important}
+}
+[dir="rtl"] .director-dashboard,[dir="rtl"] .administrative-dashboard,[dir="rtl"] .pedagogical-dashboard,[dir="rtl"] .finance-logistics-dashboard{margin-left:0!important;margin-right:248px!important}
+@media(max-width:900px){[dir="rtl"] .director-dashboard,[dir="rtl"] .administrative-dashboard,[dir="rtl"] .pedagogical-dashboard,[dir="rtl"] .finance-logistics-dashboard{margin-right:72px!important;margin-left:0!important}}
+@media(max-width:640px){[dir="rtl"] .director-dashboard,[dir="rtl"] .administrative-dashboard,[dir="rtl"] .pedagogical-dashboard,[dir="rtl"] .finance-logistics-dashboard{margin-right:0!important}}
