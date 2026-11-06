@@ -22,7 +22,7 @@ function LevelForm({initial,programId,structure,levels,saving,error,onCancel,onS
  const [description,setDescription]=useState(initial?.description??"");
  const currentProgram=structure.programs.find(p=>p.id===selectedProgram);
  const programLevels=levels.filter(l=>l.programId===selectedProgram&&l.id!==initial?.id);
- const suggestedOrder=programLevels.reduce((max,l)=>Math.max(max,l.order),0)+1;
+ const occupiedOrders=new Set(programLevels.map(level=>level.order));let suggestedOrder=1;while(occupiedOrders.has(suggestedOrder))suggestedOrder+=1;
  const [order,setOrder]=useState(String(initial?.order??suggestedOrder));
  const [validation,setValidation]=useState<Record<string,string>>({});
  useEffect(()=>{if(!sectors.some(s=>s.id===sectorId))setSectorId(sectors[0]?.id??"");},[cycle,structure.sectors]);
