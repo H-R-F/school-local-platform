@@ -1,11 +1,12 @@
+import { schoolBranding } from "../config/school";
 export type FinancePeriod = "month" | "lastMonth" | "academicYear" | "custom";
 export type PaymentStatus = "Payé" | "En attente" | "Partiel" | "Échoué";
 
 export const financeSchoolSettings = {
-  currency: "MAD",
+  currency: schoolBranding.currency ?? "MAD",
   locale: "fr-MA",
-  academicYear: "2026–2027",
-  academicYearStart: "2026-09-01",
+  academicYear: schoolBranding.academicYear ?? "2026–2027",
+  academicYearStart: schoolBranding.academicYearStart ?? "2026-09-01",
 };
 
 export const financePayments = [
