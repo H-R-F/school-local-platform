@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { ArrowRight, Eye, EyeOff, LockKeyhole, Mail, ShieldCheck, Sparkles } from "lucide-react";
-import { authenticateDemoStaff, demoAccounts, demoMot de passe, getRoleLabel } from "../../data/demo-accounts";
+import { authenticateDemoStaff, demoAccounts, demoPassword, getRoleLabel } from "../../data/demo-accounts";
 import { schoolBranding } from "../../config/school";
 import type { AuthenticatedSidebarUser } from "../../types/navigation";
 
@@ -8,8 +8,8 @@ interface Props { onSignIn: (user: AuthenticatedSidebarUser) => void }
 
 export function StaffSignIn({ onSignIn }: Props) {
   const [email, setEmail] = useState("");
-  const [password, setMot de passe] = useState("");
-  const [showMot de passe, setShowMot de passe] = useState(false);
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowMot de passe] = useState(false);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -58,7 +58,7 @@ export function StaffSignIn({ onSignIn }: Props) {
             <label htmlFor="staff-email">Adresse e-mail professionnelle</label>
             <div className="auth-input-wrap"><Mail size={17}/><input id="staff-email" type="email" autoComplete="username" placeholder="vous@ecole.ma" value={email} onChange={event=>setEmail(event.target.value)} required/></div>
             <div className="auth-password-label"><label htmlFor="staff-password">Mot de passe</label><button type="button" className="auth-text-button" onClick={()=>setError("Veuillez contacter l’administrateur de votre établissement pour réinitialiser votre mot de passe.")}>Mot de passe oublié ?</button></div>
-            <div className="auth-input-wrap"><LockKeyhole size={17}/><input id="staff-password" type={showMot de passe?"text":"password"} autoComplete="current-password" placeholder="Saisissez votre mot de passe" value={password} onChange={event=>setMot de passe(event.target.value)} required/><button type="button" className="auth-password-toggle" onClick={()=>setShowMot de passe(value=>!value)} aria-label={showMot de passe?"Masquer le mot de passe":"Afficher le mot de passe"}>{showMot de passe?<EyeOff size={17}/>:<Eye size={17}/>}</button></div>
+            <div className="auth-input-wrap"><LockKeyhole size={17}/><input id="staff-password" type={showPassword?"text":"password"} autoComplete="current-password" placeholder="Saisissez votre mot de passe" value={password} onChange={event=>setPassword(event.target.value)} required/><button type="button" className="auth-password-toggle" onClick={()=>setShowMot de passe(value=>!value)} aria-label={showPassword?"Masquer le mot de passe":"Afficher le mot de passe"}>{showPassword?<EyeOff size={17}/>:<Eye size={17}/>}</button></div>
             {error&&<div className="auth-error" role="alert">{error}</div>}
             <button className="auth-submit" type="submit" disabled={submitting}>{submitting?"Connexion en cours...":"Se connecter à l’espace"}<ArrowRight size={17}/></button>
           </form>
@@ -67,12 +67,12 @@ export function StaffSignIn({ onSignIn }: Props) {
             <div className="auth-demo-heading"><span>ACCÈS DE DÉMONSTRATION</span><span className="auth-demo-badge">APERÇU UNIQUEMENT</span></div>
             <p>Choisissez un compte de démonstration pour découvrir l’espace correspondant à chaque fonction.</p>
             <div className="auth-demo-grid">
-              {demoAccounts.map(account=><button type="button" className="auth-demo-account" key={account.user.id} onClick={()=>{setEmail(account.email);setMot de passe(demoMot de passe);setError("");}}>
+              {demoAccounts.map(account=><button type="button" className="auth-demo-account" key={account.user.id} onClick={()=>{setEmail(account.email);setPassword(demoPassword);setError("");}}>
                 <span className={`auth-demo-avatar auth-demo-avatar--${account.user.role}`}>{account.user.initials}</span>
                 <span><strong>{getRoleLabel(account.user.role)}</strong><small>{account.email}</small></span>
               </button>)}
             </div>
-            <div className="auth-demo-password">Mot de passe de démonstration <code>{demoMot de passe}</code></div>
+            <div className="auth-demo-password">Mot de passe de démonstration <code>{demoPassword}</code></div>
           </div>
           <p className="auth-legal">En continuant, vous confirmez être un membre autorisé de cet établissement.</p>
         </div>
