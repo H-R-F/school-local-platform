@@ -110,7 +110,7 @@ export const subjectsRepository={
  async list():Promise<SubjectsData>{const raw=await loadRaw();return {subjects:buildRecords(raw),structure:raw.structure,levels:raw.levels,academicYears:raw.academicYears,teachers:raw.teachers};},
  async create(input:SubjectInput):Promise<SubjectsData>{const raw=await loadRaw();validateSubject(input,raw.subjects);const now=new Date().toISOString();const row:Subject={id:`SUB-${Date.now()}`,...input,name:input.name.trim(),code:input.code.trim().toLocaleUpperCase("fr-FR"),description:input.description.trim(),status:"Actif",createdAt:now,updatedAt:now};write(SUBJECT_KEY,[row,...raw.subjects]);return this.list();},
  async update(id:string,input:SubjectInput):Promise<SubjectsData>{const raw=await loadRaw();const target=raw.subjects.find(s=>s.id===id);if(!target)throw new SubjectsRepositoryError("Cette matière n'existe plus. Actualisez la page.");validateSubject(input,raw.subjects,id);write(SUBJECT_KEY,raw.subjects.map(s=>s.id===id?{...s,...input,name:input.name.trim(),code:input.code.trim().toLocaleUpperCase("fr-FR"),description:input.description.trim(),updatedAt:new Date().toISOString()}:s));return this.list();},
- async saveAssignments(subjectId:string,inputs:SubjectAssignmentInput[]):Promise<SubjectsData>{
+ async saveAssignments(subjectId:string,academicYearId:string,inputs:SubjectAssignmentInput[]):Promise<SubjectsData>{
   const raw=await loadRaw();const subject=raw.subjects.find(s=>s.id===subjectId);if(!subject)throw new SubjectsRepositoryError("Cette matière n'existe plus.");
   if(subject.status!=="Actif")throw new SubjectsRepositoryError("Une matière inactive ne peut pas recevoir de nouvelles affectations.");
   const seen=new Set<string>();const now=new Date().toISOString();
@@ -124,8 +124,10 @@ export const subjectsRepository={
    if(input.coefficient!==null&&(!Number.isFinite(input.coefficient)||input.coefficient<=0||input.coefficient>20))throw new SubjectsRepositoryError("Le coefficient doit être supérieur à 0 et inférieur ou égal à 20.");
   }
   const existing=raw.assignments.filter(a=>a.subjectId===subjectId);
-  const retained=existing.filter(a=>!inputs.some(i=>i.programId===a.programId&&i.levelId===a.levelId&&i.academicYearId===a.academicYearId));
-  const next=inputs.map(input=>{const old=existing.find(a=>a.programId===input.programId&&a.levelId===input.levelId&&a.academicYearId===input.academicYearId);return old?{...old,...input,active:true,updatedAt:now}:{id:`ASG-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,subjectId,...input,active:true,createdAt:now,updatedAt:now};});
+  if(!raw.academicYears.some(y=>y.id===academicYearId&&y.status!=="Archivée"&&y.status!=="Terminée"))throw new SubjectsRepositoryError("Sélectionnez une année scolaire ouverte.");
+  if(inputs.some(input=>input.academicYearId!==academicYearId))throw new SubjectsRepositoryError("Les affectations enregistrées doivent appartenir à l’année scolaire sélectionnée.");
+  const retained=existing.filter(a=>a.academicYearId!==academicYearId);
+  const next=inputs.map(input=>{const old=existing.find(a=>a.programId===input.programId&&a.levelId===input.levelId&&a.academicYearId===academicYearId);return old?{...old,...input,active:true,updatedAt:now}:{id:`ASG-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,subjectId,...input,active:true,createdAt:now,updatedAt:now};});
   write(ASSIGNMENT_KEY,[...raw.assignments.filter(a=>a.subjectId!==subjectId),...retained,...next]);return this.list();
  },
  async removeAssignment(id:string):Promise<SubjectsData>{const raw=await loadRaw();const target=raw.assignments.find(a=>a.id===id);if(!target)throw new SubjectsRepositoryError("Cette affectation n'existe plus.");write(ASSIGNMENT_KEY,raw.assignments.map(a=>a.id===id?{...a,active:false,updatedAt:new Date().toISOString()}:a));return this.list();},
