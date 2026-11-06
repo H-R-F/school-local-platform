@@ -39,6 +39,7 @@ export default function App() {
         <h1>Welcome, {user.displayName.split(" ")[0]}</h1>
         <p>Your {user.role === "finance" ? "Finance & Logistics Manager" : user.role === "administrative" ? "Administrative Manager" : user.role === "pedagogical" ? "Pedagogical Manager" : "Director"} workspace is ready.</p>
         <span className="workspace-note">This is a frontend preview. We'll build each workspace page next.</span>
+        <button type="button" className="workspace-signout" onClick={handleSignOut}>Sign out</button>
       </main>
     </div>
   );
