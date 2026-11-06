@@ -74,6 +74,8 @@ export const recentActivities = [
   { id: 4, daysAgo: 2, time: "11:30", title: "Présences enregistrées", description: "Niveau collège · 18 classes", actor: "Service de vie scolaire", type: "attendance" },
   { id: 5, daysAgo: 3, time: "10:12", title: "Cours approuvé", description: "Sciences de la vie et de la terre", actor: "Youssef Amrani", type: "course" },
   { id: 6, daysAgo: 5, time: "08:55", title: "Nouveau membre du personnel", description: "Hind Tazi · Assistante administrative", actor: "Amine Benali", type: "employee" },
+  { id: 7, daysAgo: 34, time: "14:20", title: "Sortie scolaire enregistrée", description: "Visite pédagogique · Niveau lycée", actor: "Service de vie scolaire", type: "course" },
+  { id: 8, daysAgo: 61, time: "10:40", title: "Réunion de rentrée", description: "Préparation de l’année scolaire 2026–2027", actor: "Amine Benali", type: "employee" },
 ];
 
 export const importantAlerts = [
