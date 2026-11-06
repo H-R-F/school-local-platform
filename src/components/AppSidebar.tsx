@@ -1,100 +1,64 @@
-import { useMemo, useState } from "react";
-import {
-  ChevronDown, ChevronRight, Command, Search, PanelLeftClose,
-  PanelLeftOpen, School, Sparkles,
-} from "lucide-react";
-import { navigation, roleLabels } from "../data/navigation";
-import type { NavigationGroup, StaffRole } from "../types/navigation";
+import { useEffect, useMemo, useState } from "react";
+import type { CSSProperties } from "react";
+import { PanelLeftClose, PanelLeftOpen, Search } from "lucide-react";
+import { navigation } from "../data/navigation";
+import type { AuthenticatedSidebarUser, NavigationGroup, SchoolBranding } from "../types/navigation";
+import { SidebarBrand } from "./sidebar/SidebarBrand";
+import { SidebarGroup } from "./sidebar/SidebarGroup";
 
 interface AppSidebarProps {
-  role: StaffRole;
-  activeItem: string;
-  onNavigate: (label: string) => void;
+  user: AuthenticatedSidebarUser;
+  school: SchoolBranding;
+  currentPath?: string;
+  onNavigate?: (route: string) => void;
 }
-
-export function AppSidebar({ role, activeItem, onNavigate }: AppSidebarProps) {
-  const [collapsed, setCollapsed] = useState(false);
-  const [search, setSearch] = useState("");
-  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
-  const visibleGroups = useMemo<NavigationGroup[]>(() => navigation
-    .map((group) => ({
-      ...group,
-      items: group.items.filter((item) => item.roles.includes(role)
-        && item.label.toLowerCase().includes(search.toLowerCase())),
-    }))
-    .filter((group) => group.items.length > 0 && (!group.roles || group.roles.includes(role))),
-  [role, search]);
-
-  const toggleGroup = (label: string) => setOpenGroups((current) => ({
-    ...current,
-    [label]: !(current[label] ?? true),
-  }));
-
-  return (
-    <aside className={`sidebar ${collapsed ? "sidebar--collapsed" : ""}`}>
-      <div className="sidebar-brand">
-        <div className="brand-mark"><School size={19} strokeWidth={2.2} /></div>
-        {!collapsed && <div className="brand-copy"><span className="brand-name">Northstar</span><span className="brand-caption">SCHOOL WORKSPACE</span></div>}
-        <button className="icon-button collapse-button" aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"} onClick={() => setCollapsed(!collapsed)}>
-          {collapsed ? <PanelLeftOpen size={17} /> : <PanelLeftClose size={17} />}
-        </button>
-      </div>
-
-      {!collapsed && (
-        <div className="school-switcher">
-          <div className="school-avatar">N</div>
-          <div className="school-details"><strong>Northstar Academy</strong><span>Casablanca · Morocco</span></div>
-          <ChevronDown size={15} className="muted-icon" />
-        </div>
-      )}
-
-      {!collapsed && <div className="nav-search"><Search size={15} /><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search navigation..." /><kbd>⌘ K</kbd></div>}
-
-      <nav className="nav-scroll" aria-label="Main navigation">
-        {visibleGroups.map((group, index) => {
-          const isOpen = openGroups[group.label] ?? true;
-          const isOverview = group.label === "Overview";
-          return (
-            <section className={`nav-group ${isOverview ? "nav-group--overview" : ""}`} key={group.label}>
-              {!collapsed && !isOverview && (
-                <button className="nav-group-heading" onClick={() => toggleGroup(group.label)} aria-expanded={isOpen}>
-                  <span>{group.label}</span><ChevronDown size={13} className={isOpen ? "" : "chevron-closed"} />
-                </button>
-              )}
-              {(isOpen || collapsed || isOverview) && (
-                <div className="nav-items">
-                  {group.items.map((item) => {
-                    const Icon = item.icon;
-                    const active = activeItem === item.label;
-                    return (
-                      <button key={item.label} title={collapsed ? item.label : undefined} className={`nav-item ${active ? "nav-item--active" : ""}`} onClick={() => onNavigate(item.label)}>
-                        <Icon size={17} strokeWidth={active ? 2.1 : 1.8} />
-                        {!collapsed && <><span>{item.label}</span>{item.badge && <span className="nav-badge">{item.badge}</span>}</>}
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-              {!collapsed && index === 0 && <div className="nav-separator" />}
-            </section>
-          );
-        })}
-      </nav>
-
-      <div className="sidebar-bottom">
-        {!collapsed ? (
-          <>
-            <div className="help-card"><div className="help-icon"><Sparkles size={15} /></div><div><strong>Need a hand?</strong><span>Visit the help center</span></div><ChevronRight size={14} /></div>
-            <div className="profile-row">
-              <div className="profile-avatar">AB</div>
-              <div className="profile-copy"><strong>Admin Benali</strong><span>{roleLabels[role]}</span></div>
-              <button className="icon-button profile-menu" aria-label="Profile options"><Command size={16} /></button>
-            </div>
-          </>
-        ) : (
-          <div className="profile-avatar profile-avatar--center" title={roleLabels[role]}>AB</div>
-        )}
-      </div>
-    </aside>
-  );
+function normalizePath(path: string): string {
+  return path.length > 1 && path.endsWith("/") ? path.slice(0, -1) : path;
+}
+export function AppSidebar({user,school,currentPath,onNavigate}:AppSidebarProps) {
+  const [collapsed,setCollapsed]=useState(false);
+  const [search,setSearch]=useState("");
+  const path=normalizePath(currentPath ?? window.location.pathname);
+  const visibleGroups=useMemo<NavigationGroup[]>(()=>navigation.map(group=>({
+    ...group,
+    items:group.items.filter(item=>
+      item.roles.includes(user.role) &&
+      user.permissions.includes(item.permission) &&
+      item.label.toLocaleLowerCase().includes(search.trim().toLocaleLowerCase())
+    )
+  })).filter(group=>group.items.length>0),[user.role,user.permissions,search]);
+  const activeGroupId=visibleGroups.find(group=>group.items.some(item=>normalizePath(item.route)===path))?.id;
+  const [expandedGroups,setExpandedGroups]=useState<Record<string,boolean>>({});
+  useEffect(()=>{
+    if(!activeGroupId)return;
+    setExpandedGroups(current=>({...current,[activeGroupId]:true}));
+  },[activeGroupId]);
+  const toggleGroup=(id:string)=>setExpandedGroups(current=>({...current,[id]:!(current[id]??id===activeGroupId)}));
+  const cssVariables={
+    "--school-primary":school.primaryColor,
+    "--school-secondary":school.secondaryColor??"#edf3f9"
+  } as CSSProperties;
+  return <aside className={`sidebar ${collapsed?"sidebar--collapsed":""}`} style={cssVariables}>
+    <div className="sidebar-top">
+      <SidebarBrand school={school} collapsed={collapsed}/>
+      <button type="button" className="sidebar-collapse-button" onClick={()=>setCollapsed(value=>!value)}
+        aria-label={collapsed?"Expand sidebar":"Collapse sidebar"} title={collapsed?"Expand sidebar":"Collapse sidebar"}>
+        {collapsed?<PanelLeftOpen size={17}/>:<PanelLeftClose size={17}/>}
+      </button>
+    </div>
+    {!collapsed&&<div className="sidebar-search">
+      <Search size={15} aria-hidden="true"/>
+      <input type="search" value={search} onChange={event=>setSearch(event.target.value)} placeholder="Search navigation" aria-label="Search navigation"/>
+      {search&&<button type="button" onClick={()=>setSearch("")} aria-label="Clear search">×</button>}
+    </div>}
+    <nav className="nav-scroll" aria-label="School navigation">
+      {visibleGroups.map(group=><SidebarGroup key={group.id} group={group} activePath={path} collapsed={collapsed}
+        expanded={expandedGroups[group.id]??group.id===activeGroupId} onToggle={()=>toggleGroup(group.id)} onNavigate={onNavigate}/>)}
+      {visibleGroups.length===0&&!collapsed&&<p className="nav-empty">No matching pages available.</p>}
+    </nav>
+    <div className="sidebar-footer">
+      <div className="sidebar-user-avatar" title={user.displayName}>{user.initials}</div>
+      {!collapsed&&<div className="sidebar-user-copy"><strong>{user.displayName}</strong><span>{user.role==="finance"?"Finance & Logistics Manager":user.role==="administrative"?"Administrative Manager":user.role==="pedagogical"?"Pedagogical Manager":"Director"}</span></div>}
+    </div>
+  </aside>;
 }
