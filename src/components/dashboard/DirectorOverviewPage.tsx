@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import "./DirectorOverviewPage.css";
 import {
   Activity, AlertCircle, ArrowRight, ArrowUpRight, BadgeCheck,
   Banknote, BookOpenCheck, CalendarDays, ChevronDown, CircleAlert,
@@ -73,11 +74,19 @@ function DistributionDonut() {
 }
 
 function AttendanceChart({ range }: { range: DashboardRange }) {
-  const count = range === "7" ? 7 : range === "30" ? 7 : 7;
-  const rows = attendanceSeries.slice(-count);
+  const rows = range === "7" ? attendanceSeries.slice(-7) : range === "30" ? [
+    { label: "S1", present: 94, absent: 4, late: 2 },
+    { label: "S2", present: 93, absent: 5, late: 2 },
+    { label: "S3", present: 95, absent: 3, late: 2 },
+    { label: "S4", present: 94, absent: 4, late: 2 },
+  ] : [
+    { label: "Sept.", present: 93, absent: 5, late: 2 },
+    { label: "Oct.", present: 94, absent: 4, late: 2 },
+    { label: "Nov.", present: 95, absent: 3, late: 2 },
+  ];
   return <div className="dash-attendance-chart">
     <div className="dash-attendance-legend"><span><i className="is-present"/>Présents</span><span><i className="is-absent"/>Absents</span><span><i className="is-late"/>En retard</span></div>
-    <div className="dash-attendance-bars">{rows.map((row, index) => <div className="dash-attendance-column" key={`${row.label}-${index}`}>
+    <div className="dash-attendance-bars" style={{ gridTemplateColumns: `repeat(${rows.length}, minmax(0, 1fr))` }}>{rows.map((row, index) => <div className="dash-attendance-column" key={`${row.label}-${index}`}>
       <div className="dash-attendance-stack"><span className="is-present" style={{ height: `${row.present}%` }}/><span className="is-late" style={{ height: `${row.late}%` }}/><span className="is-absent" style={{ height: `${row.absent}%` }}/></div>
       <small>{row.label}</small>
     </div>)}</div>
