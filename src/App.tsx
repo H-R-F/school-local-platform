@@ -33,7 +33,7 @@ export default function App() {
 
   return (
     <div className="sidebar-demo">
-      <AppSidebar user={user} school={schoolBranding} onSignOut={handleSignOut} />
+      <AppSidebar user={user} school={schoolBranding} onExit={handleSignOut} />
       <main className="workspace-placeholder">
         <span className="workspace-eyebrow">STAFF WORKSPACE</span>
         <h1>Welcome, {user.displayName.split(" ")[0]}</h1>
