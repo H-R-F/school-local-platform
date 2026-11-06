@@ -66,6 +66,7 @@ export function ClassesGroupsPage({user,onNavigate}:Props){
  const[modal,setModal]=useState<Modal>(null);const[pending,setPending]=useState<Pending>(null);const[search,setSearch]=useState("");const[year,setYear]=useState("all");const[cycle,setCycle]=useState("all");const[sector,setSector]=useState("all");const[program,setProgram]=useState("all");const[level,setLevel]=useState("all");const[status,setStatus]=useState<StatusFilter>("Tous les statuts");const[sort,setSort]=useState<"asc"|"desc">("asc");const[page,setPage]=useState(1);const[pageSize,setPageSize]=useState(8);
  async function refresh(){setLoading(true);setLoadError("");try{setData(await classesGroupsRepository.list())}catch(e){setLoadError(e instanceof Error?e.message:"Une erreur est survenue.")}finally{setLoading(false)}}
  useEffect(()=>{void refresh()},[]);
+ useEffect(()=>{if(data&&year==="all"){const active=data.academicYears.find(y=>y.status==="Active");if(active)setYear(active.id)}},[data]);
  const sectors=data?.structure.sectors.filter(s=>cycle==="all"||s.cycle===cycle)??[];
  const programs=data?.structure.programs.filter(p=>(sector==="all"||p.sectorId===sector)&&(cycle==="all"||data?.structure.sectors.find(s=>s.id===p.sectorId)?.cycle===cycle))??[];
  const levels=data?.levels.filter(l=>(program==="all"||l.programId===program)&&(cycle==="all"||l.cycle===cycle)&&(sector==="all"||data.structure.programs.find(p=>p.id===l.programId)?.sectorId===sector))??[];
