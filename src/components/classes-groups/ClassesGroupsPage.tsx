@@ -69,7 +69,7 @@ export function ClassesGroupsPage({user,onNavigate}:Props){
  useEffect(()=>{if(data&&year==="all"){const active=data.academicYears.find(y=>y.status==="Active");if(active)setYear(active.id)}},[data]);
  const sectors=data?.structure.sectors.filter(s=>cycle==="all"||s.cycle===cycle)??[];
  const programs=data?.structure.programs.filter(p=>(sector==="all"||p.sectorId===sector)&&(cycle==="all"||data?.structure.sectors.find(s=>s.id===p.sectorId)?.cycle===cycle))??[];
- const levels=data?.levels.filter(l=>(program==="all"||l.programId===program)&&(cycle==="all"||l.cycle===cycle)&&(sector==="all"||data.structure.programs.find(p=>p.id===l.programId)?.sectorId===sector))??[];
+ const levels=data?.levels.filter(l=>(program==="all"||l.programId===program)&&(cycle==="all"||l.cycle===cycle)&&(sector==="all"||data?.structure.programs.find(p=>p.id===l.programId)?.sectorId===sector))??[];
  const filtered=useMemo(()=>{if(!data)return[];return data.classes.filter(c=>(year==="all"||c.academicYearId===year)&&(cycle==="all"||c.cycle===cycle)&&(sector==="all"||c.sectorId===sector)&&(program==="all"||c.programId===program)&&(level==="all"||c.levelId===level)&&(status==="Tous les statuts"||c.status===status)&&(!search||c.name.toLocaleLowerCase("fr-FR").includes(search.toLocaleLowerCase("fr-FR"))||c.code.toLocaleLowerCase("fr-FR").includes(search.toLocaleLowerCase("fr-FR")))).sort((a,b)=>sort==="asc"?a.name.localeCompare(b.name,"fr"):b.name.localeCompare(a.name,"fr"))},[data,year,cycle,sector,program,level,status,search,sort]);
  useEffect(()=>setPage(1),[search,year,cycle,sector,program,level,status,sort,pageSize]);
  useEffect(()=>{if(sector!=="all"&&!sectors.some(s=>s.id===sector))setSector("all")},[cycle,data]);
