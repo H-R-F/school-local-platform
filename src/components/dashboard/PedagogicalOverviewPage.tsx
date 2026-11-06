@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import "./RoleDashboards.css";
 import {
   Activity, ArrowRight, Award, BookOpen, CalendarDays, CheckCircle2,
   ClipboardCheck, Clock3, FileText, GraduationCap, Medal,
