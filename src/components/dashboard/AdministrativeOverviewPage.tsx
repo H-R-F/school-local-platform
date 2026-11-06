@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 import {
-  ArrowRight, BookOpen, BriefcaseBusiness, CalendarDays, CheckCircle2,
+  ArrowRight, BookOpen, BriefcaseBusiness, CalendarDays,
   ClipboardList, FileText, GraduationCap, LayoutDashboard, Plus, Search,
-  ShieldAlert, Users, UserRound, UserRoundCheck, X,
+  ShieldAlert, Users, UserRoundCheck,
 } from "lucide-react";
 import {
   administrativeActivities, administrativeAttendance, administrativeKpis,
@@ -14,7 +14,6 @@ import type { AuthenticatedSidebarUser, Permission } from "../../types/navigatio
 
 interface Props { user: AuthenticatedSidebarUser; onNavigate: (route: string) => void; }
 
-const numberFormat = new Intl.NumberFormat("fr-FR");
 const peopleTabs: { id: RegistrationKind | "Personnel"; label: string; key: keyof typeof peopleMetrics; icon: typeof Users }[] = [
   { id: "Élève", label: "Élèves", key: "students", icon: GraduationCap },
   { id: "Parent", label: "Parents", key: "parents", icon: Users },
