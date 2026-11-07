@@ -1,0 +1,39 @@
+.notif-page{min-height:100%;padding:26px 30px 42px;background:#f7f9fc;color:#172337;font-family:Inter,system-ui,sans-serif}
+.notif-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px}
+.notif-breadcrumb{display:flex;align-items:center;gap:8px;color:#758196;font-size:12px;margin-bottom:13px}
+.notif-breadcrumb strong{color:#344256}.notif-separator{color:#b2bbc7}
+.notif-header h1{font-size:27px;letter-spacing:-.6px;margin:0 0 5px;font-weight:750}
+.notif-header p{font-size:13px;color:#687589;margin:0}
+.notif-notice{display:flex;gap:12px;align-items:flex-start;border:1px solid #eadfbd;background:#fffaf0;border-radius:10px;padding:15px 17px;margin:18px 0 20px;color:#72551d}
+.notif-notice-icon{width:32px;height:32px;flex:none;display:grid;place-items:center;border-radius:8px;background:#f7edcf;color:#956c1c}
+.notif-notice strong{font-size:13px;color:#624a1d}.notif-notice p{font-size:12px;line-height:1.6;color:#806a3c;margin:5px 0 0;max-width:1050px}
+.notif-overview{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin:18px 0}
+.notif-overview-card{display:flex;align-items:flex-start;gap:12px;min-height:100px;padding:16px;background:#fff;border:1px solid #e5eaf1;border-radius:10px}
+.notif-card-icon{width:34px;height:34px;display:grid;place-items:center;flex:none;border-radius:8px;background:#f1f4f8;color:#66758b}
+.notif-overview-card>div{display:flex;flex-direction:column;gap:4px;min-width:0}
+.notif-overview-card span:not(.notif-card-icon){font-size:11px;color:#657287}
+.notif-overview-card strong{font-size:25px;line-height:1.1;color:#98a2b1;font-weight:650}
+.notif-overview-card small{font-size:10px;color:#98a2b1}
+.notif-panel,.notif-capabilities{background:#fff;border:1px solid #e5eaf1;border-radius:11px;overflow:hidden;margin-top:17px}
+.notif-panel-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:17px 19px;border-bottom:1px solid #e9edf3}
+.notif-panel-heading h2{font-size:14px;color:#27364b;margin:0 0 4px}
+.notif-panel-heading p{font-size:11px;color:#7a8799;margin:0}
+.notif-readonly{display:inline-flex;align-items:center;gap:6px;padding:6px 9px;border-radius:6px;background:#f1f3f6;color:#6e7a8b;font-size:10px;font-weight:650;white-space:nowrap}
+.notif-empty{min-height:245px;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:30px 22px}
+.notif-empty-icon{width:48px;height:48px;border-radius:14px;background:#f1f4f8;color:#8793a5;display:grid;place-items:center;margin-bottom:13px}
+.notif-empty strong{font-size:13px;color:#39475b}
+.notif-empty p{max-width:620px;font-size:11px;line-height:1.65;color:#8290a2;margin:8px 0 0}
+.notif-capability-list{padding:2px 19px}
+.notif-capability-list article{display:flex;align-items:center;gap:18px;padding:14px 0;border-bottom:1px solid #eef1f5}
+.notif-capability-list article:last-child{border-bottom:0}
+.notif-capability-state{display:inline-flex;align-items:center;gap:6px;min-width:145px;color:#8b6870;font-size:10px;font-weight:650}
+.notif-capability-list article>div strong{font-size:11px;color:#39475b}
+.notif-capability-list article>div p{font-size:10px;color:#8792a2;margin:4px 0 0}
+.notif-footnote{display:flex;gap:9px;align-items:flex-start;margin-top:17px;padding:12px 14px;border:1px solid #e5eaf1;border-radius:8px;background:#fbfcfe}
+.notif-footnote-mark{color:#7c8da4;flex:none;margin-top:1px}
+.notif-footnote p{font-size:10px;line-height:1.55;color:#7c899b;margin:0}
+.notif-footnote strong{color:#536176}
+.notif-denied{max-width:520px;margin:100px auto;text-align:center;color:#78869a}
+.notif-denied h1{font-size:22px;color:#26364c}.notif-denied p{font-size:13px}
+@media(max-width:1100px){.notif-page{padding:20px}.notif-overview{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.notif-header{flex-direction:column;gap:12px}.notif-overview{grid-template-columns:1fr 1fr}.notif-panel-heading{align-items:flex-start;flex-direction:column}.notif-capability-list article{align-items:flex-start;flex-direction:column;gap:7px}}
