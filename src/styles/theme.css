@@ -1,0 +1,144 @@
+/* ==========================================================================
+   Design tokens — the single source of truth for the visual style.
+   Components must use these variables; never hardcode colors, sizes,
+   radii, shadows or durations. Old --app-* names are kept as aliases at the
+   bottom so existing rules keep working.
+   ========================================================================== */
+:root {
+  color-scheme: light;
+
+  /* ---- Brand colors ---- */
+  --color-primary: #1D4ED8;
+  --color-primary-hover: color-mix(in srgb, var(--color-primary) 90%, black);   /* darker 10% */
+  --color-primary-active: color-mix(in srgb, var(--color-primary) 80%, black);  /* darker 20% */
+  --color-primary-soft: #EAF1FF;          /* tinted background for selected / active items */
+  --color-on-primary: #FFFFFF;
+  --color-secondary: #0F766E;
+  --color-secondary-hover: color-mix(in srgb, var(--color-secondary) 90%, black);
+  --color-secondary-active: color-mix(in srgb, var(--color-secondary) 80%, black);
+  --color-secondary-soft: #E6F4F2;
+
+  /* ---- Status colors ----
+     Base value = fills, dots, borders, icons.
+     -strong    = text and solid buttons (meets 4.5:1 on white).
+     -bg        = tinted backgrounds for badges and alerts. */
+  --color-success: #22C55E;
+  --color-success-strong: #15803D;
+  --color-success-bg: #E8F7EE;
+  --color-warning: #F59E0B;
+  --color-warning-strong: #B45309;
+  --color-warning-bg: #FEF3E2;
+  --color-danger: #EF4444;
+  --color-danger-strong: #B91C1C;
+  --color-danger-bg: #FDEBEB;
+  --color-info: #3B82F6;
+  --color-info-strong: #1D4ED8;
+  --color-info-bg: #E8F0FE;
+  --color-neutral: #6B7280;
+  --color-neutral-strong: #475569;
+  --color-neutral-bg: #F0F1F3;
+
+  /* ---- Surfaces, text, borders ---- */
+  --color-bg: #F5F7FA;
+  --color-surface: #FFFFFF;
+  --color-surface-muted: #F0F3F8;
+  --color-text: #1F2A3D;
+  --color-text-secondary: #566378;
+  --color-text-disabled: #667389;
+  --color-border: #E1E6EF;
+  --color-border-strong: #C7D0DE;
+  --color-focus: #60A5FA;
+  --color-overlay: rgb(15 23 42 / .45);
+
+  /* ---- Sidebar (dark navigation) ---- */
+  --color-sidebar: #0B1B3A;
+  --color-sidebar-border: #203456;
+  --color-sidebar-text: #B8C4DC;
+  --color-sidebar-muted: #9EADC7;
+  --color-sidebar-active: #16306A;
+  --color-sidebar-hover: rgb(255 255 255 / .06);
+
+  /* ---- Typography ---- */
+  --font-sans: "Inter Variable", Inter, "IBM Plex Sans Arabic", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-arabic: "IBM Plex Sans Arabic", "Inter Variable", Inter, "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-lg: 18px;
+  --text-xl: 20px;
+  --text-2xl: 24px;
+  --text-3xl: 30px;
+  --weight-normal: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --leading-body: 1.5;
+  --leading-heading: 1.2;
+
+  /* ---- Spacing scale ---- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  /* ---- Radius ---- */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+
+  /* ---- Shadows (soft, low opacity) ---- */
+  --shadow-sm: 0 1px 2px rgb(15 23 42 / .06);
+  --shadow-md: 0 4px 12px rgb(15 23 42 / .08);
+  --shadow-lg: 0 16px 40px rgb(15 23 42 / .16);
+  --ring: 0 0 0 3px color-mix(in srgb, var(--color-primary) 22%, transparent);
+  --ring-danger: 0 0 0 3px color-mix(in srgb, var(--color-danger) 22%, transparent);
+
+  /* ---- Motion ---- */
+  --duration: 150ms;
+  --ease: ease-in-out;
+
+  /* ---- Control sizes (buttons, inputs) ---- */
+  --control-sm: 32px;
+  --control-md: 40px;
+  --control-lg: 48px;
+
+  /* ---- Legacy aliases (do not use in new code) ---- */
+  --app-primary: var(--color-primary);
+  --app-primary-hover: var(--color-primary-hover);
+  --app-primary-pressed: var(--color-primary-active);
+  --app-primary-soft: var(--color-primary-soft);
+  --app-teal: var(--color-secondary);
+  --app-gold: var(--color-warning);
+  --app-bg: var(--color-bg);
+  --app-surface: var(--color-surface);
+  --app-surface-subtle: var(--color-surface-muted);
+  --app-border: var(--color-border);
+  --app-border-strong: var(--color-border-strong);
+  --app-text: var(--color-text);
+  --app-muted: var(--color-text-secondary);
+  --app-disabled: var(--color-text-disabled);
+  --app-sidebar: var(--color-sidebar);
+  --app-sidebar-text: var(--color-sidebar-text);
+  --app-sidebar-active: var(--color-sidebar-active);
+  --app-focus: var(--color-focus);
+  --app-success: var(--color-success-strong);
+  --app-success-bg: var(--color-success-bg);
+  --app-warning: var(--color-warning-strong);
+  --app-warning-bg: var(--color-warning-bg);
+  --app-danger: var(--color-danger-strong);
+  --app-danger-bg: var(--color-danger-bg);
+  --app-info: var(--color-info-strong);
+  --app-info-bg: var(--color-info-bg);
+  --app-neutral: var(--color-neutral);
+  --app-neutral-bg: var(--color-neutral-bg);
+  --app-radius-card: var(--radius-md);
+  --app-radius-control: var(--radius-md);
+  --app-shadow-card: var(--shadow-sm);
+  --app-shadow-overlay: var(--shadow-lg);
+}
