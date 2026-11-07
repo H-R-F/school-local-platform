@@ -12,7 +12,7 @@ import "./AccidentsIncidentsPage.css";
 
 interface Props { user: AuthenticatedSidebarUser }
 type IncidentStatus = "À examiner" | "En suivi" | "Clôturé";
-type PersonCategory = "Élève" | "Enseignant" | "Employé" | "Visiteur";
+type PersonCategory = "Élève" | "Enseignant" | "Employé";
 type PersonRole = "Personne concernée" | "Témoin" | "Déclarant" | "Intervenant";
 type IncidentPerson = { id: string; name: string; category: PersonCategory; role: PersonRole; reference?: string; className?: string };
 type FollowUp = { id: string; note: string; actor: string; createdAt: string; kind: "Note" | "Statut" | "Affectation" };
@@ -28,7 +28,6 @@ type FormState = {
   date: string; time: string; category: string; location: string; description: string;
   circumstances: string; immediateActions: string; responsibleId: string;
   selectedPersonId: string; selectedPersonCategory: PersonCategory; selectedPersonRole: PersonRole;
-  visitorName: string; visitorRole: PersonRole;
 };
 const STORAGE_KEY = "school-platform-incident-demo-v1";
 const INCIDENT_CATEGORIES = [
@@ -74,7 +73,7 @@ const emptyForm = (): FormState => ({
   date: new Date().toISOString().slice(0, 10), time: new Date().toTimeString().slice(0, 5),
   category: INCIDENT_CATEGORIES[0], location: "", description: "", circumstances: "",
   immediateActions: "", responsibleId: "", selectedPersonId: "", selectedPersonCategory: "Élève",
-  selectedPersonRole: "Personne concernée", visitorName: "", visitorRole: "Témoin"
+  selectedPersonRole: "Personne concernée"
 });
 function readIncidents(): IncidentRecord[] {
   try {
@@ -192,7 +191,6 @@ export function AccidentsIncidentsPage({ user }: Props) {
     if (!form.date || !form.time || !form.location.trim() || !form.description.trim()) {
       setError("Renseignez la date, l'heure, le lieu et la description des faits."); return;
     }
-    if (formPeople.length === 0) { setError("Ajoutez au moins une personne concernée ou un témoin."); return; }
     if (form.date > new Date().toISOString().slice(0, 10)) { setError("La date de l'incident ne peut pas être dans le futur."); return; }
     setSaving(true); setError("");
     try {
@@ -275,7 +273,7 @@ export function AccidentsIncidentsPage({ user }: Props) {
           <label><span>Du</span><input type="date" value={dateFrom} onChange={e=>{setDateFrom(e.target.value);setPage(1);}}/></label>
           <label><span>Au</span><input type="date" value={dateTo} onChange={e=>{setDateTo(e.target.value);setPage(1);}}/></label>
           <label><span>Catégorie</span><select value={categoryFilter} onChange={e=>{setCategoryFilter(e.target.value);setPage(1);}}><option value="all">Toutes</option>{[...new Set(incidents.map(i=>i.category))].map(v=><option key={v}>{v}</option>)}</select></label>
-          <label><span>Personne</span><select value={personFilter} onChange={e=>{setPersonFilter(e.target.value);setPage(1);}}><option value="all">Toutes</option>{["Élève","Enseignant","Employé","Visiteur"].map(v=><option key={v}>{v}</option>)}</select></label>
+          <label><span>Personne</span><select value={personFilter} onChange={e=>{setPersonFilter(e.target.value);setPage(1);}}><option value="all">Toutes</option>{["Élève","Enseignant","Employé"].map(v=><option key={v}>{v}</option>)}</select></label>
           <label><span>Lieu</span><select value={locationFilter} onChange={e=>{setLocationFilter(e.target.value);setPage(1);}}><option value="all">Tous</option>{locations.map(v=><option key={v}>{v}</option>)}</select></label>
           <label><span>Suivi</span><select value={statusFilter} onChange={e=>{setStatusFilter(e.target.value);setPage(1);}}><option value="all">Tous</option>{STATUS_OPTIONS.map(v=><option key={v}>{v}</option>)}</select></label>
           <label><span>Responsable</span><select value={responsibleFilter} onChange={e=>{setResponsibleFilter(e.target.value);setPage(1);}}><option value="all">Tous</option>{responsibles.map(v=><option key={v.id} value={v.id}>{v.name}</option>)}</select></label>
@@ -284,7 +282,7 @@ export function AccidentsIncidentsPage({ user }: Props) {
         <div className="ai-table-wrap"><table className="ai-table"><thead><tr><th>Référence</th><th>Date et heure</th><th>Type d'incident</th><th>Personne(s)</th><th>Lieu</th><th>Responsable</th><th>Statut</th><th></th></tr></thead><tbody>
           {visible.map(item=><tr key={item.id} onClick={()=>{setSelectedId(item.id);setDetailTab("Résumé");setNewStatus(item.status);setNewResponsible("");}} className={selectedId===item.id?"is-selected":""}>
             <td><strong>{item.id}</strong><small>{responsibleLabel(item.createdBy)}</small></td><td>{formatDate(item.occurredAt,true)}</td><td>{item.category}</td>
-            <td><strong>{item.people.length===1?personLabel(item.people[0]):item.people.length+" personnes"}</strong><small>{[...new Set(item.people.map(p=>p.category))].join(", ")}</small></td>
+            <td><strong>{item.people.length===0?"Aucune personne renseignée":item.people.length===1?personLabel(item.people[0]):item.people.length+" personnes"}</strong><small>{[...new Set(item.people.map(p=>p.category))].join(", ")}</small></td>
             <td><span className="ai-location"><MapPin size={12}/>{item.location}</span></td><td>{item.responsibleName}</td>
             <td><span className={"ai-status "+statusClass(item.status)}>{item.status}</span></td>
             <td><button className="ai-icon-btn" aria-label="Consulter l'incident" onClick={e=>{e.stopPropagation();setSelectedId(item.id);setDetailTab("Résumé");setNewStatus(item.status);}}><Eye size={15}/></button></td>
@@ -314,9 +312,9 @@ export function AccidentsIncidentsPage({ user }: Props) {
             <label><span>Catégorie</span><select value={form.selectedPersonCategory} onChange={e=>updateForm("selectedPersonCategory",e.target.value as PersonCategory)}>{["Élève","Enseignant","Employé","Visiteur"].map(v=><option key={v}>{v}</option>)}</select></label>
             <label><span>Rôle</span><select value={form.selectedPersonRole} onChange={e=>updateForm("selectedPersonRole",e.target.value as PersonRole)}>{["Personne concernée","Témoin","Déclarant","Intervenant"].map(v=><option key={v}>{v}</option>)}</select></label>
             {form.selectedPersonCategory==="Visiteur"?<label className="ai-wide"><span>Nom du visiteur</span><input value={form.visitorName} onChange={e=>updateForm("visitorName",e.target.value)} placeholder="Nom communiqué"/></label>:<label className="ai-wide"><span>Personne existante</span><select value={form.selectedPersonId} onChange={e=>updateForm("selectedPersonId",e.target.value)}><option value="">Sélectionner…</option>{(form.selectedPersonCategory==="Élève"?students.map(s=>({id:s.id,name:personName(s)+" · "+s.className})):staff.filter(s=>s.category===form.selectedPersonCategory).map(s=>({id:s.id,name:s.name}))).map(p=><option key={p.id} value={p.id}>{p.name}</option>)}</select></label>}
-            <div className="ai-wide"><button className="ai-btn ai-btn--secondary" type="button" onClick={()=>{if(form.selectedPersonCategory==="Visiteur"){if(!form.visitorName.trim()){setError("Renseignez le nom du visiteur.");return;}const p:IncidentPerson={id:"VIS-"+Date.now(),name:form.visitorName.trim(),category:"Visiteur",role:form.selectedPersonRole};if(formPeople.some(x=>x.id===p.id||(x.category==="Visiteur"&&p.category==="Visiteur"&&x.name.toLocaleLowerCase("fr-FR")===p.name.toLocaleLowerCase("fr-FR")))){setError("Cette personne est déjà associée.");return;}setFormPeople(old=>[...old,p]);updateForm("visitorName","");}else{const id=form.selectedPersonId;if(!id){setError("Sélectionnez une personne.");return;}const student=students.find(s=>s.id===id);const member=staff.find(s=>s.id===id);const p:IncidentPerson=student?{id,name:personName(student),category:"Élève",role:form.selectedPersonRole,reference:student.code,className:student.className}:member?{id,name:member.name,category:member.category,role:form.selectedPersonRole,reference:id}:null as never;if(!p){setError("Cette personne n'est pas accessible.");return;}if(formPeople.some(x=>x.id===p.id)){setError("Cette personne est déjà associée à l'incident.");return;}setFormPeople(old=>[...old,p]);updateForm("selectedPersonId","");}setError("");}}><UserPlus size={14}/>Ajouter la personne</button></div>
+            <div className="ai-wide"><button className="ai-btn ai-btn--secondary" type="button" onClick={()=>{const id=form.selectedPersonId;if(!id){setError("Sélectionnez une personne.");return;}const student=students.find(s=>s.id===id);const member=staff.find(s=>s.id===id);const p=student?{id,name:personName(student),category:"Élève" as const,role:form.selectedPersonRole,reference:student.code,className:student.className}:member?{id,name:member.name,category:member.category,role:form.selectedPersonRole,reference:id}:null;if(!p){setError("Cette personne n'est pas accessible.");return;}if(formPeople.some(x=>x.id===p.id)){setError("Cette personne est déjà associée à l'incident.");return;}setFormPeople(old=>[...old,p]);updateForm("selectedPersonId","");setError("");}}><UserPlus size={14}/>Ajouter la personne</button></div>
           </div>
-          <div className="ai-person-chips">{formPeople.length?formPeople.map(p=><span key={p.id}><strong>{p.name}</strong><small>{p.category} · {p.role}</small><button onClick={()=>setFormPeople(old=>old.filter(x=>x.id!==p.id))}><X size={12}/></button></span>):<p>Aucune personne ajoutée pour le moment.</p>}</div></div>
+          <div className="ai-person-chips">{formPeople.length?formPeople.map(p=><span key={p.id}><strong>{p.name}</strong><small>{p.category} · {p.role}</small><button onClick={()=>setFormPeople(old=>old.filter(x=>x.id!==p.id))}><X size={12}/></button></span>):<p>Aucune personne ajoutée (facultatif selon la nature de l’incident).</p>}</div></div>
           <div className="ai-form-section"><h3>Mesures immédiates rapportées</h3><label className="ai-full"><span>Actions effectivement réalisées</span><textarea rows={3} value={form.immediateActions} onChange={e=>updateForm("immediateActions",e.target.value)} placeholder="Indiquez uniquement les actions qui ont réellement été effectuées…"/></label></div>
           <div className="ai-form-section"><h3>Suivi</h3><label className="ai-full"><span>Responsable du suivi</span><select value={form.responsibleId} onChange={e=>updateForm("responsibleId",e.target.value)}><option value="">Non affecté</option>{staff.map(s=><option key={s.id} value={s.id}>{s.name} · {s.category}</option>)}</select></label></div>
           <div className="ai-inline-note"><Info size={14}/>Les champs médicaux détaillés, pièces jointes et communications parentales ne sont pas disponibles : aucune autorisation dédiée ni aucun service sécurisé correspondant n'a été identifié.</div>
@@ -330,7 +328,7 @@ export function AccidentsIncidentsPage({ user }: Props) {
         <div className="ai-drawer-body">
           {detailTab==="Résumé"&&<><div className="ai-detail-facts"><div><small>Date et heure</small><strong>{formatDate(selected.occurredAt,true)}</strong></div><div><small>Type</small><strong>{selected.category}</strong></div><div><small>Lieu</small><strong>{selected.location}</strong></div><div><small>Responsable</small><strong>{responsibleLabel(selected.responsibleName)}</strong></div></div>
             <section><h3>Description des faits</h3><p>{selected.description}</p>{selected.circumstances&&<><h3>Circonstances rapportées</h3><p>{selected.circumstances}</p></>}</section>
-            <section><h3>Personnes impliquées ({selected.people.length})</h3>{selected.people.map(p=><div className="ai-detail-person" key={p.id}><Users size={15}/><div><strong>{personLabel(p)}</strong><span>{p.category} · {p.role}{personLabel(p)!=="Identité restreinte"&&p.className?" · "+p.className:""}</span><small>{personLabel(p)==="Identité restreinte"?"Référence masquée":p.reference??"Référence non disponible"}</small></div></div>)}</section>
+            <section><h3>Personnes impliquées ({selected.people.length})</h3>{selected.people.length===0?<p>Aucune personne associée à ce dossier.</p>:selected.people.map(p=><div className="ai-detail-person" key={p.id}><Users size={15}/><div><strong>{personLabel(p)}</strong><span>{p.category} · {p.role}{personLabel(p)!=="Identité restreinte"&&p.className?" · "+p.className:""}</span><small>{personLabel(p)==="Identité restreinte"?"Référence masquée":p.reference??"Référence non disponible"}</small></div></div>)}</section>
             <section><h3>Mesures immédiates rapportées</h3><p>{selected.immediateActions||"Aucune mesure renseignée."}</p></section>
             <section className="ai-muted-section"><h3>Documents joints</h3><p>Le service de stockage documentaire n'est pas connecté.</p></section>
             <section className="ai-muted-section"><h3>Communications</h3><p>Aucune communication parentale ou notification n'est enregistrée par cette démonstration.</p></section>
