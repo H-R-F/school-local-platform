@@ -19,6 +19,7 @@ import { RolesPermissionsPage } from "./components/roles-permissions/RolesPermis
 import { GradesValidationPage } from "./components/grades-validation/GradesValidationPage";
 import { ExaminationsPage } from "./components/examinations/ExaminationsPage";
 import { CoursesExercisesPage } from "./components/courses-exercises/CoursesExercisesPage";
+import { PedagogicalReportsPage } from "./components/pedagogical-reports/PedagogicalReportsPage";
 import { schoolBranding } from "./config/school";
 import { getDemoStaffById } from "./data/demo-accounts";
 import type { AuthenticatedSidebarUser } from "./types/navigation";
@@ -81,6 +82,7 @@ export default function App() {
   const isGradesValidationPage = currentPath === "/grades-validation";
   const isExaminationsPage = currentPath === "/examinations";
   const isCoursesExercisesPage = currentPath === "/courses-exercises";
+  const isPedagogicalReportsPage = currentPath === "/pedagogical-reports";
 
   return (
     <div className="sidebar-demo">
@@ -121,6 +123,8 @@ export default function App() {
         <ExaminationsPage user={user} onNavigate={navigate} />
       ) : isCoursesExercisesPage ? (
         <CoursesExercisesPage user={user} onNavigate={navigate} />
+      ) : isPedagogicalReportsPage ? (
+        <PedagogicalReportsPage user={user} onNavigate={navigate} />
       ) : (
         <main className="workspace-placeholder">
           <span className="workspace-eyebrow">ESPACE DU PERSONNEL</span>
