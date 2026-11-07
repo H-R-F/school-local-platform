@@ -5,7 +5,7 @@ import type { AuthenticatedSidebarUser } from "../../types/navigation";
 import "./StudentBalancesPage.css";
 
 interface Props { user: AuthenticatedSidebarUser }
-type Situation = "À jour" | "Paiement partiel" | "En retard" | "Solde impayé" | "Crédit disponible";
+type Situation = "À jour" | "Paiement partiel" | "En retard" | "Solde impayé";
 type Fee = { id:string; name:string; description:string; billed:number; paid:number; dueDate:string };
 type Payment = { id:string; receipt:string|null; studentId:string; date:string; amount:number; method:string; fee:string; status:"Confirmé"|"En attente"|"Annulé"|"Remboursé" };
 type Service = { id:string; name:string; assignedAt:string; period:string; status:"Actif"|"Suspendu"|"Terminé"; fee:number };
@@ -38,11 +38,11 @@ function makeAccount(student:StudentRecord,index:number):Account {
  const confirmed=payment.status==="Confirmé"?payment.amount:0;
  const fees=base.map((f,i)=>({...f,paid:f.paid+(i===index%feeNames.length?confirmed:0)}));
  const billed=fees.reduce((n,f)=>n+f.billed,0),paid=fees.reduce((n,f)=>n+f.paid,0),outstanding=billed-paid;
- const situation:Situation=outstanding<0?"Crédit disponible":outstanding===0?"À jour":paid===0?"Solde impayé":outstanding>0&&"2026-10-31"<"2026-11-07"?"En retard":"Paiement partiel";
+ const situation:Situation=outstanding===0?"À jour":paid===0?"Solde impayé":"2026-10-31"<"2026-11-07"?"En retard":"Paiement partiel";
  const studentServices=services[index%services.length];
  return {student,fees,payments:[payment],services:studentServices,billed,paid,outstanding,activeServices:studentServices.filter(s=>s.status==="Actif").length,situation};
 }
-function statusClass(s:Situation){return s==="À jour"?"good":s==="Crédit disponible"?"credit":s==="Paiement partiel"?"partial":"late";}
+function statusClass(s:Situation){return s==="À jour"?"good":s==="Paiement partiel"?"partial":"late";}
 function initials(s:StudentRecord){return (s.firstName.slice(0,1)+s.lastName.slice(0,1)).toLocaleUpperCase("fr-FR");}
 
 export function StudentBalancesPage({user}:Props){
@@ -84,7 +84,7 @@ export function StudentBalancesPage({user}:Props){
     <select value={classId} onChange={e=>{setClassId(e.target.value);setPage(1);}}><option value="all">Toutes les classes</option>{classes.map(([id,name])=><option key={id} value={id}>{name}</option>)}</select>
     <select value={fee} onChange={e=>{setFee(e.target.value);setPage(1);}}><option value="all">Tous les frais</option>{feeNames.map(x=><option key={x}>{x}</option>)}</select>
     <select value={service} onChange={e=>{setService(e.target.value);setPage(1);}}><option value="all">Tous les services</option>{["Transport scolaire","Restauration scolaire","Club de programmation"].map(x=><option key={x}>{x}</option>)}</select>
-    <select value={situation} onChange={e=>{setSituation(e.target.value);setPage(1);}}><option value="all">Toutes les situations</option>{(["À jour","Paiement partiel","En retard","Solde impayé","Crédit disponible"] as Situation[]).map(x=><option key={x}>{x}</option>)}</select>
+    <select value={situation} onChange={e=>{setSituation(e.target.value);setPage(1);}}><option value="all">Toutes les situations</option>{(["À jour","Paiement partiel","En retard","Solde impayé"] as Situation[]).map(x=><option key={x}>{x}</option>)}</select>
     <button className="sb-clear" onClick={clear}><FilterX size={13}/> Réinitialiser</button>
    </div>
    <div className="sb-table-wrap">{loading?<div className="sb-loading"><span/><span/><span/><span/></div>:error?<div className="sb-empty"><AlertCircle size={22}/><strong>Chargement impossible</strong><p>{error}</p></div>:visible.length===0?<div className="sb-empty"><Search size={22}/><strong>Aucun élève trouvé</strong><p>Aucun compte ne correspond aux filtres sélectionnés.</p><button onClick={clear}>Effacer les filtres</button></div>:<table className="sb-table"><thead><tr><th>Élève</th><th>Référence</th><th>Classe / Groupe</th><th><button onClick={()=>setSort("billed")}>Total facturé (DH)</button></th><th><button onClick={()=>setSort("outstanding")}>Total payé (DH) / Reste dû</button></th><th>Services actifs</th><th>Situation</th><th>Action</th></tr></thead><tbody>{visible.map(a=><tr key={a.student.id} onClick={()=>open(a.student.id)}><td><div className="sb-student"><span>{initials(a.student)}</span><strong>{a.student.firstName} {a.student.lastName}</strong></div></td><td className="sb-ref">{a.student.code}</td><td>{a.student.className}<small>{a.student.groupName!=="—"?a.student.groupName:"Sans groupe"}</small></td><td className="sb-money">{money(a.billed)}</td><td><strong className="sb-money">{money(a.paid)}</strong><small className="sb-outstanding">{money(Math.max(0,a.outstanding))} restant</small></td><td><span className="sb-service-count">{a.activeServices} service{a.activeServices>1?"s":""}</span></td><td><span className={"sb-status "+statusClass(a.situation)}>{a.situation}</span></td><td><button className="sb-view" onClick={e=>{e.stopPropagation();open(a.student.id);}}>Consulter <ChevronRight size={13}/></button></td></tr>)}</tbody></table>}</div>
