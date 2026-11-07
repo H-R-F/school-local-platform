@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Activity, CalendarDays, ChevronLeft, ChevronRight, Download, Eye, Filter, RefreshCw, Search, ShieldCheck, X } from "lucide-react";
+import { Activity, CalendarDays, ChevronLeft, ChevronRight, Download, Eye, Filter, RefreshCw, Search, ShieldCheck, Users, X } from "lucide-react";
 import type { AuthenticatedSidebarUser } from "../../types/navigation";
 import "./ActivityHistoryPage.css";
 
