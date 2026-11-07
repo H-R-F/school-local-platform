@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { Activity, AlertCircle, ArrowUpRight, BarChart3, CheckCircle2, ChevronRight, Download, FileBarChart, Filter, GraduationCap, RefreshCw, Search, ShieldAlert, Users, Wallet, X } from "lucide-react";
 import type { AuthenticatedSidebarUser, Permission } from "../../types/navigation";
-import { schoolBranding } from "../../config/school";
 import "./ReportsAnalyticsPage.css";
 interface Props { user:AuthenticatedSidebarUser; onNavigate:(route:string)=>void }
 type Category="Académique"|"Vie scolaire"|"Ressources humaines"|"Finances"|"Logistique"|"Communication";
