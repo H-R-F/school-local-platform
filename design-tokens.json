@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "School Local Platform Design Tokens",
+  "version": "1.0.0",
+  "color": {
+    "light": {
+      "surface": {
+        "default": "#F8FAFC",
+        "raised": "#FFFFFF",
+        "sunken": "#F1F5F9"
+      },
+      "text": {
+        "primary": "#0F172A",
+        "secondary": "#475569",
+        "tertiary": "#94A3B8"
+      },
+      "border": {
+        "default": "#E2E8F0",
+        "strong": "#CBD5E1"
+      },
+      "action": {
+        "primary": "#4F46E5",
+        "hover": "#4338CA",
+        "pressed": "#3730A3",
+        "subtle": "#E0E7FF"
+      },
+      "semantic": {
+        "success": "#16A34A",
+        "successSubtle": "#DCFCE7",
+        "warning": "#D97706",
+        "warningSubtle": "#FEF3C7",
+        "error": "#DC2626",
+        "errorSubtle": "#FEE2E2",
+        "info": "#2563EB",
+        "infoSubtle": "#DBEAFE"
+      }
+    },
+    "dark": {
+      "surface": {
+        "default": "#0F1117",
+        "raised": "#1A1D27",
+        "sunken": "#080A0F"
+      },
+      "text": {
+        "primary": "#F1F5F9",
+        "secondary": "#94A3B8",
+        "tertiary": "#64748B"
+      },
+      "border": {
+        "default": "#2D3142",
+        "strong": "#41465A"
+      }
+    }
+  },
+  "typography": {
+    "sans": "Inter, Geist, system-ui, sans-serif",
+    "mono": "JetBrains Mono, Geist Mono, ui-monospace, monospace",
+    "display": {
+      "size": 32,
+      "lineHeight": 40
+    },
+    "h1": {
+      "size": 24,
+      "lineHeight": 32
+    },
+    "h2": {
+      "size": 20,
+      "lineHeight": 28
+    },
+    "bodyDesktop": {
+      "size": 14,
+      "lineHeight": 21
+    },
+    "bodyMobile": {
+      "size": 16,
+      "lineHeight": 24
+    },
+    "small": {
+      "size": 12,
+      "lineHeight": 18
+    },
+    "weights": {
+      "regular": 400,
+      "medium": 500,
+      "semibold": 600
+    }
+  },
+  "spacing": {
+    "base": 4,
+    "scale": [
+      4,
+      8,
+      12,
+      16,
+      20,
+      24,
+      32,
+      40,
+      48,
+      64
+    ]
+  },
+  "radius": {
+    "sm": 4,
+    "md": 6,
+    "lg": 8,
+    "xl": 12
+  },
+  "shadows": {
+    "sm": "0 1px 2px rgba(15,23,42,0.06)",
+    "md": "0 2px 4px rgba(15,23,42,0.08)",
+    "lg": "0 4px 8px rgba(15,23,42,0.10)"
+  },
+  "layout": {
+    "desktop": {
+      "sidebarWidth": [
+        240,
+        260
+      ],
+      "sidebarCollapsed": 64,
+      "headerHeight": [
+        56,
+        64
+      ],
+      "tableRowHeight": [
+        40,
+        44
+      ]
+    },
+    "mobile": {
+      "bottomTabs": [
+        4,
+        5
+      ],
+      "minimumTouchTarget": 44
+    }
+  }
+}

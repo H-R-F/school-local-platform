@@ -1,0 +1,129 @@
+/* School Local Platform — canonical cross-surface design tokens.
+   Components should consume these variables; legacy aliases are maintained in design-system.css. */
+:root {
+  color-scheme: light;
+  --ds-color-surface-default:#F8FAFC;
+  --ds-color-surface-raised:#FFFFFF;
+  --ds-color-surface-sunken:#F1F5F9;
+  --ds-color-text-primary:#0F172A;
+  --ds-color-text-secondary:#475569;
+  --ds-color-text-tertiary:#94A3B8;
+  --ds-color-border-default:#E2E8F0;
+  --ds-color-border-strong:#CBD5E1;
+  --ds-color-action-primary:#4F46E5;
+  --ds-color-action-primary-hover:#4338CA;
+  --ds-color-action-primary-pressed:#3730A3;
+  --ds-color-action-subtle:#E0E7FF;
+  --ds-color-accent:#0F766E;
+  --ds-color-success:#16A34A;
+  --ds-color-success-subtle:#DCFCE7;
+  --ds-color-warning:#D97706;
+  --ds-color-warning-subtle:#FEF3C7;
+  --ds-color-error:#DC2626;
+  --ds-color-error-subtle:#FEE2E2;
+  --ds-color-info:#2563EB;
+  --ds-color-info-subtle:#DBEAFE;
+  --ds-font-sans:"Inter","Geist",system-ui,sans-serif;
+  --ds-font-mono:"JetBrains Mono","Geist Mono",ui-monospace,monospace;
+  --ds-font-display:32px;
+  --ds-line-display:40px;
+  --ds-font-h1:24px;
+  --ds-line-h1:32px;
+  --ds-font-h2:20px;
+  --ds-line-h2:28px;
+  --ds-font-body-desktop:14px;
+  --ds-line-body-desktop:21px;
+  --ds-font-body-mobile:16px;
+  --ds-line-body-mobile:24px;
+  --ds-font-small:12px;
+  --ds-line-small:18px;
+  --ds-weight-regular:400;
+  --ds-weight-medium:500;
+  --ds-weight-semibold:600;
+  --ds-line-height-body:1.5;
+  --ds-line-height-heading:1.25;
+  --ds-space-1:4px;
+  --ds-space-2:8px;
+  --ds-space-3:12px;
+  --ds-space-4:16px;
+  --ds-space-5:20px;
+  --ds-space-6:24px;
+  --ds-space-8:32px;
+  --ds-space-10:40px;
+  --ds-space-12:48px;
+  --ds-space-16:64px;
+  --ds-radius-sm:4px;
+  --ds-radius-md:6px;
+  --ds-radius-lg:8px;
+  --ds-radius-xl:12px;
+  --ds-radius-full:9999px;
+  --ds-shadow-sm:0 1px 2px rgba(15,23,42,.06);
+  --ds-shadow-md:0 2px 4px rgba(15,23,42,.08);
+  --ds-shadow-lg:0 4px 8px rgba(15,23,42,.10);
+  --ds-sidebar-width:252px;
+  --ds-sidebar-collapsed-width:64px;
+  --ds-header-height:60px;
+  --ds-focus-ring:0 0 0 2px #4F46E5;
+  --ds-focus-offset:2px;
+  --ds-motion-fast:150ms ease;
+  --ds-control-height:40px;
+}
+:root[data-theme="dark"] {
+  color-scheme:dark;
+  --ds-color-surface-default:#0F1117;
+  --ds-color-surface-raised:#1A1D27;
+  --ds-color-surface-sunken:#080A0F;
+  --ds-color-text-primary:#F1F5F9;
+  --ds-color-text-secondary:#94A3B8;
+  --ds-color-text-tertiary:#64748B;
+  --ds-color-border-default:#2D3142;
+  --ds-color-border-strong:#41465A;
+  --ds-color-action-primary:#818CF8;
+  --ds-color-action-primary-hover:#A5B4FC;
+  --ds-color-action-primary-pressed:#6366F1;
+  --ds-color-action-subtle:#292D4A;
+  --ds-color-accent:#5EEAD4;
+  --ds-color-success:#4ADE80;
+  --ds-color-success-subtle:#123522;
+  --ds-color-warning:#FBBF24;
+  --ds-color-warning-subtle:#3A2B0B;
+  --ds-color-error:#F87171;
+  --ds-color-error-subtle:#3B171B;
+  --ds-color-info:#60A5FA;
+  --ds-color-info-subtle:#172B48;
+  --ds-focus-ring:0 0 0 2px #A5B4FC;
+}
+@media (prefers-color-scheme:dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme:dark;
+    --ds-color-surface-default:#0F1117;
+    --ds-color-surface-raised:#1A1D27;
+    --ds-color-surface-sunken:#080A0F;
+    --ds-color-text-primary:#F1F5F9;
+    --ds-color-text-secondary:#94A3B8;
+    --ds-color-text-tertiary:#64748B;
+    --ds-color-border-default:#2D3142;
+    --ds-color-border-strong:#41465A;
+    --ds-color-action-primary:#818CF8;
+    --ds-color-action-primary-hover:#A5B4FC;
+    --ds-color-action-primary-pressed:#6366F1;
+    --ds-color-action-subtle:#292D4A;
+    --ds-color-accent:#5EEAD4;
+    --ds-color-success:#4ADE80;
+    --ds-color-success-subtle:#123522;
+    --ds-color-warning:#FBBF24;
+    --ds-color-warning-subtle:#3A2B0B;
+    --ds-color-error:#F87171;
+    --ds-color-error-subtle:#3B171B;
+    --ds-color-info:#60A5FA;
+    --ds-color-info-subtle:#172B48;
+    --ds-focus-ring:0 0 0 2px #A5B4FC;
+  }
+}
+:where(button,input,select,textarea,a,[tabindex]):focus-visible {
+  outline:2px solid var(--ds-color-action-primary);
+  outline-offset:var(--ds-focus-offset);
+}
+@media(prefers-reduced-motion:reduce) {
+  *,*::before,*::after {scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}

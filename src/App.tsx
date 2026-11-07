@@ -22,6 +22,34 @@ import { ParentsPage } from "./components/parents/ParentsPage";
 import { TeachersPage } from "./components/teachers/TeachersPage";
 import { EmployeesPage } from "./components/employees/EmployeesPage";
 import { RolesPermissionsPage } from "./components/roles-permissions/RolesPermissionsPage";
+import { GradesValidationPage } from "./components/grades-validation/GradesValidationPage";
+import { ExaminationsPage } from "./components/examinations/ExaminationsPage";
+import { CoursesExercisesPage } from "./components/courses-exercises/CoursesExercisesPage";
+import { PedagogicalReportsPage } from "./components/pedagogical-reports/PedagogicalReportsPage";
+import { BadgesRecognitionPage } from "./components/badges-recognition/BadgesRecognitionPage";
+import { TimetablesPage } from "./components/timetables/TimetablesPage";
+import { StudentAttendancePage } from "./components/student-attendance/StudentAttendancePage";
+import { StaffAttendancePage } from "./components/staff-attendance/StaffAttendancePage";
+import { DocumentsPage } from "./components/documents/DocumentsPage";
+import { ClassRankingsPage } from "./components/class-rankings/ClassRankingsPage";
+import { StudentRiskPage } from "./components/student-risk/StudentRiskPage";
+import { StudentActivitiesPage } from "./components/student-activities/StudentActivitiesPage";
+import { PaymentRegistersPage } from "./components/payment-registers/PaymentRegistersPage";
+import { CashRegistersPage } from "./components/cash-registers/CashRegistersPage";
+import { PaymentsPage } from "./components/payments/PaymentsPage";
+import { StudentBalancesPage } from "./components/student-balances/StudentBalancesPage";
+import { ExpensesPage } from "./components/expenses/ExpensesPage";
+import { FinancialReportsPage } from "./components/financial-reports/FinancialReportsPage";
+import { TransportPage } from "./components/transport/TransportPage";
+import { TripsOutingsPage } from "./components/trips-outings/TripsOutingsPage";
+import { AccidentsIncidentsPage } from "./components/accidents-incidents/AccidentsIncidentsPage";
+import { InventoryPage } from "./components/inventory/InventoryPage";
+import { AnnouncementsPage } from "./components/announcements/AnnouncementsPage";
+import { NotificationsPage } from "./components/notifications/NotificationsPage";
+import { EventsPage } from "./components/events/EventsPage";
+import { MeetingsPage } from "./components/meetings/MeetingsPage";
+import { ActivityHistoryPage } from "./components/activity-history/ActivityHistoryPage";
+import { ReportsAnalyticsPage } from "./components/reports-analytics/ReportsAnalyticsPage";
 import { schoolBranding } from "./config/school";
 import { getDemoStaffById } from "./data/demo-accounts";
 import type { AuthenticatedSidebarUser } from "./types/navigation";
@@ -86,7 +114,7 @@ export default function App() {
 
   function navigate(route: string) {
     if (window.location.pathname !== route) window.history.pushState({}, "", route);
-    setCurrentPath(route);
+    setCurrentPath(window.location.pathname || "/overview");
   }
 
   function handleSignIn(nextUser: AuthenticatedSidebarUser) {
@@ -120,6 +148,34 @@ export default function App() {
   const isTeachersPage = currentPath === "/teachers";
   const isEmployeesPage = currentPath === "/employees";
   const isRolesPermissionsPage = currentPath === "/roles-permissions";
+  const isGradesValidationPage = currentPath === "/grades-validation";
+  const isExaminationsPage = currentPath === "/examinations";
+  const isCoursesExercisesPage = currentPath === "/courses-exercises";
+  const isPedagogicalReportsPage = currentPath === "/pedagogical-reports";
+  const isBadgesRecognitionPage = currentPath === "/badges-recognition";
+  const isTimetablesPage = currentPath === "/timetables";
+  const isStudentAttendancePage = currentPath === "/student-attendance";
+  const isStaffAttendancePage = currentPath === "/staff-attendance";
+  const isDocumentsPage = currentPath === "/documents";
+  const isClassRankingsPage = currentPath === "/class-rankings";
+  const isStudentRiskPage = currentPath === "/student-risk";
+  const isStudentActivitiesPage = currentPath === "/student-activities";
+  const isPaymentRegistersPage = currentPath === "/payment-registers";
+  const isCashRegistersPage = currentPath === "/cash-registers";
+  const isPaymentsPage = currentPath === "/payments";
+  const isStudentBalancesPage = currentPath === "/student-balances";
+  const isExpensesPage = currentPath === "/expenses";
+  const isFinancialReportsPage = currentPath === "/financial-reports";
+  const isTransportPage = currentPath === "/transport";
+  const isTripsOutingsPage = currentPath === "/trips-outings";
+  const isAccidentsIncidentsPage = currentPath === "/accidents-incidents";
+  const isInventoryPage = currentPath === "/inventory";
+  const isAnnouncementsPage = currentPath === "/announcements";
+  const isNotificationsPage = currentPath === "/notifications";
+  const isEventsPage = currentPath === "/events";
+  const isMeetingsPage = currentPath === "/meetings";
+  const isActivityHistoryPage = currentPath === "/activity-history";
+  const isReportsAnalyticsPage = currentPath === "/reports-analytics";
 
   return (
     <div className={`sidebar-demo${sidebarCollapsed ? " is-collapsed" : ""}`}>
@@ -161,6 +217,62 @@ export default function App() {
         <EmployeesPage user={user} onNavigate={navigate} />
       ) : isRolesPermissionsPage ? (
         <RolesPermissionsPage user={user} onNavigate={navigate} />
+      ) : isGradesValidationPage ? (
+        <GradesValidationPage user={user} onNavigate={navigate} />
+      ) : isExaminationsPage ? (
+        <ExaminationsPage user={user} onNavigate={navigate} />
+      ) : isCoursesExercisesPage ? (
+        <CoursesExercisesPage user={user} onNavigate={navigate} />
+      ) : isPedagogicalReportsPage ? (
+        <PedagogicalReportsPage user={user} onNavigate={navigate} />
+      ) : isBadgesRecognitionPage ? (
+        <BadgesRecognitionPage user={user} onNavigate={navigate} />
+      ) : isTimetablesPage ? (
+        <TimetablesPage user={user} onNavigate={navigate} />
+      ) : isStudentAttendancePage ? (
+        <StudentAttendancePage user={user} onNavigate={navigate} />
+      ) : isStaffAttendancePage ? (
+        <StaffAttendancePage user={user} onNavigate={navigate} />
+      ) : isDocumentsPage ? (
+        <DocumentsPage user={user} onNavigate={navigate} />
+      ) : isClassRankingsPage ? (
+        <ClassRankingsPage user={user} onNavigate={navigate} />
+      ) : isStudentRiskPage ? (
+        <StudentRiskPage user={user} onNavigate={navigate} />
+      ) : isStudentActivitiesPage ? (
+        <StudentActivitiesPage user={user} />
+      ) : isPaymentRegistersPage ? (
+        <PaymentRegistersPage user={user} />
+      ) : isCashRegistersPage ? (
+        <CashRegistersPage user={user} />
+      ) : isPaymentsPage ? (
+        <PaymentsPage user={user} />
+      ) : isStudentBalancesPage ? (
+        <StudentBalancesPage user={user} />
+      ) : isExpensesPage ? (
+        <ExpensesPage user={user} />
+      ) : isFinancialReportsPage ? (
+        <FinancialReportsPage user={user} />
+      ) : isTransportPage ? (
+        <TransportPage user={user} onNavigate={navigate} />
+      ) : isTripsOutingsPage ? (
+        <TripsOutingsPage user={user} />
+      ) : isAccidentsIncidentsPage ? (
+        <AccidentsIncidentsPage user={user} />
+      ) : isInventoryPage ? (
+        <InventoryPage user={user} />
+      ) : isAnnouncementsPage ? (
+        <AnnouncementsPage user={user} />
+      ) : isNotificationsPage ? (
+        <NotificationsPage user={user} />
+      ) : isEventsPage ? (
+        <EventsPage user={user} onNavigate={navigate} />
+      ) : isMeetingsPage ? (
+        <MeetingsPage user={user} />
+      ) : isActivityHistoryPage ? (
+        <ActivityHistoryPage user={user} />
+      ) : isReportsAnalyticsPage ? (
+        <ReportsAnalyticsPage user={user} onNavigate={navigate} />
       ) : (
         <main className="workspace-placeholder">
           <span className="workspace-eyebrow">ESPACE DU PERSONNEL</span>

@@ -1,3 +1,5 @@
+@import "./styles/theme.css";
+@import "./styles/tokens.css";
 
 /* School Local Platform — shared design system
    Visual layer only: page logic and domain-specific styles remain in their modules. */
@@ -8,6 +10,46 @@
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+  /* color-scheme is controlled by the active theme tokens. */
+  /* Compatibility aliases. Canonical values live in styles/tokens.css. */
+  --app-primary:var(--ds-color-action-primary);
+  --app-primary-hover:var(--ds-color-action-primary-hover);
+  --app-primary-pressed:var(--ds-color-action-primary-pressed);
+  --app-primary-soft:var(--ds-color-action-subtle);
+  --app-teal:var(--ds-color-accent);
+  --app-gold:var(--ds-color-warning);
+  --app-bg:var(--ds-color-surface-default);
+  --app-surface:var(--ds-color-surface-raised);
+  --app-surface-subtle:var(--ds-color-surface-sunken);
+  --app-border:var(--ds-color-border-default);
+  --app-border-strong:var(--ds-color-border-strong);
+  --app-text:var(--ds-color-text-primary);
+  --app-muted:var(--ds-color-text-secondary);
+  --app-disabled:var(--ds-color-text-tertiary);
+  --app-sidebar:#0F172A;
+  --app-sidebar-text:#CBD5E1;
+  --app-sidebar-active:var(--ds-color-action-subtle);
+  --app-focus:var(--ds-color-action-primary);
+  --app-success:var(--ds-color-success);
+  --app-success-bg:var(--ds-color-success-subtle);
+  --app-warning:var(--ds-color-warning);
+  --app-warning-bg:var(--ds-color-warning-subtle);
+  --app-danger:var(--ds-color-error);
+  --app-danger-bg:var(--ds-color-error-subtle);
+  --app-info:var(--ds-color-info);
+  --app-info-bg:var(--ds-color-info-subtle);
+  --app-neutral:#64748B;
+  --app-neutral-bg:var(--ds-color-surface-sunken);
+  --app-radius-card:var(--ds-radius-lg);
+  --app-radius-control:var(--ds-radius-md);
+  --app-shadow-card:var(--ds-shadow-sm);
+  --app-shadow-overlay:var(--ds-shadow-lg);
+  font-family:var(--ds-font-sans);
+  color:var(--ds-color-text-primary);
+  background:var(--ds-color-surface-default);
+  font-synthesis:none;
+  text-rendering:optimizeLegibility;
+  -webkit-font-smoothing:antialiased;
 }
 html,body,#root{min-height:100%;background:var(--app-bg)}
 body{font-family:var(--font-sans);color:var(--app-text);font-size:var(--text-base);line-height:1.55}
@@ -324,3 +366,35 @@ body{font-family:var(--font-sans);font-optical-sizing:auto;font-kerning:normal;l
 .sidebar-demo>main :where(td,th){line-height:1.45}
 :lang(ar),[dir="rtl"]{font-family:var(--font-arabic)}
 :lang(ar) *,[dir="rtl"] *{letter-spacing:0!important}
+
+
+/* Unified controls, surfaces and typography — visual-only normalization */
+.sidebar-demo :where(button,input,select,textarea){font-family:var(--font-family-base)}
+.sidebar-demo :where(button){transition:all var(--transition-fast)}
+.sidebar-demo :where(button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible){outline:2px solid var(--color-focus);outline-offset:2px}
+.sidebar-demo :where(input:not([type=checkbox]):not([type=radio]):not([type=range]),select,textarea){
+  border-radius:var(--control-radius);border-color:var(--control-border);color:var(--color-text-primary);
+}
+.sidebar-demo :where(input:not([type=checkbox]):not([type=radio]):not([type=range]),select){min-height:var(--control-height)}
+.sidebar-demo :where(textarea){min-height:96px;line-height:var(--line-height-body)}
+.sidebar-demo :where(input,select,textarea):focus{border-color:var(--color-primary);box-shadow:var(--control-focus-ring);outline:0}
+.sidebar-demo :where(input,select,textarea):disabled{background:var(--color-surface-muted);color:#9AA6BA;cursor:not-allowed}
+.sidebar-demo :where(input,select,textarea)::placeholder{color:#718096;opacity:1}
+.sidebar-demo :where(button:disabled){opacity:.55;cursor:not-allowed}
+.sidebar-demo :where(table){font-variant-numeric:tabular-nums}
+.sidebar-demo>main :where(table:not([role=grid])){border-collapse:collapse}
+.sidebar-demo>main :where(table:not([role=grid]) thead th){background:var(--color-surface-muted);color:var(--color-text-secondary);font-size:var(--font-size-xs);font-weight:600;letter-spacing:.025em}
+.sidebar-demo>main :where(table:not([role=grid]) tbody td){border-bottom:1px solid var(--color-border);color:var(--color-text-secondary)}
+.sidebar-demo>main :where(table:not([role=grid]) tbody tr:hover){background:#F5F8FC}
+.sidebar-demo>main :where([class*="-panel"],[class*="-card"],[class*="-widget"]){box-shadow:var(--shadow-sm)}
+.sidebar-demo>main :where(h1){font-size:var(--font-size-2xl);line-height:var(--line-height-heading);font-weight:600;letter-spacing:-.02em}
+.sidebar-demo>main :where(h2){font-size:var(--font-size-lg);line-height:var(--line-height-heading);font-weight:600}
+.sidebar-demo>main :where(h3){font-size:var(--font-size-base);line-height:var(--line-height-heading);font-weight:600}
+.sidebar-demo>main :where(p){line-height:var(--line-height-body)}
+.sidebar-demo>main :where(a){color:var(--color-primary);text-underline-offset:3px}
+.sidebar-demo>main :where(a:hover){color:var(--color-primary-hover)}
+.sidebar-demo :where(.btn-primary,.button-primary,[class*="-primary"]){transition:background-color var(--transition-fast),border-color var(--transition-fast),color var(--transition-fast)}
+@media(max-width:768px){
+  .sidebar-demo>main:not(.auth-page){padding:16px!important}
+  .sidebar-demo>main :where(h1){font-size:var(--font-size-xl)}
+}
