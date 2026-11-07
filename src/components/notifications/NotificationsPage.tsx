@@ -1,4 +1,4 @@
-import { Bell, CheckCircle2, CircleAlert, Clock3, Mail, RefreshCw, ShieldCheck, Smartphone, XCircle } from "lucide-react";
+import { Bell, CheckCircle2, CircleAlert, Clock3, Mail, ShieldCheck, XCircle } from "lucide-react";
 import { schoolBranding } from "../../config/school";
 import type { AuthenticatedSidebarUser } from "../../types/navigation";
 import "./NotificationsPage.css";
