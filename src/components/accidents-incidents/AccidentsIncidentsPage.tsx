@@ -154,7 +154,7 @@ export function AccidentsIncidentsPage({ user }: Props) {
   }, [canManage, canStudents, canEmployees, canTeachers]);
 
   const personLabel = (person: IncidentPerson) => (person.category === "Élève" && !canStudents) || (person.category === "Enseignant" && !canTeachers) || (person.category === "Employé" && !canEmployees) ? "Identité restreinte" : person.name;
-  const responsibleLabel = (name: string) => canEmployees && canTeachers ? name : "Personnel autorisé";
+  const responsibleLabel = (name: string) => name === "Non affecté" || (canEmployees && canTeachers) ? name : "Personnel autorisé";
   const filtered = useMemo(() => incidents.filter(item => {
     const q = query.trim().toLocaleLowerCase("fr-FR");
     const matchesQuery = !q || [item.id, item.category, item.location, item.description, item.people.map(p => personLabel(p)).join(" ")].join(" ").toLocaleLowerCase("fr-FR").includes(q);
