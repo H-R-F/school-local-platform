@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { AlertCircle, CalendarDays, Check, CheckCircle2, ChevronRight, Clock3, Download, Eye, FileText, FilterX, History, Search, ShieldAlert, Users, X } from "lucide-react";
+import { AlertCircle, CheckCircle2, ChevronRight, Clock3, Download, Eye, FileText, FilterX, Search, ShieldAlert, X } from "lucide-react";
 import { academicYearRepository } from "../../services/academic-years";
 import { classesGroupsRepository } from "../../services/classes-groups";
 import { subjectsRepository } from "../../services/subjects";
@@ -42,7 +42,7 @@ function makeReports(classes:any[], subjects:any[], teachers:any[], years:any[])
 
 export function PedagogicalReportsPage({user}:Props){
  const canRead=user.permissions.includes("pedagogy.reports.view");
- const canReview=user.role==="director"||user.role==="pedagogical";
+ const canReview=false;
  const [loading,setLoading]=useState(true),[loadError,setLoadError]=useState("");
  const [academic,setAcademic]=useState<any>(null),[years,setYears]=useState<any[]>([]),[subjects,setSubjects]=useState<any>(null),[teachers,setTeachers]=useState<any>(null);
  const [reports,setReports]=useState<Report[]>([]),[selectedId,setSelectedId]=useState<string|null>(null);
@@ -66,7 +66,7 @@ export function PedagogicalReportsPage({user}:Props){
  if(!canRead)return <main className="pr-page"><section className="pr-access"><ShieldAlert size={25}/><h2>Accès non autorisé</h2><p>Votre compte ne dispose pas de l’autorisation nécessaire pour consulter les rapports pédagogiques.</p></section></main>;
  return <main className="pr-page">
   <header className="pr-header"><div className="pr-breadcrumb">Opérations pédagogiques <ChevronRight size={12}/> <strong>Rapports pédagogiques</strong></div><div className="pr-title-row"><div><h1>Rapports pédagogiques</h1><p>Consultez, examinez et suivez les rapports pédagogiques.</p></div><span className="pr-pending-indicator"><Clock3 size={13}/>{counts.pending} en attente de lecture</span></div></header>
-  <div className="pr-demo-notice"><AlertCircle size={16}/><div><strong>Mode démonstration — données fictives</strong><p>Le projet ne dispose pas encore de modèle ni de service de rapports pédagogiques. Les quatre rapports affichés illustrent l’interface ; les actions de validation et de rejet ne sont pas enregistrées sur un serveur.</p></div></div>
+  <div className="pr-demo-notice"><AlertCircle size={16}/><div><strong>Mode démonstration — données fictives</strong><p>Le projet ne dispose pas encore de modèle ni de service de rapports pédagogiques. Les quatre rapports affichés illustrent l’interface. Aucune permission dédiée à la revue ni aucun service serveur de validation/rejet n’existe actuellement : les actions de revue restent donc désactivées.</p></div></div>
   <section className="pr-kpis" aria-label="Indicateurs des rapports"><article><span>Total des rapports</span><strong>156</strong><small>Valeur illustrative</small></article><article><span>En attente de validation</span><strong className="is-pending">24</strong><small>Valeur illustrative</small></article><article><span>Validés</span><strong className="is-approved">112</strong><small>Valeur illustrative</small></article><article><span>Rejetés</span><strong className="is-rejected">20</strong><small>Valeur illustrative</small></article></section>
   <section className="pr-panel">
    <div className="pr-panel-head"><div><h2>Suivi des rapports</h2><p>Consultez les soumissions et ouvrez un rapport pour examiner son contenu.</p></div><span>{filtered.length} résultat(s)</span></div>
