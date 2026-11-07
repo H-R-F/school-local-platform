@@ -21,6 +21,7 @@ import { ExaminationsPage } from "./components/examinations/ExaminationsPage";
 import { CoursesExercisesPage } from "./components/courses-exercises/CoursesExercisesPage";
 import { PedagogicalReportsPage } from "./components/pedagogical-reports/PedagogicalReportsPage";
 import { BadgesRecognitionPage } from "./components/badges-recognition/BadgesRecognitionPage";
+import { TimetablesPage } from "./components/timetables/TimetablesPage";
 import { schoolBranding } from "./config/school";
 import { getDemoStaffById } from "./data/demo-accounts";
 import type { AuthenticatedSidebarUser } from "./types/navigation";
@@ -85,6 +86,7 @@ export default function App() {
   const isCoursesExercisesPage = currentPath === "/courses-exercises";
   const isPedagogicalReportsPage = currentPath === "/pedagogical-reports";
   const isBadgesRecognitionPage = currentPath === "/badges-recognition";
+  const isTimetablesPage = currentPath === "/timetables";
 
   return (
     <div className="sidebar-demo">
@@ -129,6 +131,8 @@ export default function App() {
         <PedagogicalReportsPage user={user} onNavigate={navigate} />
       ) : isBadgesRecognitionPage ? (
         <BadgesRecognitionPage user={user} onNavigate={navigate} />
+      ) : isTimetablesPage ? (
+        <TimetablesPage user={user} onNavigate={navigate} />
       ) : (
         <main className="workspace-placeholder">
           <span className="workspace-eyebrow">ESPACE DU PERSONNEL</span>
