@@ -47,6 +47,7 @@ import { InventoryPage } from "./components/inventory/InventoryPage";
 import { AnnouncementsPage } from "./components/announcements/AnnouncementsPage";
 import { NotificationsPage } from "./components/notifications/NotificationsPage";
 import { EventsPage } from "./components/events/EventsPage";
+import { MeetingsPage } from "./components/meetings/MeetingsPage";
 import { schoolBranding } from "./config/school";
 import { getDemoStaffById } from "./data/demo-accounts";
 import type { AuthenticatedSidebarUser } from "./types/navigation";
@@ -170,6 +171,7 @@ export default function App() {
   const isAnnouncementsPage = currentPath === "/announcements";
   const isNotificationsPage = currentPath === "/notifications";
   const isEventsPage = currentPath === "/events";
+  const isMeetingsPage = currentPath === "/meetings";
 
   return (
     <div className={`sidebar-demo${sidebarCollapsed ? " is-collapsed" : ""}`}>
@@ -261,6 +263,8 @@ export default function App() {
         <NotificationsPage user={user} />
       ) : isEventsPage ? (
         <EventsPage user={user} onNavigate={navigate} />
+      ) : isMeetingsPage ? (
+        <MeetingsPage user={user} />
       ) : (
         <main className="workspace-placeholder">
           <span className="workspace-eyebrow">ESPACE DU PERSONNEL</span>
