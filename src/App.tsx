@@ -32,6 +32,7 @@ import { PaymentRegistersPage } from "./components/payment-registers/PaymentRegi
 import { PaymentsPage } from "./components/payments/PaymentsPage";
 import { StudentBalancesPage } from "./components/student-balances/StudentBalancesPage";
 import { ExpensesPage } from "./components/expenses/ExpensesPage";
+import { FinancialReportsPage } from "./components/financial-reports/FinancialReportsPage";
 import { schoolBranding } from "./config/school";
 import { getDemoStaffById } from "./data/demo-accounts";
 import type { AuthenticatedSidebarUser } from "./types/navigation";
@@ -107,6 +108,7 @@ export default function App() {
   const isPaymentsPage = currentPath === "/payments";
   const isStudentBalancesPage = currentPath === "/student-balances";
   const isExpensesPage = currentPath === "/expenses";
+  const isFinancialReportsPage = currentPath === "/financial-reports";
 
   return (
     <div className="sidebar-demo">
@@ -173,6 +175,8 @@ export default function App() {
         <StudentBalancesPage user={user} />
       ) : isExpensesPage ? (
         <ExpensesPage user={user} />
+      ) : isFinancialReportsPage ? (
+        <FinancialReportsPage user={user} />
       ) : (
         <main className="workspace-placeholder">
           <span className="workspace-eyebrow">ESPACE DU PERSONNEL</span>
