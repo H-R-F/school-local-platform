@@ -25,6 +25,7 @@ import { TimetablesPage } from "./components/timetables/TimetablesPage";
 import { StudentAttendancePage } from "./components/student-attendance/StudentAttendancePage";
 import { StaffAttendancePage } from "./components/staff-attendance/StaffAttendancePage";
 import { DocumentsPage } from "./components/documents/DocumentsPage";
+import { ClassRankingsPage } from "./components/class-rankings/ClassRankingsPage";
 import { schoolBranding } from "./config/school";
 import { getDemoStaffById } from "./data/demo-accounts";
 import type { AuthenticatedSidebarUser } from "./types/navigation";
@@ -93,6 +94,7 @@ export default function App() {
   const isStudentAttendancePage = currentPath === "/student-attendance";
   const isStaffAttendancePage = currentPath === "/staff-attendance";
   const isDocumentsPage = currentPath === "/documents";
+  const isClassRankingsPage = currentPath === "/class-rankings";
 
   return (
     <div className="sidebar-demo">
@@ -145,6 +147,8 @@ export default function App() {
         <StaffAttendancePage user={user} onNavigate={navigate} />
       ) : isDocumentsPage ? (
         <DocumentsPage user={user} onNavigate={navigate} />
+      ) : isClassRankingsPage ? (
+        <ClassRankingsPage user={user} onNavigate={navigate} />
       ) : (
         <main className="workspace-placeholder">
           <span className="workspace-eyebrow">ESPACE DU PERSONNEL</span>
