@@ -283,7 +283,7 @@ export function AccidentsIncidentsPage({ user }: Props) {
         </div>
         <div className="ai-table-wrap"><table className="ai-table"><thead><tr><th>Référence</th><th>Date et heure</th><th>Type d'incident</th><th>Personne(s)</th><th>Lieu</th><th>Responsable</th><th>Statut</th><th></th></tr></thead><tbody>
           {visible.map(item=><tr key={item.id} onClick={()=>{setSelectedId(item.id);setDetailTab("Résumé");setNewStatus(item.status);setNewResponsible("");}} className={selectedId===item.id?"is-selected":""}>
-            <td><strong>{item.id}</strong><small>{item.createdBy}</small></td><td>{formatDate(item.occurredAt,true)}</td><td>{item.category}</td>
+            <td><strong>{item.id}</strong><small>{responsibleLabel(item.createdBy)}</small></td><td>{formatDate(item.occurredAt,true)}</td><td>{item.category}</td>
             <td><strong>{item.people.length===1?personLabel(item.people[0]):item.people.length+" personnes"}</strong><small>{[...new Set(item.people.map(p=>p.category))].join(", ")}</small></td>
             <td><span className="ai-location"><MapPin size={12}/>{item.location}</span></td><td>{item.responsibleName}</td>
             <td><span className={"ai-status "+statusClass(item.status)}>{item.status}</span></td>
@@ -330,7 +330,7 @@ export function AccidentsIncidentsPage({ user }: Props) {
         <div className="ai-drawer-body">
           {detailTab==="Résumé"&&<><div className="ai-detail-facts"><div><small>Date et heure</small><strong>{formatDate(selected.occurredAt,true)}</strong></div><div><small>Type</small><strong>{selected.category}</strong></div><div><small>Lieu</small><strong>{selected.location}</strong></div><div><small>Responsable</small><strong>{responsibleLabel(selected.responsibleName)}</strong></div></div>
             <section><h3>Description des faits</h3><p>{selected.description}</p>{selected.circumstances&&<><h3>Circonstances rapportées</h3><p>{selected.circumstances}</p></>}</section>
-            <section><h3>Personnes impliquées ({selected.people.length})</h3>{selected.people.map(p=><div className="ai-detail-person" key={p.id}><Users size={15}/><div><strong>{personLabel(p)}</strong><span>{p.category} · {p.role}{p.className?" · "+p.className:""}</span><small>{p.reference??"Référence non disponible"}</small></div></div>)}</section>
+            <section><h3>Personnes impliquées ({selected.people.length})</h3>{selected.people.map(p=><div className="ai-detail-person" key={p.id}><Users size={15}/><div><strong>{personLabel(p)}</strong><span>{p.category} · {p.role}{personLabel(p)!=="Identité restreinte"&&p.className?" · "+p.className:""}</span><small>{personLabel(p)==="Identité restreinte"?"Référence masquée":p.reference??"Référence non disponible"}</small></div></div>)}</section>
             <section><h3>Mesures immédiates rapportées</h3><p>{selected.immediateActions||"Aucune mesure renseignée."}</p></section>
             <section className="ai-muted-section"><h3>Documents joints</h3><p>Le service de stockage documentaire n'est pas connecté.</p></section>
             <section className="ai-muted-section"><h3>Communications</h3><p>Aucune communication parentale ou notification n'est enregistrée par cette démonstration.</p></section>
