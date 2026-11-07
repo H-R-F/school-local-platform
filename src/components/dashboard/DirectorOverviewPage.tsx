@@ -1,222 +1,204 @@
-import { useEffect, useMemo, useState } from "react";
-import "./DirectorOverviewPage.css";
+import { useMemo, useState } from "react";
 import {
-  Activity, AlertCircle, ArrowRight, ArrowUpRight, BadgeCheck,
-  Banknote, BookOpenCheck, CalendarDays, ChevronDown,
-  GraduationCap, LayoutDashboard, ShieldAlert, TrendingUp,
-  UserRound, Users, Wallet, X,
+  Activity, AlertTriangle, ArrowRight, ArrowUpRight, Banknote, BookOpenCheck,
+  CalendarDays, CheckCircle2, Clock3, GraduationCap, LayoutDashboard,
+  ShieldAlert, TrendingUp, Users, Wallet, X,
 } from "lucide-react";
 import {
-  academicLevels, academicTrend, attendanceSeries, classPerformance,
-  dashboardRangeOptions, directorKpis, financialSummary,
-  recentActivities, revenueByRange, studentDistribution,
+  academicLevels, attendanceSeries, classPerformance, dashboardRangeOptions,
+  financialSummary, importantAlerts, recentActivities, revenueByRange,
   studentsAtRisk, type DashboardRange,
 } from "../../data/director-dashboard";
 import type { AuthenticatedSidebarUser } from "../../types/navigation";
 import { DirectorTaskCenter } from "./DirectorTaskCenter";
+import "./DirectorOverviewPage.css";
 
 interface Props {
   user: AuthenticatedSidebarUser;
   onNavigate: (route: string) => void;
 }
 
-const formatNumber = (value: number) => new Intl.NumberFormat("fr-FR").format(value);
+const number = (value: number) => new Intl.NumberFormat("fr-FR").format(value);
+const todayLabel = () => new Intl.DateTimeFormat("fr-FR", {
+  weekday: "long", day: "numeric", month: "long", year: "numeric",
+}).format(new Date());
 
-function SectionHeading({ eyebrow, title, action }: { eyebrow?: string; title: string; action?: { label: string; onClick: () => void } }) {
-  return <div className="dash-section-heading">
-    <div>{eyebrow && <span className="dash-eyebrow">{eyebrow}</span>}<h2>{title}</h2></div>
-    {action && <button type="button" className="dash-text-action" onClick={action.onClick}>{action.label}<ArrowRight size={14}/></button>}
-  </div>;
-}
-
-function KpiIcon({ name }: { name: string }) {
-  const icons: Record<string, typeof Users> = {
-    students: GraduationCap, teachers: Users, employees: UserRound,
-    attendance: CalendarDays, performance: TrendingUp, payments: Wallet,
-  };
-  const Icon = icons[name] ?? Activity;
-  return <span className="dash-kpi-icon"><Icon size={18}/></span>;
-}
-
-function BarChart({ data, max = 20, suffix = "/20" }: { data: { label: string; value: number }[]; max?: number; suffix?: string }) {
-  return <div className="dash-bars" role="img" aria-label={data.map(item => `${item.label} : ${item.value}${suffix}`).join(", ")}>
-    <div className="dash-bars-scale"><span>{max}{suffix}</span><span>{Math.round(max / 2)}{suffix}</span><span>0</span></div>
-    <div className="dash-bars-grid">{data.map(item => <div className="dash-bar-column" key={item.label}>
-      <span className="dash-bar-value">{item.value.toLocaleString("fr-FR")}{suffix}</span>
-      <div className="dash-bar-track"><span style={{ height: `${Math.min(100, item.value / max * 100)}%` }}/></div>
-      <span className="dash-bar-label">{item.label}</span>
-    </div>)}</div>
-  </div>;
-}
-
-function TrendChart({ data }: { data: { label: string; value: number }[] }) {
-  const points = data.map((item, index) => ({ x: 22 + index * (256 / Math.max(1, data.length - 1)), y: 108 - (item.value - 12) * 12 }));
-  const path = points.map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`).join(" ");
-  return <div className="dash-trend-chart">
-    <svg viewBox="0 0 300 132" role="img" aria-label="Évolution de la moyenne générale">
-      {[36, 72, 108].map(y => <line key={y} x1="16" x2="286" y1={y} y2={y} className="dash-chart-gridline"/>)}
-      <path d={`${path} L 278 118 L 22 118 Z`} className="dash-trend-area"/>
-      <path d={path} className="dash-trend-line"/>
-      {points.map((point, index) => <circle key={index} cx={point.x} cy={point.y} r="3.5" className="dash-trend-dot"/>)}
-    </svg>
-    <div className="dash-trend-labels">{data.map(item => <span key={item.label}>{item.label}</span>)}</div>
-  </div>;
-}
-
-function DistributionDonut() {
-  const total = studentDistribution.reduce((sum, item) => sum + item.value, 0);
-  const first = studentDistribution[0].value / total * 100;
-  return <div className="dash-donut-wrap">
-    <div className="dash-donut" style={{ background: `conic-gradient(var(--color-primary) 0 ${first}%, var(--color-secondary) ${first}% 100%)` }}>
-      <div><strong>{formatNumber(total)}</strong><span>élèves</span></div>
+function SectionTitle({ eyebrow, title, action }: {
+  eyebrow: string;
+  title: string;
+  action?: { label: string; run: () => void };
+}) {
+  return (
+    <div className="director-section-title">
+      <div><span>{eyebrow}</span><h2>{title}</h2></div>
+      {action && <button type="button" onClick={action.run}>{action.label}<ArrowRight size={15}/></button>}
     </div>
-    <div className="dash-legend">{studentDistribution.map(item => <div key={item.label}><span className="dash-legend-dot" style={{ background: item.color }}/><span>{item.label}</span><strong>{formatNumber(item.value)}</strong></div>)}</div>
-  </div>;
+  );
 }
 
-function AttendanceChart({ range }: { range: DashboardRange }) {
-  const rows = range === "7" ? attendanceSeries.slice(-7) : range === "30" ? [
-    { label: "S1", present: 94, absent: 4, late: 2 },
-    { label: "S2", present: 93, absent: 5, late: 2 },
-    { label: "S3", present: 95, absent: 3, late: 2 },
-    { label: "S4", present: 94, absent: 4, late: 2 },
-  ] : [
-    { label: "Sept.", present: 93, absent: 5, late: 2 },
-    { label: "Oct.", present: 94, absent: 4, late: 2 },
-    { label: "Nov.", present: 95, absent: 3, late: 2 },
-  ];
-  return <div className="dash-attendance-chart">
-    <div className="dash-attendance-legend"><span><i className="is-present"/>Présents</span><span><i className="is-absent"/>Absents</span><span><i className="is-late"/>En retard</span></div>
-    <div className="dash-attendance-bars" style={{ gridTemplateColumns: `repeat(${rows.length}, minmax(0, 1fr))` }}>{rows.map((row, index) => <div className="dash-attendance-column" key={`${row.label}-${index}`}>
-      <div className="dash-attendance-stack"><span className="is-present" style={{ height: `${row.present}%` }}/><span className="is-late" style={{ height: `${row.late}%` }}/><span className="is-absent" style={{ height: `${row.absent}%` }}/></div>
-      <small>{row.label}</small>
-    </div>)}</div>
-  </div>;
+function MetricCard({ label, value, detail, icon: Icon, tone, onClick }: {
+  label: string;
+  value: string;
+  detail: string;
+  icon: typeof Users;
+  tone: "blue" | "green" | "amber" | "violet";
+  onClick: () => void;
+}) {
+  return (
+    <button type="button" className="director-metric" onClick={onClick}>
+      <span className={`director-metric-icon director-tone--${tone}`}><Icon size={19}/></span>
+      <span className="director-metric-copy"><span>{label}</span><strong>{value}</strong><small>{detail}</small></span>
+      <ArrowRight className="director-metric-arrow" size={16}/>
+    </button>
+  );
+}
+
+function AttendancePanel({ onNavigate }: { onNavigate: (route: string) => void }) {
+  const total = 1248;
+  const present = 1176;
+  const absent = 49;
+  const late = 23;
+  return (
+    <article className="director-panel">
+      <SectionTitle eyebrow="VIE SCOLAIRE · AUJOURD’HUI" title="Présence des élèves"
+        action={{ label: "Ouvrir les présences", run: () => onNavigate("/student-attendance") }}/>
+      <div className="director-attendance-main">
+        <div><strong>94,2<span>%</span></strong><small>Taux de présence</small></div>
+        <div className="director-attendance-track" role="img" aria-label="94,2 % présents, 3,9 % absents, 1,9 % en retard">
+          <span className="is-present" style={{ width: "94.2%" }}/><span className="is-absent" style={{ width: "3.9%" }}/><span className="is-late" style={{ width: "1.9%" }}/>
+        </div>
+      </div>
+      <div className="director-attendance-breakdown">
+        <div><i className="is-present"/><span>Présents</span><strong>{number(present)}</strong></div>
+        <div><i className="is-absent"/><span>Absents</span><strong>{number(absent)}</strong></div>
+        <div><i className="is-late"/><span>En retard</span><strong>{number(late)}</strong></div>
+      </div>
+      <div className="director-panel-footnote">Sur {number(total)} élèves inscrits · chiffres simulés pour la démonstration</div>
+    </article>
+  );
 }
 
 export function DirectorOverviewPage({ user, onNavigate }: Props) {
   const [range, setRange] = useState<DashboardRange>("30");
-  const [showAllStudents, setShowAllStudents] = useState(false);
-  const [showAllActivities, setShowAllActivities] = useState(false);
-  const [selectedStudent, setSelectedStudent] = useState<string | null>(null);
   const [showDemoNotice, setShowDemoNotice] = useState(true);
-  const filteredActivities = useMemo(() => recentActivities.filter(item => item.daysAgo <= Number(range)), [range]);
-  const activities = showAllActivities ? filteredActivities : filteredActivities.slice(0, 4);
+  const firstName = user.displayName.split(" ")[0];
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? "Bonjour" : hour < 18 ? "Bon après-midi" : "Bonsoir";
+  const activities = useMemo(() => recentActivities.filter(item => item.daysAgo <= Number(range)).slice(0, 5), [range]);
   const revenue = revenueByRange[range];
-  const today = new Intl.DateTimeFormat("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(new Date());
-  const greeting = new Date().getHours() < 12 ? "Bonjour" : new Date().getHours() < 18 ? "Bon après-midi" : "Bonsoir";
-  const selected = studentsAtRisk.find(student => student.id === selectedStudent);
+  const maxRevenue = Math.max(...revenue.map(item => item.amount), 1);
+  const average = "14,6";
+  const riskCount = studentsAtRisk.filter(item => item.status !== "Résolu").length;
+  const periodLabel = range === "7" ? "7 derniers jours" : range === "30" ? "30 derniers jours" : "90 derniers jours";
 
-  useEffect(() => {
-    if (!selectedStudent) return;
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setSelectedStudent(null);
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedStudent]);
-
-  return <main className="director-dashboard">
-    <div className="dash-welcome">
-      <div>
-        <div className="dash-breadcrumb"><LayoutDashboard size={13}/> Tableau de bord <span>/</span> Vue d’ensemble</div>
-        <h1>Vue d’ensemble</h1>
-        <p>{greeting} {user.displayName.split(" ")[0]}, voici la situation de votre établissement.</p>
-        <div className="dash-context"><span><CalendarDays size={14}/> Année scolaire 2026–2027</span><span className="dash-date">{today}</span></div>
-      </div>
-      <label className="dash-range-select"><span>Période d’analyse</span><span className="dash-select-wrap"><select value={range} onChange={event => setRange(event.target.value as DashboardRange)}>{dashboardRangeOptions.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}</select><ChevronDown size={15}/></span></label>
-    </div>
-
-    {showDemoNotice && <div className="dash-demo-notice"><span><AlertCircle size={16}/><span><strong>Données de démonstration</strong> — Ces chiffres illustrent le tableau de bord et ne proviennent pas encore d’une base de données réelle.</span></span><button type="button" onClick={() => setShowDemoNotice(false)} aria-label="Fermer l’avertissement"><X size={16}/></button></div>}
-
-    <DirectorTaskCenter onNavigate={onNavigate}/>
-
-    <section className="dash-kpi-grid" aria-label="Indicateurs clés">
-      {directorKpis.map(item => <button type="button" className="dash-kpi-card dash-kpi-card--link" key={item.id} onClick={() => onNavigate(item.route)} aria-label={`${item.label} : ${item.value}. Ouvrir le détail`}>
-        <div className="dash-kpi-top"><span>{item.label}</span><KpiIcon name={item.icon}/></div>
-        <strong className="dash-kpi-value">{item.value}</strong>
-        <div className="dash-kpi-bottom"><span>{item.detail}</span><span className={`dash-kpi-trend dash-kpi-trend--${item.direction}`}>{item.direction === "up" ? <ArrowUpRight size={13}/> : <Activity size={13}/>} {item.trend}</span></div>
-      </button>)}
-    </section>
-
-    <section className="dash-grid dash-grid--academic">
-      <article className="dash-panel">
-        <SectionHeading eyebrow="RÉSULTATS SCOLAIRES" title="Performance académique" action={{ label: "Rapports détaillés", onClick: () => onNavigate("/pedagogical-reports") }}/>
-        <div className="dash-academic-summary"><strong>14,6<span>/20</span></strong><span className="dash-positive"><ArrowUpRight size={14}/> +0,4 pt</span><small>Moyenne générale · Trimestre en cours</small></div>
-        <div className="dash-chart-title">Moyenne par niveau</div>
-        <BarChart data={academicLevels.map(item => ({ label: item.label, value: item.value }))}/>
-        <div className="dash-subchart">
-          <div className="dash-chart-title">Comparaison des classes</div>
-          <BarChart data={classPerformance} />
+  return (
+    <main className="director-dashboard">
+      <header className="director-welcome">
+        <div className="director-welcome-copy">
+          <div className="director-breadcrumb"><LayoutDashboard size={14}/> Direction <span>/</span> Tableau de bord</div>
+          <div className="director-title-row"><div><h1>Tableau de bord</h1><p>{greeting} {firstName}, voici les points essentiels de votre établissement.</p></div></div>
+          <div className="director-context"><span><CalendarDays size={14}/> Année scolaire 2026–2027</span><span>{todayLabel()}</span></div>
         </div>
-        <div className="dash-subchart">
-          <div className="dash-chart-title">Évolution par trimestre</div>
-          <TrendChart data={academicTrend}/>
+        <label className="director-period"><span>Période d’analyse</span><select value={range} onChange={event => setRange(event.target.value as DashboardRange)}>{dashboardRangeOptions.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
+      </header>
+
+      {showDemoNotice && (
+        <div className="director-demo-notice" role="status">
+          <span><AlertTriangle size={17}/><span><strong>Mode démonstration</strong> — Les indicateurs de cette page sont fictifs. Les données ne sont pas encore consolidées depuis une base centrale.</span></span>
+          <button type="button" onClick={() => setShowDemoNotice(false)} aria-label="Masquer l’avertissement"><X size={16}/></button>
         </div>
-        <div className="dash-class-strip"><span>Meilleure classe</span><strong>1re B · 15,8/20</strong><span>À suivre</span><strong>4e A · 13,9/20</strong></div>
-      </article>
-      <article className="dash-panel">
-        <SectionHeading eyebrow="EFFECTIFS" title="Répartition des élèves"/>
-        <div className="dash-student-total"><strong>1 248</strong><span>élèves inscrits au total</span></div>
-        <DistributionDonut/>
-        <div className="dash-divider"/>
-        <div className="dash-chart-title">Effectifs par niveau</div>
-        <div className="dash-level-list">{academicLevels.map(item => <div key={item.label}><div><span>{item.label}</span><strong>{formatNumber(item.students)}</strong></div><div className="dash-level-track"><span style={{ width: `${item.students / 468 * 100}%` }}/></div></div>)}</div>
-        <button type="button" className="dash-panel-link" onClick={() => onNavigate("/students")}>Consulter les élèves<ArrowRight size={14}/></button>
-      </article>
-    </section>
+      )}
 
-    <section className="dash-grid dash-grid--attendance">
-      <article className="dash-panel">
-        <SectionHeading eyebrow="SUIVI QUOTIDIEN" title="Aperçu des présences" action={{ label: "Voir les présences", onClick: () => onNavigate("/student-attendance") }}/>
-        <div className="dash-attendance-summary"><div><strong>94,2 %</strong><span>Taux de présence aujourd’hui</span></div><span className="dash-positive"><ArrowUpRight size={14}/> +1,6 pt</span></div>
-        <div className="dash-attendance-stats"><div><i className="is-present"/><strong>1 176</strong><span>Présents</span></div><div><i className="is-absent"/><strong>49</strong><span>Absents</span></div><div><i className="is-late"/><strong>23</strong><span>En retard</span></div></div>
-        <div className="dash-chart-title">Tendance des derniers jours</div>
-        <AttendanceChart range={range}/>
-      </article>
-      <article className="dash-panel">
-        <SectionHeading eyebrow="ACCOMPAGNEMENT" title="Élèves nécessitant une attention" action={{ label: "Voir tout", onClick: () => onNavigate("/student-risk") }}/>
-        <div className="dash-risk-summary"><strong>12</strong><span>élèves signalés nécessitent un suivi actif</span><span className="dash-risk-badge"><ShieldAlert size={13}/> À surveiller</span></div>
-        <div className="dash-risk-table-wrap"><table className="dash-risk-table">
-          <thead><tr><th>Élève</th><th>Classe</th><th>Motif principal</th><th>Suivi</th><th/></tr></thead>
-          <tbody>{(showAllStudents ? studentsAtRisk : studentsAtRisk.slice(0, 3)).map(student => <tr key={student.id}>
-            <td><div className="dash-student-cell"><span>{student.initials}</span><div><strong>{student.name}</strong><small>{student.id}</small></div></div></td>
-            <td>{student.className}</td><td><span className={`dash-risk-tag dash-risk-tag--${student.tone}`}>{student.risk}</span><small className="dash-reason">{student.reason}</small></td>
-            <td><span className={`dash-status dash-status--${student.status === "Résolu" ? "done" : student.status === "En cours" ? "progress" : "pending"}`}>{student.status}</span></td>
-            <td><button type="button" className="dash-icon-action" onClick={() => setSelectedStudent(student.id)} aria-label={`Voir le suivi de ${student.name}`}><ArrowRight size={15}/></button></td>
-          </tr>)}</tbody>
-        </table></div>
-        <button type="button" className="dash-panel-link" onClick={() => setShowAllStudents(value => !value)}>{showAllStudents ? "Réduire la liste" : "Afficher les élèves de démonstration"}<ArrowRight size={14}/></button>
-      </article>
-    </section>
-
-    <section className="dash-grid dash-grid--operations">
-      <article className="dash-panel">
-        <SectionHeading eyebrow="SUIVI FINANCIER" title="Aperçu financier" action={{ label: "Rapports financiers", onClick: () => onNavigate("/financial-reports") }}/>
-        <div className="dash-finance-metrics"><div><span>Encaissements</span><strong>{financialSummary.collected}</strong><small className="dash-positive"><ArrowUpRight size={12}/>{financialSummary.comparison} vs période précédente</small></div><div><span>Reste à recouvrer</span><strong>{financialSummary.outstanding}</strong><small>127 dossiers concernés</small></div><div><span>Dépenses</span><strong>{financialSummary.expenses}</strong><small>Budget de fonctionnement</small></div></div>
-        <div className="dash-revenue-head"><span>Évolution des recettes</span><small>{range === "7" ? "7 jours" : range === "30" ? "30 jours" : "90 jours"} · milliers de DH</small></div>
-        <div className="dash-revenue-bars">{revenue.map(item => <div key={item.label}><span>{item.amount}</span><i style={{ height: `${item.amount / 100 * 100}%` }}/><small>{item.label}</small></div>)}</div>
-      </article>
-      <article className="dash-panel">
-        <SectionHeading eyebrow="JOURNAL DE L’ÉTABLISSEMENT" title="Activité récente" action={{ label: "Historique complet", onClick: () => onNavigate("/activity-history") }}/>
-        <div className="dash-activity-list">{activities.map(item => <div className="dash-activity-item" key={item.id}>
-          <span className={`dash-activity-icon dash-activity-icon--${item.type}`}>{item.type === "student" ? <GraduationCap size={16}/> : item.type === "payment" ? <Banknote size={16}/> : item.type === "grade" ? <BadgeCheck size={16}/> : item.type === "attendance" ? <CalendarDays size={16}/> : item.type === "course" ? <BookOpenCheck size={16}/> : <UserRound size={16}/>}</span>
-          <div><strong>{item.title}</strong><p>{item.description}</p><small>{item.actor}</small></div><time>{item.daysAgo === 0 ? "Aujourd’hui" : item.daysAgo === 1 ? "Hier" : `Il y a ${item.daysAgo} j`} · {item.time}</time>
-        </div>)}</div>
-        {filteredActivities.length > 4 && <button type="button" className="dash-panel-link" onClick={() => setShowAllActivities(value => !value)}>{showAllActivities ? "Afficher moins" : "Afficher plus d’activités"}<ArrowRight size={14}/></button>}
-      </article>
-    </section>
-
-    <footer className="dash-footer"><span>Tableau de bord de direction</span><span>Données fictives à des fins de démonstration · Actualisation à l’ouverture</span></footer>
-
-    {selected && <div className="dash-modal-backdrop" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) setSelectedStudent(null); }}>
-      <section className="dash-student-modal" role="dialog" aria-modal="true" aria-labelledby="dash-modal-title">
-        <button type="button" className="dash-modal-close" onClick={() => setSelectedStudent(null)} aria-label="Fermer"><X size={18}/></button>
-        <span className="dash-modal-avatar">{selected.initials}</span><span className="dash-eyebrow">DOSSIER ÉLÈVE · {selected.id}</span><h2 id="dash-modal-title">{selected.name}</h2>
-        <p>{selected.className} · {selected.risk}</p><div className="dash-modal-reason">{selected.reason}</div>
-        <p className="dash-modal-note">Aperçu de démonstration : les informations de suivi réelles seront chargées depuis le dossier de l’élève lorsque le backend sera connecté.</p>
-        <button type="button" className="dash-primary-button" onClick={() => { setSelectedStudent(null); onNavigate("/student-risk"); }}>Ouvrir le suivi des élèves<ArrowRight size={15}/></button>
+      <section className="director-metrics" aria-label="Indicateurs clés de l’établissement">
+        <MetricCard label="Élèves inscrits" value="1 248" detail="1 216 actifs · 32 dossiers à vérifier" icon={GraduationCap} tone="blue" onClick={() => onNavigate("/students")}/>
+        <MetricCard label="Présence aujourd’hui" value="94,2 %" detail="49 absents · 23 retards" icon={Users} tone="green" onClick={() => onNavigate("/student-attendance")}/>
+        <MetricCard label="Suivis prioritaires" value={String(riskCount + 8)} detail={`${riskCount} situations élèves · autres alertes`} icon={ShieldAlert} tone="amber" onClick={() => onNavigate("/student-risk")}/>
+        <MetricCard label="Encaissements" value={financialSummary.collected} detail={`${financialSummary.comparison} par rapport à la période précédente`} icon={Wallet} tone="violet" onClick={() => onNavigate("/financial-reports")}/>
       </section>
-    </div>}
-  </main>;
+
+      <section className="director-priority-section">
+        <DirectorTaskCenter onNavigate={onNavigate}/>
+      </section>
+
+      <section className="director-content-grid director-content-grid--equal">
+        <AttendancePanel onNavigate={onNavigate}/>
+        <article className="director-panel director-alert-panel">
+          <SectionTitle eyebrow="POINTS DE VIGILANCE" title="Ce qui demande votre attention"
+            action={{ label: "Suivi des élèves", run: () => onNavigate("/student-risk") }}/>
+          <div className="director-alert-list">
+            {importantAlerts.map(alert => (
+              <div className={`director-alert director-alert--${alert.severity}`} key={alert.id}>
+                <span className="director-alert-icon">{alert.severity === "critical" ? <AlertTriangle size={17}/> : alert.severity === "warning" ? <ShieldAlert size={17}/> : <CalendarDays size={17}/>}</span>
+                <div><strong>{alert.title}</strong><p>{alert.description}</p></div>
+                <button type="button" onClick={() => onNavigate(alert.route)}>{alert.action}<ArrowRight size={14}/></button>
+              </div>
+            ))}
+          </div>
+        </article>
+      </section>
+
+      <section className="director-content-grid director-content-grid--wide-left">
+        <article className="director-panel">
+          <SectionTitle eyebrow="RÉSULTATS SCOLAIRES" title="Vue pédagogique"
+            action={{ label: "Rapports pédagogiques", run: () => onNavigate("/pedagogical-reports") }}/>
+          <div className="director-academic-summary"><div><strong>{average}<small>/20</small></strong><span>Moyenne générale simulée</span></div><span className="director-trend"><ArrowUpRight size={15}/> +0,4 pt</span></div>
+          <div className="director-chart-caption">Moyenne par niveau · sur 20</div>
+          <div className="director-level-bars">
+            {academicLevels.map(level => <div className="director-level-row" key={level.label}>
+              <span>{level.label}</span><div><i style={{ width: `${level.value / 20 * 100}%` }}/></div><strong>{level.value.toLocaleString("fr-FR")}</strong>
+            </div>)}
+          </div>
+          <div className="director-class-summary">
+            <div><span>Meilleure classe</span><strong>1re B · 15,8/20</strong></div>
+            <div><span>À accompagner</span><strong>4e A · 13,9/20</strong></div>
+          </div>
+          <div className="director-inline-link"><button type="button" onClick={() => onNavigate("/class-rankings")}>Comparer les classes<ArrowRight size={14}/></button></div>
+        </article>
+
+        <article className="director-panel">
+          <SectionTitle eyebrow="PILOTAGE FINANCIER" title="Situation financière"
+            action={{ label: "Rapports financiers", run: () => onNavigate("/financial-reports") }}/>
+          <div className="director-finance-list">
+            <div><span className="director-finance-icon is-income"><Banknote size={17}/></span><span><strong>Encaissements</strong><small>Montants reçus</small></span><b>{financialSummary.collected}</b></div>
+            <div><span className="director-finance-icon is-outstanding"><Clock3 size={17}/></span><span><strong>Reste à recouvrer</strong><small>127 dossiers concernés</small></span><b>{financialSummary.outstanding}</b></div>
+            <div><span className="director-finance-icon is-expense"><Activity size={17}/></span><span><strong>Dépenses enregistrées</strong><small>Charges de fonctionnement</small></span><b>{financialSummary.expenses}</b></div>
+          </div>
+          <div className="director-chart-caption">Évolution des recettes · milliers de DH · {periodLabel}</div>
+          <div className="director-revenue-chart" role="img" aria-label={revenue.map(item => `${item.label} : ${item.amount} milliers de dirhams`).join(", ")}>
+            {revenue.map(item => <div key={item.label}><strong>{item.amount}</strong><span><i style={{ height: `${item.amount / maxRevenue * 100}%` }}/></span><small>{item.label}</small></div>)}
+          </div>
+        </article>
+      </section>
+
+      <section className="director-content-grid director-content-grid--wide-left">
+        <article className="director-panel">
+          <SectionTitle eyebrow="ACCOMPAGNEMENT DES ÉLÈVES" title="Situations à suivre"
+            action={{ label: "Ouvrir le suivi", run: () => onNavigate("/student-risk") }}/>
+          <div className="director-risk-list">
+            {studentsAtRisk.slice(0, 3).map(student => <button type="button" className="director-risk-row" key={student.id} onClick={() => onNavigate(`/student-risk?student=${student.id}`)}>
+              <span className={`director-risk-avatar director-risk-avatar--${student.tone}`}>{student.initials}</span>
+              <span className="director-risk-copy"><strong>{student.name}</strong><small>{student.className} · {student.reason}</small></span>
+              <span className={`director-risk-status director-risk-status--${student.tone}`}>{student.status}</span>
+              <ArrowRight size={15}/>
+            </button>)}
+          </div>
+          <div className="director-panel-footnote">Exemples fictifs · consulter le dossier complet dans le module de suivi</div>
+        </article>
+        <article className="director-panel">
+          <SectionTitle eyebrow="VIE DE L’ÉTABLISSEMENT" title="Activité récente"
+            action={{ label: "Tout l’historique", run: () => onNavigate("/activity-history") }}/>
+          <div className="director-activity-list">
+            {activities.map(item => <div className="director-activity-row" key={item.id}>
+              <span className={`director-activity-icon director-activity-icon--${item.type}`}>{item.type === "payment" ? <Banknote size={15}/> : item.type === "grade" ? <CheckCircle2 size={15}/> : item.type === "attendance" ? <CalendarDays size={15}/> : item.type === "course" ? <BookOpenCheck size={15}/> : <GraduationCap size={15}/>}</span>
+              <span><strong>{item.title}</strong><small>{item.description}</small></span>
+              <time>{item.daysAgo === 0 ? "Aujourd’hui" : item.daysAgo === 1 ? "Hier" : `Il y a ${item.daysAgo} j`} · {item.time}</time>
+            </div>)}
+            {activities.length === 0 && <p className="director-empty">Aucune activité sur cette période.</p>}
+          </div>
+        </article>
+      </section>
+
+      <footer className="director-footer"><span>Direction · Tableau de bord</span><span>Données de démonstration · Période : {periodLabel}</span></footer>
+    </main>
+  );
 }
