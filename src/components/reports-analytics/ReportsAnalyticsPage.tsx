@@ -54,6 +54,7 @@ const money=(n:number)=>fmt(n)+" DH";
 const dateTime=(s:string)=>new Intl.DateTimeFormat("fr-FR",{dateStyle:"medium",timeStyle:"short"}).format(new Date(s));
 const today=new Date().toISOString().slice(0,10);
 const reportCatalog:{title:string;category:Category;description:string;route?:string;permission:Permission}[]=[
+{title:"Effectifs par niveau",category:"Académique",description:"Répartition des inscriptions actives par niveau.",route:"/students",permission:"people.students.view"},
 {title:"Résultats scolaires",category:"Académique",description:"Synthèse des résultats validés par classe.",route:"/grades-validation",permission:"pedagogy.grades.view"},
 {title:"Taux de réussite",category:"Académique",description:"Indicateurs de réussite calculés sur les résultats validés.",route:"/pedagogical-reports",permission:"pedagogy.reports.view"},
 {title:"Moyennes par classe et matière",category:"Académique",description:"Comparaison des moyennes disponibles.",route:"/class-rankings",permission:"student.analytics.view"},
