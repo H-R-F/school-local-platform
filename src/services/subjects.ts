@@ -81,7 +81,7 @@ async function loadRaw(){
  const [structure,levels,academicYears]=await Promise.all([sectorsProgramsRepository.list(),levelsRepository.list(),academicYearRepository.list()]);
  const subjects=read(SUBJECT_KEY,seedSubjects());
  const assignments=read(ASSIGNMENT_KEY,seedAssignments(structure,levels,academicYears));
- const teachers=read<TeacherSubjectAssignment>(TEACHER_KEY,[]);
+ const teachers=read(TEACHER_KEY,[]);
  return {structure,levels,academicYears,subjects,assignments,teachers};
 }
 function validateSubject(input:SubjectInput,rows:Subject[],excludedId?:string){

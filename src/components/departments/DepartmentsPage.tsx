@@ -1,6 +1,6 @@
 import {useEffect,useMemo,useState,type CSSProperties,type FormEvent} from "react";
-import {AlertCircle,Building2,Check,ChevronLeft,ChevronRight,Filter,MoreHorizontal,Plus,Search,ShieldCheck,Users,BookOpen,X} from "lucide-react";
-import {departmentsRepository,type DepartmentInput,type DepartmentRecord,type DepartmentsData} from "../../services/departments";
+import {AlertCircle,Building2,Check,ChevronLeft,ChevronRight,Filter,MoreHorizontal,Pencil,Plus,Search,ShieldCheck,Users,BookOpen,X} from "lucide-react";
+import {departmentsRepository,type Department,type DepartmentInput,type DepartmentRecord,type DepartmentsData} from "../../services/departments";
 import type {AuthenticatedSidebarUser} from "../../types/navigation";
 import {schoolBranding} from "../../config/school";
 import "./departments.css";

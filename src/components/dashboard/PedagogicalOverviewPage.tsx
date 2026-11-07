@@ -9,12 +9,11 @@ import {
   academicAlerts, badgeOverview, contentReviews, gradeSubmissions,
   pedagogicalActivities, pedagogicalKpis, pedagogicalQuickActions,
   performanceByClass, performanceByLevel, performanceTrends, performanceTrendsByTerm, teacherReports,
-  timetableOverview,
+  timetableOverview, type ContentKind,
 } from "../../data/pedagogical-dashboard";
-import { demoAccounts } from "../../data/demo-accounts";
 import type { AuthenticatedSidebarUser, Permission } from "../../types/navigation";
 
-interface Props { user: AuthenticatedSidebarUser; onNavigate: (route: string) => void; onSwitchUser?: (user: AuthenticatedSidebarUser) => void; }
+interface Props { user: AuthenticatedSidebarUser; onNavigate: (route: string) => void; }
 type PerformanceLevel = "Tous" | "Primaire" | "Collège" | "Lycée";
 type ReviewTab = "Cours" | "Exercices";
 
@@ -47,7 +46,7 @@ function TrendLine({ data }: { data: { label: string; value: number }[] }) {
   </svg><div className="ped-line-legend"><span/>Moyenne générale sur 20</div></div>;
 }
 
-export function PedagogicalOverviewPage({ user, onNavigate, onSwitchUser }: Props) {
+export function PedagogicalOverviewPage({ user, onNavigate }: Props) {
   const [reviewTab, setReviewTab] = useState<ReviewTab>("Cours");
   const [level, setLevel] = useState<PerformanceLevel>("Tous");
   const [year, setYear] = useState("2026–2027");
@@ -77,27 +76,7 @@ export function PedagogicalOverviewPage({ user, onNavigate, onSwitchUser }: Prop
       <div><div className="ped-breadcrumb"><GraduationCap size={14}/> Espace pédagogique <span>/</span> Vue d’ensemble</div>
         <h1>Vue d'ensemble</h1><p>{greeting}, {firstName}. Suivez les progrès académiques et les activités pédagogiques de votre établissement.</p>
         <div className="ped-context"><span><CalendarDays size={14}/>{dateLabel()}</span><span>Année scolaire {academicYearLabel}</span><span>{semesterLabel}</span></div>
-      </div>
-      <div className="ped-role-chip">
-        <span>ESPACE PÉDAGOGIQUE</span>
-        <strong>Responsable pédagogique</strong>
-        {onSwitchUser && (
-          <div className="dash-role-pills" style={{ marginTop: "6px" }}>
-            {demoAccounts.map(account => (
-              <button
-                key={account.user.id}
-                type="button"
-                className={`dash-role-pill ${account.user.id === user.id ? "dash-role-pill--active" : ""}`}
-                onClick={() => onSwitchUser(account.user)}
-                title={`Passer à ${account.user.displayName}`}
-              >
-                <span className="dash-role-avatar">{account.user.initials}</span>
-                <span>{account.user.displayName.split(" ")[0]}</span>
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
+      </div><div className="ped-role-chip"><span>ESPACE PÉDAGOGIQUE</span><strong>Responsable pédagogique</strong></div>
     </header>
 
     <section className="ped-kpis" aria-label="Indicateurs pédagogiques">

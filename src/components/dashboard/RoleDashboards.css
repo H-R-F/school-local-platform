@@ -1,9 +1,9 @@
 /* Shared interaction and visual system for the three role-specific operational dashboards.
    Role content stays distinct; hierarchy, controls, data density and responsive behavior are consistent. */
 :where(.administrative-dashboard,.pedagogical-dashboard,.finance-logistics-dashboard){
-  --role-ink:#0F172A;--role-muted:#64748B;--role-border:#E2E8F0;--role-surface:#FFFFFF;
-  --role-primary:#1D4ED8;--role-primary-soft:#EFF6FF;--role-bg:#F8FAFC;
-  display:flex!important;flex-direction:column;gap:20px;min-width:0;
+  --role-ink:#14213A;--role-muted:#64748B;--role-border:#E3E9F1;--role-surface:#fff;
+  --role-primary:#2457B8;--role-primary-soft:#EEF4FF;--role-bg:#F5F7FA;
+  display:flex!important;flex-direction:column;gap:18px;min-width:0;
 }
 :where(.administrative-dashboard,.pedagogical-dashboard,.finance-logistics-dashboard) *{box-sizing:border-box}
 :where(.administrative-dashboard,.pedagogical-dashboard,.finance-logistics-dashboard) h1{

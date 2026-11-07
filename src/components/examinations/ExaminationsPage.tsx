@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import type { CSSProperties } from "react";
 import {
   AlertCircle, CalendarDays, CalendarRange, Check, ChevronLeft, ChevronRight, Clock3,
-  Eye, GraduationCap, Info, LayoutGrid, List,
+  DoorOpen, Eye, GraduationCap, Info, LayoutGrid, List, MapPin,
   Plus, Search, ShieldCheck, Users, X, Ban,
 } from "lucide-react";
 import { academicYearRepository } from "../../services/academic-years";
@@ -96,6 +96,7 @@ export function ExaminationsPage({ user, onNavigate }: Props) {
           const activeClasses = classes.classes.filter((c: any) => c.academicYearId === currentYear.id && c.status === "Actif");
           const cls = activeClasses;
           const first = cls[0], second = cls[1] ?? cls[0], third = cls[2] ?? cls[0];
+          const start = "2026-11-09";
           const next = (n: number) => `2026-11-${String(n).padStart(2, "0")}`;
           const seedSession: ExamSession = { id: "DEMO-SESSION-1", name: "Examens du premier semestre", yearId: currentYear.id, yearName: currentYear.name, period: "Premier semestre", startDate: "2026-11-06", endDate: "2026-11-20", description: "Session de démonstration — évaluations du premier semestre.", classIds: cls.slice(0, Math.min(6, cls.length)).map((c: any) => c.id), programNames: [...new Set(cls.slice(0, 6).map((c: any) => c.programName))], levelNames: [...new Set(cls.slice(0, 6).map((c: any) => c.levelName))] };
           const getSubject = (classId: string, index: number) => {

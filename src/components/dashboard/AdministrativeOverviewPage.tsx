@@ -11,10 +11,9 @@ import {
   enrollmentLevels, enrollmentTrend, peopleMetrics, recentRegistrations,
   type RegistrationKind,
 } from "../../data/administrative-dashboard";
-import { demoAccounts } from "../../data/demo-accounts";
 import type { AuthenticatedSidebarUser, Permission } from "../../types/navigation";
 
-interface Props { user: AuthenticatedSidebarUser; onNavigate: (route: string) => void; onSwitchUser?: (user: AuthenticatedSidebarUser) => void; }
+interface Props { user: AuthenticatedSidebarUser; onNavigate: (route: string) => void; }
 
 const peopleTabs: { id: RegistrationKind | "Personnel"; label: string; key: keyof typeof peopleMetrics; icon: typeof Users }[] = [
   { id: "Élève", label: "Élèves", key: "students", icon: GraduationCap },
@@ -48,7 +47,7 @@ function EnrollmentChart() {
   </div>;
 }
 
-export function AdministrativeOverviewPage({ user, onNavigate, onSwitchUser }: Props) {
+export function AdministrativeOverviewPage({ user, onNavigate }: Props) {
   const [activePeople, setActivePeople] = useState<keyof typeof peopleMetrics>("students");
   const [search, setSearch] = useState("");
   const [showAllRegistrations, setShowAllRegistrations] = useState(false);
@@ -70,26 +69,7 @@ export function AdministrativeOverviewPage({ user, onNavigate, onSwitchUser }: P
         <p>{greeting} {user.displayName.split(" ")[0]}, voici votre aperçu administratif pour aujourd’hui.</p>
         <div className="admin-dash-context"><span><CalendarDays size={14}/> Année scolaire 2026–2027</span><span>{today}</span></div>
       </div>
-      <div className="admin-dash-role">
-        <span>ESPACE ADMINISTRATIF</span>
-        <strong>Responsable administratif</strong>
-        {onSwitchUser && (
-          <div className="dash-role-pills" style={{ marginTop: "6px" }}>
-            {demoAccounts.map(account => (
-              <button
-                key={account.user.id}
-                type="button"
-                className={`dash-role-pill ${account.user.id === user.id ? "dash-role-pill--active" : ""}`}
-                onClick={() => onSwitchUser(account.user)}
-                title={`Passer à ${account.user.displayName}`}
-              >
-                <span className="dash-role-avatar">{account.user.initials}</span>
-                <span>{account.user.displayName.split(" ")[0]}</span>
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
+      <div className="admin-dash-role"><span>ESPACE ADMINISTRATIF</span><strong>Responsable administratif</strong></div>
     </header>
 
     <section className="admin-dash-kpis" aria-label="Indicateurs administratifs">
