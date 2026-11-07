@@ -2,10 +2,10 @@ import { useMemo, useState } from "react";
 import {
   Activity, AlertTriangle, ArrowRight, ArrowUpRight, Banknote, BookOpenCheck,
   CalendarDays, CheckCircle2, Clock3, GraduationCap, LayoutDashboard,
-  ShieldAlert, TrendingUp, Users, Wallet, X,
+  ShieldAlert, Users, Wallet, X,
 } from "lucide-react";
 import {
-  academicLevels, attendanceSeries, classPerformance, dashboardRangeOptions,
+  academicLevels, dashboardRangeOptions,
   financialSummary, importantAlerts, recentActivities, revenueByRange,
   studentsAtRisk, type DashboardRange,
 } from "../../data/director-dashboard";
@@ -112,7 +112,7 @@ export function DirectorOverviewPage({ user, onNavigate }: Props) {
       <section className="director-metrics" aria-label="Indicateurs clés de l’établissement">
         <MetricCard label="Élèves inscrits" value="1 248" detail="1 216 actifs · 32 dossiers à vérifier" icon={GraduationCap} tone="blue" onClick={() => onNavigate("/students")}/>
         <MetricCard label="Présence aujourd’hui" value="94,2 %" detail="49 absents · 23 retards" icon={Users} tone="green" onClick={() => onNavigate("/student-attendance")}/>
-        <MetricCard label="Suivis prioritaires" value={String(riskCount + 8)} detail={`${riskCount} situations élèves · autres alertes`} icon={ShieldAlert} tone="amber" onClick={() => onNavigate("/student-risk")}/>
+        <MetricCard label="Suivis prioritaires" value="12" detail={`${riskCount} situations élèves ouvertes · autres alertes`} icon={ShieldAlert} tone="amber" onClick={() => onNavigate("/student-risk")}/>
         <MetricCard label="Encaissements" value={financialSummary.collected} detail={`${financialSummary.comparison} par rapport à la période précédente`} icon={Wallet} tone="violet" onClick={() => onNavigate("/financial-reports")}/>
       </section>
 
