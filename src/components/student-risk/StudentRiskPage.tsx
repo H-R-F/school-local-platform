@@ -1,11 +1,23 @@
 import { useMemo, useState } from "react";
-import { AlertCircle, ArrowUpRight, BookOpen, ChevronRight, CircleHelp, FilterX, Info, Search, ShieldCheck, Users, X } from "lucide-react";
+import { AlertCircle, ArrowUpRight, BookOpen, CalendarClock, ChevronRight, CircleHelp, FilterX, Info, MapPin, Search, ShieldAlert, ShieldCheck, Users, X } from "lucide-react";
 import { academicAlerts } from "../../data/pedagogical-dashboard";
 import type { AuthenticatedSidebarUser } from "../../types/navigation";
 import "./StudentRiskPage.css";
 
 interface Props { user: AuthenticatedSidebarUser; onNavigate: (route: string) => void }
 type AlertRecord = typeof academicAlerts[number];
+type SchoolIncident = {
+  id: string; student: string; className: string; date: string; time: string;
+  location: string; category: string; severity: "Faible" | "Modérée" | "Élevée";
+  status: "À examiner" | "En suivi" | "Clôturé"; summary: string; immediateAction: string;
+};
+const schoolIncidentExamples: readonly SchoolIncident[] = [
+  { id: "INC-SCOL-003", student: "Adam El Mansouri", className: "3e B", date: "2026-11-05", time: "10:25", location: "Cour de récréation", category: "Chute pendant la récréation", severity: "Modérée", status: "En suivi", summary: "Exemple fictif d’un incident survenu pendant une période de récréation.", immediateAction: "Prise en charge initiale par l’équipe de surveillance." },
+  { id: "INC-SCOL-002", student: "Lina Berrada", className: "2e A", date: "2026-11-03", time: "14:10", location: "Terrain de sport", category: "Incident pendant une activité sportive", severity: "Faible", status: "À examiner", summary: "Exemple fictif d’un incident déclaré pendant une activité encadrée.", immediateAction: "Information transmise au responsable de la vie scolaire." },
+  { id: "INC-SCOL-001", student: "Omar Chraïbi", className: "5e B", date: "2026-10-29", time: "09:40", location: "Couloir – bâtiment A", category: "Incident entre élèves", severity: "Élevée", status: "En suivi", summary: "Exemple fictif nécessitant une vérification et un suivi par l’établissement.", immediateAction: "Élèves séparés et situation transmise au responsable." },
+];
+const incidentSeverityClass = (value: SchoolIncident["severity"]) => value === "Élevée" ? "sr-incident-severity--high" : value === "Modérée" ? "sr-incident-severity--medium" : "sr-incident-severity--low";
+const incidentStatusClass = (value: SchoolIncident["status"]) => value === "En suivi" ? "sr-status--active" : value === "À examiner" ? "sr-status--review" : "sr-status--closed";
 
 const statusLabel = (value: string) => value === "Suivi en cours" ? "Suivi en cours" : value;
 const statusClass = (value: string) => value === "Suivi en cours" ? "sr-status--active" : "sr-status--review";
@@ -16,6 +28,7 @@ export function StudentRiskPage({ user, onNavigate }: Props) {
   const [reasonFilter, setReasonFilter] = useState("Tous les motifs");
   const [statusFilter, setStatusFilter] = useState("Tous les statuts");
   const [selected, setSelected] = useState<AlertRecord | null>(null);
+  const [selectedIncident, setSelectedIncident] = useState<SchoolIncident | null>(null);
 
   const permitted = user.permissions.includes("student.analytics.view");
   const records = academicAlerts as readonly AlertRecord[];
@@ -32,6 +45,7 @@ export function StudentRiskPage({ user, onNavigate }: Props) {
   const activeCount = records.filter(item => item.status === "Suivi en cours").length;
   const reviewCount = records.filter(item => item.status === "À démarrer").length;
   const uniqueStudents = new Set(records.map(item => item.student)).size;
+  const incidentInFollowUp = schoolIncidentExamples.filter(item => item.status === "En suivi").length;
   const categoryCounts = reasons.map(reason => ({ reason, count: records.filter(item => item.indicator === reason).length, pending: records.filter(item => item.indicator === reason && item.status === "À démarrer").length }));
 
   const resetFilters = () => { setQuery(""); setClassFilter("Toutes les classes"); setReasonFilter("Tous les motifs"); setStatusFilter("Tous les statuts"); };
@@ -41,22 +55,50 @@ export function StudentRiskPage({ user, onNavigate }: Props) {
   return (
     <main className="sr-page">
       <header className="sr-header">
-        <div className="sr-breadcrumb"><span>Vie scolaire</span><ChevronRight size={13}/><strong>Suivi des élèves à risque</strong></div>
+        <div className="sr-breadcrumb"><span>Vie scolaire</span><ChevronRight size={13}/><strong>Suivi des élèves</strong></div>
         <div className="sr-heading-row">
-          <div><h1>Suivi des élèves à risque</h1><p>Identifiez les situations nécessitant une attention et un accompagnement pédagogique.</p></div>
-          <div className="sr-header-meta"><span className="sr-count"><Users size={14}/>{activeCount} suivi{activeCount > 1 ? "s" : ""} en cours</span><span className="sr-demo-tag"><Info size={13}/> Aperçu de démonstration</span></div>
+          <div><h1>Suivi des élèves</h1><p>Suivez séparément les situations pédagogiques et les accidents ou incidents survenus dans l’établissement.</p></div>
+          <div className="sr-header-meta"><span className="sr-count"><Users size={14}/>{activeCount} suivi{activeCount > 1 ? "s" : ""} pédagogique{activeCount > 1 ? "s" : ""} en cours</span><span className="sr-demo-tag"><Info size={13}/> Aperçu de démonstration</span></div>
         </div>
       </header>
 
       <section className="sr-notice" aria-label="Limites des données">
-        <Info size={16}/><div><strong>Données d’aperçu uniquement</strong><span>Les alertes ci-dessous proviennent des exemples du tableau de bord pédagogique. Le projet ne dispose pas encore d’un registre de suivi persistant ni d’un historique d’interventions.</span></div>
+        <Info size={16}/><div><strong>Données d’aperçu uniquement</strong><span>Les données affichées sont des exemples de démonstration. Aucun registre persistant de suivi pédagogique ou d’accidents scolaires n’est encore connecté.</span></div>
       </section>
 
       <section className="sr-kpis" aria-label="Indicateurs de suivi">
         <article className="sr-kpi"><span className="sr-kpi-icon sr-kpi-icon--blue"><Users size={17}/></span><div><strong>{uniqueStudents}</strong><span>Élèves signalés</span><small>Élèves distincts dans les alertes d’aperçu</small></div></article>
         <article className="sr-kpi"><span className="sr-kpi-icon sr-kpi-icon--amber"><AlertCircle size={17}/></span><div><strong>{reviewCount}</strong><span>Alertes à examiner</span><small>Statut « À démarrer » dans les données d’aperçu</small></div></article>
         <article className="sr-kpi"><span className="sr-kpi-icon sr-kpi-icon--teal"><BookOpen size={17}/></span><div><strong>{activeCount}</strong><span>Suivis indiqués en cours</span><small>Statut fourni par le tableau de bord</small></div></article>
-        <article className="sr-kpi sr-kpi--unavailable"><span className="sr-kpi-icon sr-kpi-icon--neutral"><CircleHelp size={17}/></span><div><strong>—</strong><span>Interventions réalisées</span><small>Historique d’intervention non disponible</small></div></article>
+        <article className="sr-kpi"><span className="sr-kpi-icon sr-kpi-icon--amber"><ShieldAlert size={17}/></span><div><strong>{schoolIncidentExamples.length}</strong><span>Accidents et incidents</span><small>Exemples fictifs · registre non connecté</small></div></article>
+      </section>
+
+
+      <section className="sr-section sr-incident-section">
+        <div className="sr-section-heading">
+          <div><span className="sr-eyebrow">SÉCURITÉ ET VIE SCOLAIRE</span><h2>Accidents et incidents scolaires</h2></div>
+          <span className="sr-section-note">{incidentInFollowUp} situation{incidentInFollowUp > 1 ? "s" : ""} en suivi dans les exemples</span>
+        </div>
+        <div className="sr-incident-intro">
+          <span className="sr-incident-intro-icon"><ShieldAlert size={17}/></span>
+          <div><strong>Un registre distinct du suivi pédagogique</strong><span>Déclarez et suivez ici les événements survenus dans l’enceinte scolaire : cour, classe, couloirs, sanitaires ou installations sportives. Un accident ne constitue pas automatiquement un indicateur de risque scolaire.</span></div>
+          <span className="sr-demo-tag"><Info size={13}/> Exemples fictifs</span>
+        </div>
+        <div className="sr-incident-table-wrap">
+          <table className="sr-table sr-incident-table">
+            <thead><tr><th>Élève</th><th>Date et heure</th><th>Lieu</th><th>Nature de l’incident</th><th>Gravité</th><th>Statut</th><th>Détail</th></tr></thead>
+            <tbody>{schoolIncidentExamples.map(item => <tr key={item.id} onClick={() => setSelectedIncident(item)} className={selectedIncident?.id === item.id ? "sr-row--selected" : ""}>
+              <td><strong className="sr-incident-student">{item.student}</strong><small className="sr-incident-class">{item.className} · {item.id}</small></td>
+              <td><span className="sr-incident-date">{new Date(item.date + "T00:00:00").toLocaleDateString("fr-FR")}</span><small className="sr-incident-class">{item.time}</small></td>
+              <td><span className="sr-incident-location"><MapPin size={12}/>{item.location}</span></td>
+              <td>{item.category}</td>
+              <td><span className={`sr-incident-severity ${incidentSeverityClass(item.severity)}`}>{item.severity}</span></td>
+              <td><span className={`sr-status ${incidentStatusClass(item.status)}`}>{item.status}</span></td>
+              <td><button type="button" className="sr-open" aria-label={`Consulter l’incident ${item.id}`} onClick={e => {e.stopPropagation();setSelectedIncident(item);}}><ArrowUpRight size={15}/></button></td>
+            </tr>)}</tbody>
+          </table>
+        </div>
+        <div className="sr-table-footer"><span>Les exemples ne constituent pas des déclarations réelles. Aucun enregistrement ni changement de statut n’est sauvegardé.</span><span>{schoolIncidentExamples.length} exemples</span></div>
       </section>
 
       <section className="sr-section">
@@ -101,6 +143,23 @@ export function StudentRiskPage({ user, onNavigate }: Props) {
             <section className="sr-detail-card"><h3>Historique du suivi</h3><div className="sr-history-empty"><CircleHelp size={18}/><strong>Aucun historique disponible</strong><span>Le projet ne contient pas encore de journal des observations, affectations ou interventions pour ce signalement.</span></div></section>
             <section className="sr-detail-limitation"><Info size={15}/><span>Les actions de prise en charge, d’observation, de planification et de clôture ne sont pas activées : aucun workflow persistant correspondant n’a été trouvé.</span></section>
             <button type="button" className="sr-secondary-action" onClick={() => {setSelected(null);onNavigate(`/students?search=${encodeURIComponent(selected.student)}`);}}>Consulter la gestion des élèves <ChevronRight size={15}/></button>
+          </div>
+        </aside>
+      </div>}
+
+      {selectedIncident && <div className="sr-drawer-backdrop" onMouseDown={e => {if(e.target === e.currentTarget) setSelectedIncident(null);}}>
+        <aside className="sr-drawer" aria-label="Détail de l’accident ou de l’incident">
+          <header className="sr-drawer-header"><div><span className="sr-eyebrow">ACCIDENT / INCIDENT SCOLAIRE</span><h2>{selectedIncident.student}</h2><span className="sr-reference">{selectedIncident.id}</span></div><button type="button" onClick={() => setSelectedIncident(null)} aria-label="Fermer"><X size={18}/></button></header>
+          <div className="sr-drawer-content">
+            <section className="sr-detail-card"><h3>Informations sur l’événement</h3><dl>
+              <div><dt>Élève</dt><dd>{selectedIncident.student}</dd></div><div><dt>Classe</dt><dd>{selectedIncident.className}</dd></div>
+              <div><dt>Date et heure</dt><dd>{new Date(selectedIncident.date + "T00:00:00").toLocaleDateString("fr-FR")} · {selectedIncident.time}</dd></div>
+              <div><dt>Lieu</dt><dd>{selectedIncident.location}</dd></div><div><dt>Nature</dt><dd>{selectedIncident.category}</dd></div>
+              <div><dt>Gravité déclarée</dt><dd><span className={`sr-incident-severity ${incidentSeverityClass(selectedIncident.severity)}`}>{selectedIncident.severity}</span></dd></div>
+              <div><dt>Statut</dt><dd><span className={`sr-status ${incidentStatusClass(selectedIncident.status)}`}>{selectedIncident.status}</span></dd></div>
+            </dl></section>
+            <section className="sr-detail-card"><h3>Description</h3><p>{selectedIncident.summary}</p><h3 className="sr-subheading">Mesure immédiate indiquée</h3><p>{selectedIncident.immediateAction}</p></section>
+            <section className="sr-detail-limitation"><Info size={15}/><span>Exemple fictif à des fins de conception. Le formulaire de déclaration, les coordonnées du déclarant, l’information des responsables légaux, les pièces jointes et l’historique de prise en charge nécessitent un registre dédié et une sauvegarde sécurisée.</span></section>
           </div>
         </aside>
       </div>}
