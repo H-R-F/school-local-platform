@@ -63,7 +63,7 @@ export function TripsOutingsPage({user}:Props){
  const [staff,setStaff]=useState<StaffOption[]>([]),[vehicles,setVehicles]=useState<TransportVehicle[]>([]),[trips,setTrips]=useState<TripRecord[]>([]);
  const [tab,setTab]=useState<Tab>("Vue d'ensemble"),[selectedId,setSelectedId]=useState<string|null>(null);
  const [showForm,setShowForm]=useState(false),[editingId,setEditingId]=useState<string|null>(null),[form,setForm]=useState<TripForm>(defaultForm("",[]));
- const [studentSearch,setStudentSearch]=useState(""),[listSearch,setListSearch]=useState(""),[typeFilter,setTypeFilter]=useState("all"),[statusFilter,setStatusFilter]=useState("all"),[classFilter,setClassFilter]=useState("all"),[fromDate,setFromDate]=useState(""),[toDate,setToDate]=useState(""),[sortAsc,setSortAsc]=useState(true),[page,setPage]=useState(1);
+ const [studentSearch,setStudentSearch]=useState(""),[listSearch,setListSearch]=useState(""),[typeFilter,setTypeFilter]=useState("all"),[statusFilter,setStatusFilter]=useState("all"),[classFilter,setClassFilter]=useState("all"),[responsibleFilter,setResponsibleFilter]=useState("all"),[fromDate,setFromDate]=useState(""),[toDate,setToDate]=useState(""),[sortAsc,setSortAsc]=useState(true),[page,setPage]=useState(1);
  const [participantSearch,setParticipantSearch]=useState(""),[participantTrip,setParticipantTrip]=useState("all"),[participantClass,setParticipantClass]=useState("all"),[participantPage,setParticipantPage]=useState(1);
  const [detailTab,setDetailTab]=useState("Informations générales");
  const pageSize=8;
