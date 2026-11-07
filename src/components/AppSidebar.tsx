@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { CSSProperties } from "react";
-import { PanelLeftClose, PanelLeftOpen, Search } from "lucide-react";
+import { LogOut, PanelLeftClose, PanelLeftOpen, Search } from "lucide-react";
 import { navigation } from "../data/navigation";
 import type { AuthenticatedSidebarUser, NavigationGroup, SchoolBranding } from "../types/navigation";
 import { SidebarBrand } from "./sidebar/SidebarBrand";
@@ -12,12 +12,17 @@ interface AppSidebarProps {
   currentPath?: string;
   onNavigate?: (route: string) => void;
   onExit?: () => void;
+  /** Controlled collapsed state (so the page layout can follow the sidebar width). */
+  collapsed?: boolean;
+  onCollapsedChange?: (collapsed: boolean) => void;
 }
 function normalizePath(path: string): string {
   return path.length > 1 && path.endsWith("/") ? path.slice(0, -1) : path;
 }
-export function AppSidebar({user,school,currentPath,onNavigate,onExit}:AppSidebarProps) {
-  const [collapsed,setCollapsed]=useState(false);
+export function AppSidebar({user,school,currentPath,onNavigate,onExit,collapsed:collapsedProp,onCollapsedChange}:AppSidebarProps) {
+  const [internalCollapsed,setInternalCollapsed]=useState(false);
+  const collapsed=collapsedProp??internalCollapsed;
+  const setCollapsed=(update:(value:boolean)=>boolean)=>{const next=update(collapsed);setInternalCollapsed(next);onCollapsedChange?.(next);};
   const [search,setSearch]=useState("");
   const path=normalizePath(currentPath ?? window.location.pathname);
   const visibleGroups=useMemo<NavigationGroup[]>(()=>navigation.map(group=>({
@@ -43,7 +48,7 @@ export function AppSidebar({user,school,currentPath,onNavigate,onExit}:AppSideba
     <div className="sidebar-top">
       <SidebarBrand school={school} collapsed={collapsed}/>
       <button type="button" className="sidebar-collapse-button" onClick={()=>setCollapsed(value=>!value)}
-        aria-label={collapsed?"Développer le menu":"Réduire le menu"} title={collapsed?"Développer le menu":"Réduire le menu"}>
+        aria-label={collapsed?"Développer le menu":"Réduire le menu"} aria-expanded={!collapsed} title={(collapsed?"Développer le menu":"Réduire le menu")+" (Ctrl+B)"}>
         {collapsed?<PanelLeftOpen size={17}/>:<PanelLeftClose size={17}/>}
       </button>
     </div>
@@ -60,7 +65,7 @@ export function AppSidebar({user,school,currentPath,onNavigate,onExit}:AppSideba
     <div className="sidebar-footer">
       <div className="sidebar-user-avatar" title={user.displayName}>{user.initials}</div>
       {!collapsed&&<div className="sidebar-user-copy"><strong>{user.displayName}</strong><span>{user.role==="finance"?"Responsable financier et logistique":user.role==="administrative"?"Responsable administratif":user.role==="pedagogical"?"Responsable pédagogique":"Directeur"}</span></div>}
-      {onExit && <button type="button" className="sidebar-exit" onClick={onExit}>Se déconnecter</button>}
+      {onExit && <button type="button" className="sidebar-exit" onClick={onExit} aria-label="Se déconnecter" title="Se déconnecter"><LogOut size={16} aria-hidden="true"/></button>}
     </div>
   </aside>;
 }
