@@ -52,7 +52,7 @@ export const announcementsRepository={
   }
   const status:AnnouncementStatus=input.publishAt&&new Date(input.publishAt)>new Date()?"Programmée":"Brouillon";
   const row:AnnouncementRecord={...input,id:"ANN-"+Date.now(),title:input.title.trim(),summary:input.summary.trim(),content:input.content.trim(),author,createdAt:now,updatedAt:now,publishedAt:null,status,history:[{action:"Annonce créée",actor:author,at:now},...(status==="Programmée"?[{action:"Publication programmée",actor:author,at:now,detail:input.publishAt??undefined}]:[])]};
-  return write([row,...rows);
+  return write([row,...rows]);
  },
  async publish(id:string,actor:string){
   const rows=read();const row=rows.find(r=>r.id===id);if(!row)throw new AnnouncementsError("Cette annonce n'existe plus.");
