@@ -19,7 +19,6 @@ const previewRows: RankingRow[] = [
   { id: "demo-8", name: "Aya Mansouri", reference: "APERÇU-008", average: 12.65, rank: 8, mention: "Passable", className: "", subjects: [{name:"Mathématiques",average:13},{name:"Français",average:12.5},{name:"Sciences",average:12.75}] },
 ];
 const number = (value: number) => value.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-const dateLabel = (value: string) => new Intl.DateTimeFormat("fr-FR", { dateStyle: "long" }).format(new Date(value));
 
 export function ClassRankingsPage({ user }: Props) {
   const canRead = user.permissions.includes("student.analytics.view");
