@@ -25,7 +25,7 @@ function reportingBounds(period:Period,start:string,end:string):[string,string]{
 }
 function calculateDemoMetrics(period:Period,start:string,end:string){
  const [from,to]=reportingBounds(period,start,end);
- if(from>"2026-11-07"||to<"2026-09-01")return null;
+ if(from>to||from>"2026-11-07"||to<"2026-09-01")return null;
  const selected=demoMonths.filter(m=>m.month<=to.slice(0,7)&&m.month>=from.slice(0,7));
  if(!selected.length)return null;
  const totals=selected.reduce((acc,m)=>{
@@ -96,7 +96,7 @@ export function ReportsAnalyticsPage({user,onNavigate}:Props){
  const periodLabel=period==="today"?"Aujourd’hui":period==="week"?"Cette semaine":period==="month"?"Ce mois":period==="quarter"?"Ce trimestre":period==="year"?"Année scolaire":`Du ${start} au ${end}`;
  const metrics=useMemo(()=>year==="2026-2027"?calculateDemoMetrics(period,start,end):null,[period,start,end,year]);
  const catalog=reportCatalog.filter(r=>visibleCategories.includes(r.category)&&user.permissions.includes(r.permission)&&(category==="Toutes"||r.category===category)&&[r.title,r.description,r.category].join(" ").toLocaleLowerCase("fr").includes(search.toLocaleLowerCase("fr")));
- const filteredReports=reports.filter(r=>visibleCategories.includes(r.category)&&(category==="Toutes"||r.category===category)&&(format==="Tous"||r.format===format)&&(reportPeriod==="Toutes"||r.period.toLocaleLowerCase("fr").includes(reportPeriod.toLocaleLowerCase("fr"))||r.period.includes(reportPeriod))&&[r.title,r.id,r.author].join(" ").toLocaleLowerCase("fr").includes(search.toLocaleLowerCase("fr"))).sort((a,b)=>sortOrder==="oldest"?a.createdAt.localeCompare(b.createdAt):sortOrder==="name"?a.title.localeCompare(b.title,"fr"):b.createdAt.localeCompare(a.createdAt));
+ const filteredReports=reports.filter(r=>visibleCategories.includes(r.category)&&(category==="Toutes"||r.category===category)&&(format==="Tous"||r.format===format)&&(reportPeriod==="Toutes"||r.period.toLocaleLowerCase("fr").includes(reportPeriod.toLocaleLowerCase("fr"))||r.period.includes(reportPeriod==="Novembre 2026"?"2026-11":reportPeriod==="Octobre 2026"?"2026-10":reportPeriod==="Septembre 2026"?"2026-09":reportPeriod))&&[r.title,r.id,r.author].join(" ").toLocaleLowerCase("fr").includes(search.toLocaleLowerCase("fr"))).sort((a,b)=>sortOrder==="oldest"?a.createdAt.localeCompare(b.createdAt):sortOrder==="name"?a.title.localeCompare(b.title,"fr"):b.createdAt.localeCompare(a.createdAt));
  const reportPageSize=8;const reportPageCount=Math.max(1,Math.ceil(filteredReports.length/reportPageSize));const reportPageRows=filteredReports.slice((reportPage-1)*reportPageSize,reportPage*reportPageSize);
  const data=metrics??{students:null,staff:null,attendance:null,success:null,collected:null,outstanding:null,levels:[],trend:[],range:[start,end]};
  const refresh=()=>{setReports(loadReports());setLastRefresh(new Date());setNotice("Les données locales de démonstration ont été actualisées.");};
