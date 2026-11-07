@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Activity, AlertCircle, ArrowUpRight, BarChart3, CheckCircle2, ChevronRight, Download, FileBarChart, Filter, GraduationCap, RefreshCw, Search, ShieldAlert, Users, Wallet, X } from "lucide-react";
 import type { AuthenticatedSidebarUser } from "../../types/navigation";
 import { schoolBranding } from "../../config/school";
@@ -8,6 +8,38 @@ type Category="Académique"|"Vie scolaire"|"Ressources humaines"|"Finances"|"Log
 type Period="today"|"week"|"month"|"quarter"|"year"|"custom";
 type Report={id:string;title:string;category:Category;period:string;createdAt:string;author:string;format:"CSV";filters:string;summary:string;rows:string[][]};
 const categories:Category[]=["Académique","Vie scolaire","Ressources humaines","Finances","Logistique","Communication"];
+type DemoMonth={month:string;label:string;students:number;staff:number;expected:number;present:number;validated:number;passed:number;collected:number;outstanding:number;levels:{name:string;count:number}[]};
+const demoMonths:DemoMonth[]=[
+{month:"2026-09",label:"Septembre",students:612,staff:48,expected:10000,present:9410,validated:850,passed:742,collected:390000,outstanding:113000,levels:[{name:"Primaire",count:222},{name:"Collège",count:207},{name:"Lycée",count:183}]},
+{month:"2026-10",label:"Octobre",students:648,staff:50,expected:11500,present:10856,validated:920,passed:806,collected:412000,outstanding:104500,levels:[{name:"Primaire",count:235},{name:"Collège",count:219},{name:"Lycée",count:194}]},
+{month:"2026-11",label:"Novembre",students:684,staff:52,expected:12480,present:11756,validated:1000,passed:876,collected:428500,outstanding:96200,levels:[{name:"Primaire",count:248},{name:"Collège",count:231},{name:"Lycée",count:205}]}
+];
+function monthDayCount(month:string){const [y,m]=month.split("-").map(Number);return new Date(y,m,0).getDate();}
+function reportingBounds(period:Period,start:string,end:string):[string,string]{
+ const now=new Date();const iso=(d:Date)=>d.toISOString().slice(0,10);
+ if(period==="today")return [iso(now),iso(now)];
+ if(period==="week"){const d=new Date(now);d.setDate(now.getDate()-((now.getDay()+6)%7));return [iso(d),iso(now)];}
+ if(period==="month")return [iso(new Date(now.getFullYear(),now.getMonth(),1)),iso(now)];
+ if(period==="quarter")return [iso(new Date(now.getFullYear(),Math.floor(now.getMonth()/3)*3,1)),iso(now)];
+ if(period==="year")return ["2026-09-01",iso(now)];
+ return [start,end];
+}
+function calculateDemoMetrics(period:Period,start:string,end:string){
+ const [from,to]=reportingBounds(period,start,end);
+ const selected=demoMonths.filter(m=>m.month<=to.slice(0,7)&&m.month>=from.slice(0,7));
+ if(!selected.length)return null;
+ const totals=selected.reduce((acc,m)=>{
+  const monthStart=m.month+"-01";const monthEnd=m.month+"-"+String(m.month==="2026-11"?7:monthDayCount(m.month)).padStart(2,"0");
+  const a=from>monthStart?from:monthStart;const b=to<monthEnd?to:monthEnd;
+  const days=a<=b?Math.floor((new Date(b+"T12:00:00").getTime()-new Date(a+"T12:00:00").getTime())/86400000)+1:0;
+  const availableDays=m.month==="2026-11"?7:monthDayCount(m.month);
+  const ratio=days/availableDays;
+  acc.expected+=m.expected*ratio;acc.present+=m.present*ratio;acc.validated+=m.validated*ratio;acc.passed+=m.passed*ratio;acc.collected+=m.collected*ratio;
+  return acc;
+ },{expected:0,present:0,validated:0,passed:0,collected:0});
+ const snapshot=selected[selected.length-1];
+ return {students:snapshot.students,staff:snapshot.staff,attendance:totals.expected?totals.present/totals.expected*100:null,success:totals.validated?totals.passed/totals.validated*100:null,collected:totals.collected,outstanding:snapshot.outstanding,levels:snapshot.levels,trend:selected,range:[from,to]};
+}
 const seedReports:Report[]=[
 {id:"RPT-DEMO-001",title:"Synthèse des effectifs par niveau",category:"Académique",period:"Année scolaire 2026–2027",createdAt:"2026-11-05T10:15:00.000Z",author:"Direction pédagogique",format:"CSV",filters:"Tous les niveaux",summary:"Répartition fictive des inscriptions actives par niveau.",rows:[["Niveau","Effectif"],["Primaire","248"],["Collège","231"],["Lycée","205"],["Total","684"]]},
 {id:"RPT-DEMO-002",title:"Présences et absences des élèves",category:"Vie scolaire",period:"Octobre 2026",createdAt:"2026-11-04T14:20:00.000Z",author:"Vie scolaire",format:"CSV",filters:"Tous les niveaux",summary:"Synthèse fictive des présences enregistrées.",rows:[["Indicateur","Valeur"],["Présences","94,2 %"],["Absences","5,8 %"],["Séances attendues","12 480"]]},
@@ -44,9 +76,10 @@ export function ReportsAnalyticsPage({user,onNavigate}:Props){
  const [category,setCategory]=useState<Category|"Toutes">("Toutes"),[search,setSearch]=useState(""),[format,setFormat]=useState("Tous");
  const [reports,setReports]=useState<Report[]>(loadReports),[selected,setSelected]=useState<Report|null>(null),[generating,setGenerating]=useState(false),[generateType,setGenerateType]=useState(""),[generateCategory,setGenerateCategory]=useState<Category>("Académique"),[generateStart,setGenerateStart]=useState("2026-11-01"),[generateEnd,setGenerateEnd]=useState(today),[generateFormat,setGenerateFormat]=useState("CSV"),[generateError,setGenerateError]=useState(""),[notice,setNotice]=useState(""),[lastRefresh,setLastRefresh]=useState(new Date());
  const periodLabel=period==="today"?"Aujourd’hui":period==="week"?"Cette semaine":period==="month"?"Ce mois":period==="quarter"?"Ce trimestre":period==="year"?"Année scolaire":`Du ${start} au ${end}`;
+ const metrics=useMemo(()=>calculateDemoMetrics(period,start,end),[period,start,end]);
  const catalog=reportCatalog.filter(r=>visibleCategories.includes(r.category)&&(category==="Toutes"||r.category===category)&&[r.title,r.description,r.category].join(" ").toLocaleLowerCase("fr").includes(search.toLocaleLowerCase("fr")));
  const filteredReports=reports.filter(r=>visibleCategories.includes(r.category)&&(category==="Toutes"||r.category===category)&&(format==="Tous"||r.format===format)&&[r.title,r.id,r.author].join(" ").toLocaleLowerCase("fr").includes(search.toLocaleLowerCase("fr")));
- const data={students:684,staff:52,attendance:94.2,success:87.6,collected:428500,outstanding:96200};
+ const data=metrics;
  const refresh=()=>{setReports(loadReports());setLastRefresh(new Date());setNotice("Les données locales de démonstration ont été actualisées.");};
  const exportOverview=()=>{const lines=[["Indicateur","Valeur"],["Effectif total",String(data.students)],["Personnel",String(data.staff)],["Présence élèves",String(data.attendance)+" %"],["Réussite",String(data.success)+" %"],...(canFinance?[["Paiements collectés",String(data.collected)+" DH"],["Impayés",String(data.outstanding)+" DH"]]:[])];const blob=new Blob(["\ufeff"+lines.map(x=>x.join(";")).join("\n")],{type:"text/csv;charset=utf-8"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="synthese-demo.csv";a.click();URL.revokeObjectURL(url);setNotice("Export de démonstration téléchargé.");};
  const download=(r:Report)=>{const blob=new Blob(["\ufeff"+r.rows.map(row=>row.join(";")).join("\n")],{type:"text/csv;charset=utf-8"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=r.id+".csv";a.click();URL.revokeObjectURL(url);};
