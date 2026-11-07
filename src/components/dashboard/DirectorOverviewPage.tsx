@@ -2,17 +2,18 @@ import { useEffect, useMemo, useState } from "react";
 import "./DirectorOverviewPage.css";
 import {
   Activity, AlertCircle, ArrowRight, ArrowUpRight, BadgeCheck,
-  Banknote, BookOpenCheck, CalendarDays, ChevronDown, CircleAlert,
-  Clock3, GraduationCap, LayoutDashboard, Receipt, ShieldAlert, TrendingUp,
+  Banknote, BookOpenCheck, CalendarDays, ChevronDown,
+  GraduationCap, LayoutDashboard, ShieldAlert, TrendingUp,
   UserRound, Users, Wallet, X,
 } from "lucide-react";
 import {
   academicLevels, academicTrend, attendanceSeries, classPerformance,
-  dashboardRangeOptions, directorKpis, financialSummary, importantAlerts,
-  pendingApprovals, recentActivities, revenueByRange, studentDistribution,
+  dashboardRangeOptions, directorKpis, financialSummary,
+  recentActivities, revenueByRange, studentDistribution,
   studentsAtRisk, type DashboardRange,
 } from "../../data/director-dashboard";
 import type { AuthenticatedSidebarUser } from "../../types/navigation";
+import { DirectorTaskCenter } from "./DirectorTaskCenter";
 
 interface Props {
   user: AuthenticatedSidebarUser;
@@ -66,7 +67,7 @@ function DistributionDonut() {
   const total = studentDistribution.reduce((sum, item) => sum + item.value, 0);
   const first = studentDistribution[0].value / total * 100;
   return <div className="dash-donut-wrap">
-    <div className="dash-donut" style={{ background: `conic-gradient(#8b9ed0 0 ${first}%, #4f86a8 ${first}% 100%)` }}>
+    <div className="dash-donut" style={{ background: `conic-gradient(var(--color-primary) 0 ${first}%, var(--color-secondary) ${first}% 100%)` }}>
       <div><strong>{formatNumber(total)}</strong><span>élèves</span></div>
     </div>
     <div className="dash-legend">{studentDistribution.map(item => <div key={item.label}><span className="dash-legend-dot" style={{ background: item.color }}/><span>{item.label}</span><strong>{formatNumber(item.value)}</strong></div>)}</div>
@@ -128,12 +129,14 @@ export function DirectorOverviewPage({ user, onNavigate }: Props) {
 
     {showDemoNotice && <div className="dash-demo-notice"><span><AlertCircle size={16}/><span><strong>Données de démonstration</strong> — Ces chiffres illustrent le tableau de bord et ne proviennent pas encore d’une base de données réelle.</span></span><button type="button" onClick={() => setShowDemoNotice(false)} aria-label="Fermer l’avertissement"><X size={16}/></button></div>}
 
+    <DirectorTaskCenter onNavigate={onNavigate}/>
+
     <section className="dash-kpi-grid" aria-label="Indicateurs clés">
-      {directorKpis.map(item => <article className="dash-kpi-card" key={item.id}>
+      {directorKpis.map(item => <button type="button" className="dash-kpi-card dash-kpi-card--link" key={item.id} onClick={() => onNavigate(item.route)} aria-label={`${item.label} : ${item.value}. Ouvrir le détail`}>
         <div className="dash-kpi-top"><span>{item.label}</span><KpiIcon name={item.icon}/></div>
         <strong className="dash-kpi-value">{item.value}</strong>
         <div className="dash-kpi-bottom"><span>{item.detail}</span><span className={`dash-kpi-trend dash-kpi-trend--${item.direction}`}>{item.direction === "up" ? <ArrowUpRight size={13}/> : <Activity size={13}/>} {item.trend}</span></div>
-      </article>)}
+      </button>)}
     </section>
 
     <section className="dash-grid dash-grid--academic">
@@ -189,22 +192,11 @@ export function DirectorOverviewPage({ user, onNavigate }: Props) {
 
     <section className="dash-grid dash-grid--operations">
       <article className="dash-panel">
-        <SectionHeading eyebrow="À TRAITER" title="Validations en attente"/>
-        <div className="dash-approval-list">{pendingApprovals.map(item => <button type="button" className="dash-approval-item" key={item.id} onClick={() => onNavigate(item.route)}>
-          <span className="dash-approval-icon">{item.icon === "grades" ? <BadgeCheck size={18}/> : item.icon === "reports" ? <Receipt size={18}/> : <BookOpenCheck size={18}/>}</span>
-          <span className="dash-approval-copy"><strong>{item.title}</strong><small>{item.detail}</small></span>
-          <strong className="dash-approval-count">{item.count}</strong><ArrowRight size={15} className="dash-muted-arrow"/>
-        </button>)}</div>
-      </article>
-      <article className="dash-panel">
         <SectionHeading eyebrow="SUIVI FINANCIER" title="Aperçu financier" action={{ label: "Rapports financiers", onClick: () => onNavigate("/financial-reports") }}/>
         <div className="dash-finance-metrics"><div><span>Encaissements</span><strong>{financialSummary.collected}</strong><small className="dash-positive"><ArrowUpRight size={12}/>{financialSummary.comparison} vs période précédente</small></div><div><span>Reste à recouvrer</span><strong>{financialSummary.outstanding}</strong><small>127 dossiers concernés</small></div><div><span>Dépenses</span><strong>{financialSummary.expenses}</strong><small>Budget de fonctionnement</small></div></div>
         <div className="dash-revenue-head"><span>Évolution des recettes</span><small>{range === "7" ? "7 jours" : range === "30" ? "30 jours" : "90 jours"} · milliers de DH</small></div>
         <div className="dash-revenue-bars">{revenue.map(item => <div key={item.label}><span>{item.amount}</span><i style={{ height: `${item.amount / 100 * 100}%` }}/><small>{item.label}</small></div>)}</div>
       </article>
-    </section>
-
-    <section className="dash-grid dash-grid--monitoring">
       <article className="dash-panel">
         <SectionHeading eyebrow="JOURNAL DE L’ÉTABLISSEMENT" title="Activité récente" action={{ label: "Historique complet", onClick: () => onNavigate("/activity-history") }}/>
         <div className="dash-activity-list">{activities.map(item => <div className="dash-activity-item" key={item.id}>
@@ -212,13 +204,6 @@ export function DirectorOverviewPage({ user, onNavigate }: Props) {
           <div><strong>{item.title}</strong><p>{item.description}</p><small>{item.actor}</small></div><time>{item.daysAgo === 0 ? "Aujourd’hui" : item.daysAgo === 1 ? "Hier" : `Il y a ${item.daysAgo} j`} · {item.time}</time>
         </div>)}</div>
         {filteredActivities.length > 4 && <button type="button" className="dash-panel-link" onClick={() => setShowAllActivities(value => !value)}>{showAllActivities ? "Afficher moins" : "Afficher plus d’activités"}<ArrowRight size={14}/></button>}
-      </article>
-      <article className="dash-panel">
-        <SectionHeading eyebrow="POINTS DE VIGILANCE" title="Alertes importantes"/>
-        <div className="dash-alert-list">{importantAlerts.map(alert => <div className={`dash-alert dash-alert--${alert.severity}`} key={alert.id}>
-          <span className="dash-alert-icon">{alert.severity === "critical" ? <CircleAlert size={17}/> : alert.severity === "warning" ? <AlertCircle size={17}/> : <Clock3 size={17}/>}</span>
-          <div><strong>{alert.title}</strong><p>{alert.description}</p><button type="button" onClick={() => onNavigate(alert.route)}>{alert.action}<ArrowRight size={12}/></button></div>
-        </div>)}</div>
       </article>
     </section>
 

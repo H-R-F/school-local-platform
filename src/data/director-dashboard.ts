@@ -7,12 +7,12 @@ export const dashboardRangeOptions: { value: DashboardRange; label: string }[] =
 ];
 
 export const directorKpis = [
-  { id: "students", label: "Élèves inscrits", value: "1 248", detail: "1 216 élèves actifs", trend: "+4,8 %", direction: "up" as const, icon: "students" },
-  { id: "teachers", label: "Enseignants", value: "86", detail: "82 en activité", trend: "+2 ce trimestre", direction: "up" as const, icon: "teachers" },
-  { id: "employees", label: "Personnel", value: "34", detail: "32 membres actifs", trend: "2 postes à pourvoir", direction: "neutral" as const, icon: "employees" },
-  { id: "attendance", label: "Présence aujourd’hui", value: "94,2 %", detail: "1 176 présents · 49 absents", trend: "+1,6 pt", direction: "up" as const, icon: "attendance" },
-  { id: "performance", label: "Moyenne générale", value: "14,6/20", detail: "Toutes les classes", trend: "+0,4 pt", direction: "up" as const, icon: "performance" },
-  { id: "outstanding", label: "Impayés à recouvrer", value: "184 500 DH", detail: "127 dossiers concernés", trend: "−6,2 %", direction: "up" as const, icon: "payments" },
+  { id: "students", label: "Élèves inscrits", value: "1 248", detail: "1 216 élèves actifs", trend: "+4,8 %", direction: "up" as const, icon: "students", route: "/students" },
+  { id: "teachers", label: "Enseignants", value: "86", detail: "82 en activité", trend: "+2 ce trimestre", direction: "up" as const, icon: "teachers", route: "/teachers" },
+  { id: "employees", label: "Personnel", value: "34", detail: "32 membres actifs", trend: "2 postes à pourvoir", direction: "neutral" as const, icon: "employees", route: "/employees" },
+  { id: "attendance", label: "Présence aujourd’hui", value: "94,2 %", detail: "1 176 présents · 49 absents", trend: "+1,6 pt", direction: "up" as const, icon: "attendance", route: "/student-attendance" },
+  { id: "performance", label: "Moyenne générale", value: "14,6/20", detail: "Toutes les classes", trend: "+0,4 pt", direction: "up" as const, icon: "performance", route: "/pedagogical-reports" },
+  { id: "outstanding", label: "Impayés à recouvrer", value: "184 500 DH", detail: "127 dossiers concernés", trend: "−6,2 %", direction: "up" as const, icon: "payments", route: "/financial-reports" },
 ];
 
 export const academicLevels = [
@@ -33,8 +33,8 @@ export const academicTrend = [
 ];
 
 export const studentDistribution = [
-  { label: "Filles", value: 612, color: "#8b9ed0" },
-  { label: "Garçons", value: 636, color: "#4f86a8" },
+  { label: "Filles", value: 612, color: "var(--color-primary)" },
+  { label: "Garçons", value: 636, color: "var(--color-secondary)" },
 ];
 
 export const attendanceSeries = [
@@ -90,3 +90,46 @@ export const financialSummary = {
   expenses: "642 300 DH",
   comparison: "+8,4 %",
 };
+
+export type TaskPriority = "urgent" | "high" | "normal";
+export type TaskDue = "today" | "week" | "later";
+export type TaskStatus = "todo" | "doing" | "done";
+export type TaskCategory = "validation" | "attendance" | "student" | "finance" | "pedagogy" | "event";
+
+export interface DirectorTask {
+  id: string;
+  title: string;
+  detail: string;
+  category: TaskCategory;
+  priority: TaskPriority;
+  due: TaskDue;
+  dueLabel: string;
+  route: string;
+  action: string;
+  initialStatus: TaskStatus;
+}
+
+/** Everything the director must act on, in one place (replaces the separate approvals and alerts lists). */
+export const directorTasks: DirectorTask[] = [
+  { id: "t-attendance", title: "Présences incomplètes", detail: "3 classes n’ont pas encore transmis les présences du jour.", category: "attendance", priority: "urgent", due: "today", dueLabel: "Aujourd’hui", route: "/student-attendance", action: "Vérifier", initialStatus: "todo" },
+  { id: "t-grades", title: "Valider les notes", detail: "18 notes en attente dans 6 classes.", category: "validation", priority: "urgent", due: "today", dueLabel: "Aujourd’hui", route: "/grades-validation", action: "Valider", initialStatus: "doing" },
+  { id: "t-absences", title: "Suivre les absences répétées", detail: "12 élèves dépassent le seuil d’absences.", category: "student", priority: "high", due: "today", dueLabel: "Aujourd’hui", route: "/student-risk", action: "Consulter", initialStatus: "todo" },
+  { id: "t-reports", title: "Lire les rapports pédagogiques", detail: "4 rapports en attente de lecture.", category: "pedagogy", priority: "high", due: "week", dueLabel: "Cette semaine", route: "/pedagogical-reports", action: "Ouvrir", initialStatus: "todo" },
+  { id: "t-courses", title: "Approuver les cours", detail: "3 cours soumis par les enseignants.", category: "validation", priority: "high", due: "week", dueLabel: "Cette semaine", route: "/courses-exercises", action: "Approuver", initialStatus: "todo" },
+  { id: "t-exercises", title: "Approuver les exercices", detail: "7 exercices en attente de validation.", category: "validation", priority: "normal", due: "week", dueLabel: "Cette semaine", route: "/courses-exercises", action: "Approuver", initialStatus: "todo" },
+  { id: "t-balances", title: "Relancer les impayés", detail: "127 dossiers · 184 500 DH à recouvrer.", category: "finance", priority: "high", due: "week", dueLabel: "Vendredi", route: "/student-balances", action: "Voir les soldes", initialStatus: "todo" },
+  { id: "t-exams", title: "Préparer les examens du trimestre", detail: "Les examens commencent dans 8 jours.", category: "event", priority: "normal", due: "later", dueLabel: "Dans 8 jours", route: "/examinations", action: "Voir le calendrier", initialStatus: "todo" },
+];
+
+export const weekAgenda = [
+  { id: "a1", day: "Lun", date: "9", title: "Conseil de classe · 3e B", time: "16:00", route: "/meetings" },
+  { id: "a2", day: "Mer", date: "11", title: "Réunion parents · 6e A", time: "17:30", route: "/meetings" },
+  { id: "a3", day: "Jeu", date: "12", title: "Sortie pédagogique · Lycée", time: "08:30", route: "/trips-outings" },
+  { id: "a4", day: "Ven", date: "13", title: "Remise des bulletins", time: "14:00", route: "/events" },
+];
+
+export const todaySnapshot = [
+  { id: "present", label: "Présents", value: "1 176", tone: "success" as const },
+  { id: "absent", label: "Absents", value: "49", tone: "danger" as const },
+  { id: "late", label: "En retard", value: "23", tone: "warning" as const },
+];
