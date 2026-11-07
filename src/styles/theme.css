@@ -1,0 +1,104 @@
+/* School Local Platform — single source of truth for visual tokens */
+:root{
+  color-scheme:light;
+  /* Brand */
+  --color-primary:#1D4ED8;
+  --color-primary-hover:#1E40AF;
+  --color-primary-active:#1E3A8A;
+  --color-secondary:#0F9D8A;
+  --color-success:#22C55E;
+  --color-warning:#F59E0B;
+  --color-danger:#EF4444;
+  --color-info:#2563EB;
+  /* Surfaces and text */
+  --color-background:#F5F7FA;
+  --color-surface:#FFFFFF;
+  --color-surface-muted:#F0F3F8;
+  --color-text-primary:#1F2A3D;
+  --color-text-secondary:#566378;
+  --color-text-muted:#718096;
+  --color-border:#E1E6EF;
+  --color-border-strong:#C7D0DE;
+  --color-sidebar:#0B1B3A;
+  --color-sidebar-active:#16306A;
+  --color-focus:#60A5FA;
+  /* Semantic surfaces */
+  --color-success-bg:#E8F7EE;
+  --color-warning-bg:#FEF3E2;
+  --color-danger-bg:#FDEBEB;
+  --color-info-bg:#E8F0FE;
+  --color-neutral-bg:#F0F1F3;
+  /* Legacy token aliases used by existing page styles */
+  --app-primary:var(--color-primary);
+  --app-primary-hover:var(--color-primary-hover);
+  --app-primary-pressed:var(--color-primary-active);
+  --app-primary-soft:#EAF1FF;
+  --app-teal:var(--color-secondary);
+  --app-gold:#D9A441;
+  --app-bg:var(--color-background);
+  --app-surface:var(--color-surface);
+  --app-surface-subtle:var(--color-surface-muted);
+  --app-border:var(--color-border);
+  --app-border-strong:var(--color-border-strong);
+  --app-text:var(--color-text-primary);
+  --app-muted:var(--color-text-secondary);
+  --app-disabled:#9AA6BA;
+  --app-sidebar:var(--color-sidebar);
+  --app-sidebar-text:#B8C4DC;
+  --app-sidebar-active:var(--color-sidebar-active);
+  --app-focus:var(--color-focus);
+  --app-success:var(--color-success);
+  --app-success-bg:var(--color-success-bg);
+  --app-warning:var(--color-warning);
+  --app-warning-bg:var(--color-warning-bg);
+  --app-danger:var(--color-danger);
+  --app-danger-bg:var(--color-danger-bg);
+  --app-info:var(--color-info);
+  --app-info-bg:var(--color-info-bg);
+  --app-neutral:#6B7280;
+  --app-neutral-bg:var(--color-neutral-bg);
+  /* Typography */
+  --font-family-base:"Inter Variable",Inter,"IBM Plex Sans Arabic","Segoe UI",system-ui,sans-serif;
+  --font-family-arabic:"IBM Plex Sans Arabic","Inter Variable",Inter,"Segoe UI",system-ui,sans-serif;
+  --font-family-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,monospace;
+  --font-size-xs:12px;
+  --font-size-sm:14px;
+  --font-size-base:16px;
+  --font-size-lg:18px;
+  --font-size-xl:20px;
+  --font-size-2xl:24px;
+  --font-size-3xl:30px;
+  --font-size-8:12px;--font-size-9:12px;--font-size-10:12px;--font-size-11:12px;
+  --font-size-12:12px;--font-size-13:13px;--font-size-14:14px;--font-size-15:15px;
+  --font-size-16:16px;--font-size-17:17px;--font-size-18:18px;--font-size-19:19px;
+  --font-size-20:20px;--font-size-21:21px;--font-size-22:22px;--font-size-23:23px;
+  --font-size-24:24px;--font-size-25:25px;--font-size-26:26px;--font-size-27:27px;
+  --font-size-28:28px;--font-size-30:30px;--font-size-32:32px;
+  --font-size-8_5:12px;--font-size-9_5:12px;--font-size-10_5:12px;--font-size-11_5:12px;
+  --font-weight-normal:400;--font-weight-medium:500;--font-weight-semibold:600;--font-weight-bold:700;
+  --line-height-body:1.5;--line-height-heading:1.2;
+  /* Spacing scale */
+  --space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;
+  --space-6:24px;--space-8:32px;--space-12:48px;--space-16:64px;
+  /* Compatibility aliases for existing dense layouts and shell dimensions */
+  --space-1:1px;--space-2:2px;--space-3:3px;--space-4:4px;--space-5:5px;--space-6:6px;--space-7:7px;--space-8:8px;--space-9:9px;--space-10:10px;--space-11:11px;--space-12:12px;--space-13:13px;--space-14:14px;--space-15:15px;--space-16:16px;--space-17:17px;--space-18:18px;--space-19:19px;--space-20:20px;--space-21:21px;--space-22:22px;--space-23:23px;--space-24:24px;--space-25:25px;--space-26:26px;--space-27:27px;--space-28:28px;--space-29:29px;--space-30:30px;--space-32:32px;--space-34:34px;--space-35:35px;--space-36:36px;--space-38:38px;--space-40:40px;--space-42:42px;--space-45:45px;--space-48:48px;--space-60:60px;--space-64:64px;--space-72:72px;--space-75:75px;--space-100:100px;--space-248:248px;--space-258:258px;
+  /* Radius and shadows */
+  --radius-sm:6px;--radius-md:10px;--radius-lg:16px;--radius-full:9999px;
+  --radius-1:1px;--radius-2:2px;--radius-3:3px;--radius-4:4px;--radius-5:5px;--radius-6:6px;--radius-7:7px;--radius-8:8px;--radius-9:9px;--radius-10:10px;--radius-11:11px;--radius-12:12px;--radius-13:13px;--radius-20:20px;
+  --app-radius-card:var(--radius-md);
+  --app-radius-control:var(--radius-sm);
+  --shadow-sm:0 1px 2px rgba(15,23,42,.05);
+  --shadow-md:0 4px 12px rgba(15,23,42,.08);
+  --shadow-lg:0 16px 40px rgba(15,23,42,.14);
+  --app-shadow-card:var(--shadow-sm);
+  --app-shadow-overlay:var(--shadow-lg);
+  --transition-fast:150ms ease-in-out;
+  --control-height:40px;
+  --control-radius:var(--radius-sm);
+  --control-border:var(--color-border-strong);
+  --control-focus-ring:0 0 0 3px rgba(29,78,216,.14);
+  font-family:var(--font-family-base);
+  color:var(--color-text-primary);
+  background:var(--color-background);
+  font-synthesis:none;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;
+}

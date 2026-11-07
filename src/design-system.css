@@ -1,3 +1,4 @@
+@import "./styles/theme.css";
 
 /* School Local Platform — shared design system
    Visual layer only: page logic and domain-specific styles remain in their modules. */
@@ -357,3 +358,35 @@ body{font-family:"Inter Variable",Inter,"IBM Plex Sans Arabic","Segoe UI",system
 .sidebar-demo>main :where(td,th){line-height:1.45}
 :lang(ar),[dir="rtl"]{font-family:"IBM Plex Sans Arabic","Inter Variable",Inter,"Segoe UI",system-ui,sans-serif}
 :lang(ar) *,[dir="rtl"] *{letter-spacing:0!important}
+
+
+/* Unified controls, surfaces and typography — visual-only normalization */
+.sidebar-demo :where(button,input,select,textarea){font-family:var(--font-family-base)}
+.sidebar-demo :where(button){transition:all var(--transition-fast)}
+.sidebar-demo :where(button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible){outline:2px solid var(--color-focus);outline-offset:2px}
+.sidebar-demo :where(input:not([type=checkbox]):not([type=radio]):not([type=range]),select,textarea){
+  border-radius:var(--control-radius);border-color:var(--control-border);color:var(--color-text-primary);
+}
+.sidebar-demo :where(input:not([type=checkbox]):not([type=radio]):not([type=range]),select){min-height:var(--control-height)}
+.sidebar-demo :where(textarea){min-height:96px;line-height:var(--line-height-body)}
+.sidebar-demo :where(input,select,textarea):focus{border-color:var(--color-primary);box-shadow:var(--control-focus-ring);outline:0}
+.sidebar-demo :where(input,select,textarea):disabled{background:var(--color-surface-muted);color:#9AA6BA;cursor:not-allowed}
+.sidebar-demo :where(input,select,textarea)::placeholder{color:#718096;opacity:1}
+.sidebar-demo :where(button:disabled){opacity:.55;cursor:not-allowed}
+.sidebar-demo :where(table){font-variant-numeric:tabular-nums}
+.sidebar-demo>main :where(table:not([role=grid])){border-collapse:collapse}
+.sidebar-demo>main :where(table:not([role=grid]) thead th){background:var(--color-surface-muted);color:var(--color-text-secondary);font-size:var(--font-size-xs);font-weight:600;letter-spacing:.025em}
+.sidebar-demo>main :where(table:not([role=grid]) tbody td){border-bottom:1px solid var(--color-border);color:var(--color-text-secondary)}
+.sidebar-demo>main :where(table:not([role=grid]) tbody tr:hover){background:#F5F8FC}
+.sidebar-demo>main :where([class*="-panel"],[class*="-card"],[class*="-widget"]){box-shadow:var(--shadow-sm)}
+.sidebar-demo>main :where(h1){font-size:var(--font-size-2xl);line-height:var(--line-height-heading);font-weight:600;letter-spacing:-.02em}
+.sidebar-demo>main :where(h2){font-size:var(--font-size-lg);line-height:var(--line-height-heading);font-weight:600}
+.sidebar-demo>main :where(h3){font-size:var(--font-size-base);line-height:var(--line-height-heading);font-weight:600}
+.sidebar-demo>main :where(p){line-height:var(--line-height-body)}
+.sidebar-demo>main :where(a){color:var(--color-primary);text-underline-offset:3px}
+.sidebar-demo>main :where(a:hover){color:var(--color-primary-hover)}
+.sidebar-demo :where(.btn-primary,.button-primary,[class*="-primary"]){transition:background-color var(--transition-fast),border-color var(--transition-fast),color var(--transition-fast)}
+@media(max-width:768px){
+  .sidebar-demo>main:not(.auth-page){padding:16px!important}
+  .sidebar-demo>main :where(h1){font-size:var(--font-size-xl)}
+}
