@@ -36,6 +36,7 @@ import { ExpensesPage } from "./components/expenses/ExpensesPage";
 import { FinancialReportsPage } from "./components/financial-reports/FinancialReportsPage";
 import { TransportPage } from "./components/transport/TransportPage";
 import { TripsOutingsPage } from "./components/trips-outings/TripsOutingsPage";
+import { AccidentsIncidentsPage } from "./components/accidents-incidents/AccidentsIncidentsPage";
 import { schoolBranding } from "./config/school";
 import { getDemoStaffById } from "./data/demo-accounts";
 import type { AuthenticatedSidebarUser } from "./types/navigation";
@@ -115,6 +116,7 @@ export default function App() {
   const isFinancialReportsPage = currentPath === "/financial-reports";
   const isTransportPage = currentPath === "/transport";
   const isTripsOutingsPage = currentPath === "/trips-outings";
+  const isAccidentsIncidentsPage = currentPath === "/accidents-incidents";
 
   return (
     <div className="sidebar-demo">
@@ -189,6 +191,8 @@ export default function App() {
         <TransportPage user={user} onNavigate={navigate} />
       ) : isTripsOutingsPage ? (
         <TripsOutingsPage user={user} />
+      ) : isAccidentsIncidentsPage ? (
+        <AccidentsIncidentsPage user={user} />
       ) : (
         <main className="workspace-placeholder">
           <span className="workspace-eyebrow">ESPACE DU PERSONNEL</span>
