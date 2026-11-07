@@ -170,7 +170,7 @@ export function AccidentsIncidentsPage({ user }: Props) {
   const selected = incidents.find(i => i.id === selectedId) ?? null;
   const followCount = incidents.filter(i => i.status === "En suivi").length;
   const closedCount = incidents.filter(i => i.status === "Clôturé").length;
-  const studentAccidents = incidents.filter(i => i.people.some(p => p.category === "Élève")).length;
+  const studentAccidents = incidents.filter(i => i.category === "Accident physique" && i.people.some(p => p.category === "Élève")).length;
   const locations = [...new Set(incidents.map(i => i.location))].sort();
   const responsibles = [...new Map(incidents.map(i => [i.responsibleId, { id: i.responsibleId, name: i.responsibleName }])).values()];
 
@@ -262,7 +262,7 @@ export function AccidentsIncidentsPage({ user }: Props) {
       {notice && <div className="ai-alert ai-alert--success"><CheckCircle2 size={15}/><span>{notice}</span><button onClick={()=>setNotice("")}><X size={14}/></button></div>}
       <section className="ai-kpis">
         <article><i><ClipboardList size={18}/></i><div><small>TOTAL DES INCIDENTS</small><strong>{incidents.length}</strong><span>Registre local</span></div></article>
-        <article><i><Users size={18}/></i><div><small>ACCIDENTS IMPLIQUANT DES ÉLÈVES</small><strong>{studentAccidents}</strong><span>Événements distincts</span></div></article>
+        <article><i><Users size={18}/></i><div><small>ACCIDENTS PHYSIQUES IMPLIQUANT DES ÉLÈVES</small><strong>{studentAccidents}</strong><span>Événements distincts</span></div></article>
         <article><i><Clock3 size={18}/></i><div><small>INCIDENTS EN SUIVI</small><strong>{followCount}</strong><span>À traiter ou compléter</span></div></article>
         <article><i><CheckCircle2 size={18}/></i><div><small>INCIDENTS CLÔTURÉS</small><strong>{closedCount}</strong><span>Historique conservé</span></div></article>
       </section>
