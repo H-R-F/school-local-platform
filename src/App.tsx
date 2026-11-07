@@ -23,6 +23,7 @@ import { PedagogicalReportsPage } from "./components/pedagogical-reports/Pedagog
 import { BadgesRecognitionPage } from "./components/badges-recognition/BadgesRecognitionPage";
 import { TimetablesPage } from "./components/timetables/TimetablesPage";
 import { StudentAttendancePage } from "./components/student-attendance/StudentAttendancePage";
+import { StaffAttendancePage } from "./components/staff-attendance/StaffAttendancePage";
 import { schoolBranding } from "./config/school";
 import { getDemoStaffById } from "./data/demo-accounts";
 import type { AuthenticatedSidebarUser } from "./types/navigation";
@@ -89,6 +90,7 @@ export default function App() {
   const isBadgesRecognitionPage = currentPath === "/badges-recognition";
   const isTimetablesPage = currentPath === "/timetables";
   const isStudentAttendancePage = currentPath === "/student-attendance";
+  const isStaffAttendancePage = currentPath === "/staff-attendance";
 
   return (
     <div className="sidebar-demo">
@@ -137,6 +139,8 @@ export default function App() {
         <TimetablesPage user={user} onNavigate={navigate} />
       ) : isStudentAttendancePage ? (
         <StudentAttendancePage user={user} onNavigate={navigate} />
+      ) : isStaffAttendancePage ? (
+        <StaffAttendancePage user={user} onNavigate={navigate} />
       ) : (
         <main className="workspace-placeholder">
           <span className="workspace-eyebrow">ESPACE DU PERSONNEL</span>
