@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type FormEvent, type CSSProperties } from "react";
-import { AlertCircle, ArrowDownLeft, ArrowUpRight, Boxes, Check, ChevronLeft, ChevronRight, ClipboardList, Filter, History, Package, Plus, Search, ShieldCheck, Tag, Truck, UserRound, Warehouse, X } from "lucide-react";
+import { AlertCircle, ArrowDownLeft, ArrowUpRight, Boxes, Check, ChevronLeft, ChevronRight, Filter, History, Package, Plus, Search, ShieldCheck, Tag, UserRound, Warehouse, X } from "lucide-react";
 import { inventoryCategories, inventoryRepository, type InventoryData, type InventoryItem, type InventoryItemInput, type EquipmentCondition } from "../../services/inventory";
 import type { AuthenticatedSidebarUser } from "../../types/navigation";
 import { schoolBranding } from "../../config/school";
