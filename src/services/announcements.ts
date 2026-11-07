@@ -38,7 +38,7 @@ function validate(input:AnnouncementInput,rows:AnnouncementRecord[],id?:string){
  if(input.audience.some(a=>a.type==="Toute l'école")&&input.audience.length>1)throw new AnnouncementsError("Le public « Toute l'école » ne peut pas être combiné à un autre ciblage.");
  if(input.publishAt&&Number.isNaN(new Date(input.publishAt).getTime()))throw new AnnouncementsError("La date de publication est invalide.");
  if(input.publishAt&&new Date(input.publishAt)<new Date())throw new AnnouncementsError("La date de programmation ne peut pas être dans le passé.");
- if(input.expiresAt&&(!input.publishAt||new Date(input.expiresAt)<=new Date(input.publishAt)))throw new AnnouncementsError("La date d'expiration doit être postérieure à la publication.");
+ if(input.expiresAt&&new Date(input.expiresAt)<=(input.publishAt?new Date(input.publishAt):new Date()))throw new AnnouncementsError("La date d'expiration doit être postérieure à la publication.");
  if(rows.some(r=>r.id!==id&&r.title.trim().toLocaleLowerCase("fr-FR")===input.title.trim().toLocaleLowerCase("fr-FR")&&r.status!=="Archivée"))throw new AnnouncementsError("Une annonce active porte déjà ce titre.");
 }
 export const announcementsRepository={
