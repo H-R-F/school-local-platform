@@ -153,9 +153,11 @@ export function AccidentsIncidentsPage({ user }: Props) {
     return () => { live = false; };
   }, [canManage, canStudents, canEmployees, canTeachers]);
 
+  const personLabel = (person: IncidentPerson) => (person.category === "Élève" && !canStudents) || (person.category === "Enseignant" && !canTeachers) || (person.category === "Employé" && !canEmployees) ? "Identité restreinte" : person.name;
+  const responsibleLabel = (name: string) => canEmployees && canTeachers ? name : "Personnel autorisé";
   const filtered = useMemo(() => incidents.filter(item => {
     const q = query.trim().toLocaleLowerCase("fr-FR");
-    const matchesQuery = !q || [item.id, item.category, item.location, item.description, item.people.map(p => p.name).join(" ")].join(" ").toLocaleLowerCase("fr-FR").includes(q);
+    const matchesQuery = !q || [item.id, item.category, item.location, item.description, item.people.map(p => personLabel(p)).join(" ")].join(" ").toLocaleLowerCase("fr-FR").includes(q);
     const date = item.occurredAt.slice(0, 10);
     return matchesQuery && (!dateFrom || date >= dateFrom) && (!dateTo || date <= dateTo)
       && (categoryFilter === "all" || item.category === categoryFilter)
@@ -164,7 +166,7 @@ export function AccidentsIncidentsPage({ user }: Props) {
       && (statusFilter === "all" || item.status === statusFilter)
       && (responsibleFilter === "all" || item.responsibleId === responsibleFilter);
   }).sort((a, b) => sortNewest ? b.occurredAt.localeCompare(a.occurredAt) : a.occurredAt.localeCompare(b.occurredAt)),
-  [incidents, query, dateFrom, dateTo, categoryFilter, personFilter, locationFilter, statusFilter, responsibleFilter, sortNewest]);
+  [incidents, query, dateFrom, dateTo, categoryFilter, personFilter, locationFilter, statusFilter, responsibleFilter, sortNewest, canStudents, canTeachers, canEmployees]);
   const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
   const visible = filtered.slice((page - 1) * pageSize, page * pageSize);
   const selected = incidents.find(i => i.id === selectedId) ?? null;
@@ -172,7 +174,7 @@ export function AccidentsIncidentsPage({ user }: Props) {
   const closedCount = incidents.filter(i => i.status === "Clôturé").length;
   const studentAccidents = incidents.filter(i => i.category === "Accident physique" && i.people.some(p => p.category === "Élève")).length;
   const locations = [...new Set(incidents.map(i => i.location))].sort();
-  const responsibles = [...new Map(incidents.map(i => [i.responsibleId, { id: i.responsibleId, name: i.responsibleName }])).values()];
+  const responsibles = [...new Map(incidents.map(i => [i.responsibleId, { id: i.responsibleId, name: responsibleLabel(i.responsibleName) }])).values()];
 
   const resetFilters = () => {
     setQuery(""); setDateFrom(""); setDateTo(""); setCategoryFilter("all"); setPersonFilter("all");
@@ -282,7 +284,7 @@ export function AccidentsIncidentsPage({ user }: Props) {
         <div className="ai-table-wrap"><table className="ai-table"><thead><tr><th>Référence</th><th>Date et heure</th><th>Type d'incident</th><th>Personne(s)</th><th>Lieu</th><th>Responsable</th><th>Statut</th><th></th></tr></thead><tbody>
           {visible.map(item=><tr key={item.id} onClick={()=>{setSelectedId(item.id);setDetailTab("Résumé");setNewStatus(item.status);setNewResponsible("");}} className={selectedId===item.id?"is-selected":""}>
             <td><strong>{item.id}</strong><small>{item.createdBy}</small></td><td>{formatDate(item.occurredAt,true)}</td><td>{item.category}</td>
-            <td><strong>{item.people.length===1?item.people[0].name:item.people.length+" personnes"}</strong><small>{[...new Set(item.people.map(p=>p.category))].join(", ")}</small></td>
+            <td><strong>{item.people.length===1?personLabel(item.people[0]):item.people.length+" personnes"}</strong><small>{[...new Set(item.people.map(p=>p.category))].join(", ")}</small></td>
             <td><span className="ai-location"><MapPin size={12}/>{item.location}</span></td><td>{item.responsibleName}</td>
             <td><span className={"ai-status "+statusClass(item.status)}>{item.status}</span></td>
             <td><button className="ai-icon-btn" aria-label="Consulter l'incident" onClick={e=>{e.stopPropagation();setSelectedId(item.id);setDetailTab("Résumé");setNewStatus(item.status);}}><Eye size={15}/></button></td>
@@ -326,9 +328,9 @@ export function AccidentsIncidentsPage({ user }: Props) {
         <header><div><span className="ai-eyebrow">DOSSIER D'INCIDENT</span><h2>{selected.id}</h2><span className={"ai-status "+statusClass(selected.status)}>{selected.status}</span></div><button className="ai-icon-btn" onClick={()=>setSelectedId(null)}><X size={18}/></button></header>
         <nav className="ai-detail-tabs">{["Résumé","Suivi et actions","Historique"].map(t=><button className={detailTab===t?"active":""} key={t} onClick={()=>setDetailTab(t)}>{t}</button>)}</nav>
         <div className="ai-drawer-body">
-          {detailTab==="Résumé"&&<><div className="ai-detail-facts"><div><small>Date et heure</small><strong>{formatDate(selected.occurredAt,true)}</strong></div><div><small>Type</small><strong>{selected.category}</strong></div><div><small>Lieu</small><strong>{selected.location}</strong></div><div><small>Responsable</small><strong>{selected.responsibleName}</strong></div></div>
+          {detailTab==="Résumé"&&<><div className="ai-detail-facts"><div><small>Date et heure</small><strong>{formatDate(selected.occurredAt,true)}</strong></div><div><small>Type</small><strong>{selected.category}</strong></div><div><small>Lieu</small><strong>{selected.location}</strong></div><div><small>Responsable</small><strong>{responsibleLabel(selected.responsibleName)}</strong></div></div>
             <section><h3>Description des faits</h3><p>{selected.description}</p>{selected.circumstances&&<><h3>Circonstances rapportées</h3><p>{selected.circumstances}</p></>}</section>
-            <section><h3>Personnes impliquées ({selected.people.length})</h3>{selected.people.map(p=><div className="ai-detail-person" key={p.id}><Users size={15}/><div><strong>{p.name}</strong><span>{p.category} · {p.role}{p.className?" · "+p.className:""}</span><small>{p.reference??"Référence non disponible"}</small></div></div>)}</section>
+            <section><h3>Personnes impliquées ({selected.people.length})</h3>{selected.people.map(p=><div className="ai-detail-person" key={p.id}><Users size={15}/><div><strong>{personLabel(p)}</strong><span>{p.category} · {p.role}{p.className?" · "+p.className:""}</span><small>{p.reference??"Référence non disponible"}</small></div></div>)}</section>
             <section><h3>Mesures immédiates rapportées</h3><p>{selected.immediateActions||"Aucune mesure renseignée."}</p></section>
             <section className="ai-muted-section"><h3>Documents joints</h3><p>Le service de stockage documentaire n'est pas connecté.</p></section>
             <section className="ai-muted-section"><h3>Communications</h3><p>Aucune communication parentale ou notification n'est enregistrée par cette démonstration.</p></section>
