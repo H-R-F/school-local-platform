@@ -1,9 +1,9 @@
 @import "tailwindcss";
-:root{font-family:"Inter Variable",Inter,"IBM Plex Sans Arabic","Segoe UI",system-ui,sans-serif;color:#263548;background:#f5f7fa;font-synthesis:none;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased}
+:root{font-family:var(--font-family-base,"Inter Variable",Inter,"IBM Plex Sans Arabic","Segoe UI",system-ui,sans-serif);color:var(--color-text-primary,#263548);background:var(--color-background,#f5f7fa);font-synthesis:none;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased}
 *{box-sizing:border-box}
-html,body,#root{min-width:320px;min-height:100%;margin:0}
-button,input{font:inherit}
-button{cursor:pointer}
+html,body,#root{min-width:320px;min-height:100%;margin:0;background:var(--color-background,#f5f7fa);color:var(--color-text-primary,#263548)}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer;transition:background-color var(--transition-fast,150ms ease-in-out),border-color var(--transition-fast,150ms ease-in-out),color var(--transition-fast,150ms ease-in-out),box-shadow var(--transition-fast,150ms ease-in-out)}
 .sidebar-demo{min-height:100vh}
 .sidebar{--school-primary:#285d8d;--school-secondary:#edf3f9;position:fixed;inset:0 auto 0 0;z-index:20;display:flex;flex-direction:column;width:258px;height:100dvh;background:#fff;border-right:1px solid #e9edf2;transition:width 180ms ease}
 .sidebar--collapsed{width:72px}
