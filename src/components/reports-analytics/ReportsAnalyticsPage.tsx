@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { Activity, AlertCircle, ArrowDownToLine, ArrowUpRight, BarChart3, BookOpen, CalendarDays, CheckCircle2, ChevronRight, Download, FileBarChart, Filter, GraduationCap, RefreshCw, Search, ShieldAlert, Users, Wallet, X } from "lucide-react";
+import { useState } from "react";
+import { Activity, AlertCircle, ArrowUpRight, BarChart3, CheckCircle2, ChevronRight, Download, FileBarChart, Filter, GraduationCap, RefreshCw, Search, ShieldAlert, Users, Wallet, X } from "lucide-react";
 import type { AuthenticatedSidebarUser } from "../../types/navigation";
 import { schoolBranding } from "../../config/school";
 import "./ReportsAnalyticsPage.css";
@@ -44,7 +44,6 @@ export function ReportsAnalyticsPage({user,onNavigate}:Props){
  const [category,setCategory]=useState<Category|"Toutes">("Toutes"),[search,setSearch]=useState(""),[format,setFormat]=useState("Tous");
  const [reports,setReports]=useState<Report[]>(loadReports),[selected,setSelected]=useState<Report|null>(null),[generating,setGenerating]=useState(false),[generateType,setGenerateType]=useState(""),[generateCategory,setGenerateCategory]=useState<Category>("Académique"),[generateStart,setGenerateStart]=useState("2026-11-01"),[generateEnd,setGenerateEnd]=useState(today),[generateFormat,setGenerateFormat]=useState("CSV"),[generateError,setGenerateError]=useState(""),[notice,setNotice]=useState(""),[lastRefresh,setLastRefresh]=useState(new Date());
  const periodLabel=period==="today"?"Aujourd’hui":period==="week"?"Cette semaine":period==="month"?"Ce mois":period==="quarter"?"Ce trimestre":period==="year"?"Année scolaire":`Du ${start} au ${end}`;
- const range=useMemo(()=>{const d=new Date();const iso=(x:Date)=>x.toISOString().slice(0,10);if(period==="today")return [iso(d),iso(d)];if(period==="week"){const s=new Date(d);s.setDate(d.getDate()-d.getDay()+1);return [iso(s),iso(d)];}if(period==="month")return [iso(new Date(d.getFullYear(),d.getMonth(),1)),iso(d)];if(period==="quarter")return [iso(new Date(d.getFullYear(),Math.floor(d.getMonth()/3)*3,1)),iso(d)];if(period==="year")return ["2026-09-01",iso(d)];return [start,end];},[period,start,end]);
  const catalog=reportCatalog.filter(r=>visibleCategories.includes(r.category)&&(category==="Toutes"||r.category===category)&&[r.title,r.description,r.category].join(" ").toLocaleLowerCase("fr").includes(search.toLocaleLowerCase("fr")));
  const filteredReports=reports.filter(r=>visibleCategories.includes(r.category)&&(category==="Toutes"||r.category===category)&&(format==="Tous"||r.format===format)&&[r.title,r.id,r.author].join(" ").toLocaleLowerCase("fr").includes(search.toLocaleLowerCase("fr")));
  const data={students:684,staff:52,attendance:94.2,success:87.6,collected:428500,outstanding:96200};
