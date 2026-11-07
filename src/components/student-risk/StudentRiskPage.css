@@ -12,3 +12,25 @@
 @keyframes sr-slide-in{from{transform:translateX(12px);opacity:.7}to{transform:translateX(0);opacity:1}}
 @media(max-width:1180px){.sr-page{padding:20px}.sr-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.sr-category-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.sr-filters select{flex:1 1 140px}}
 @media(max-width:720px){.sr-page{margin-left:0;padding:16px}.sr-heading-row{align-items:flex-start;flex-direction:column}.sr-kpis{grid-template-columns:1fr 1fr}.sr-category-grid{grid-template-columns:1fr 1fr}.sr-table-footer{flex-direction:column}.sr-detail-card dl{grid-template-columns:1fr 1fr}}
+
+/* Student safety incidents — kept visually distinct from academic risk */
+.sr-incident-section{border-color:#E2E8EF}
+.sr-incident-intro{display:flex;align-items:center;gap:11px;padding:11px 12px;margin-bottom:12px;border:1px solid #E6EBF1;border-radius:7px;background:#F9FBFD}
+.sr-incident-intro-icon{display:grid;place-items:center;width:32px;height:32px;flex:0 0 auto;border-radius:7px;background:#F1F4F8;color:#60758F}
+.sr-incident-intro>div{display:flex;flex:1;flex-direction:column;gap:3px;min-width:0}
+.sr-incident-intro strong{color:#344861;font-size:10px;font-weight:650}
+.sr-incident-intro>div>span{color:#718096;font-size:9px;line-height:1.5}
+.sr-incident-table td{vertical-align:middle}
+.sr-incident-student{display:block;color:#2D405B;font-size:10px;font-weight:650}
+.sr-incident-class{display:block;margin-top:4px;color:#8A97A8;font-size:9px}
+.sr-incident-date{color:#465A74;font-size:10px;font-weight:600}
+.sr-incident-location{display:inline-flex;align-items:center;gap:4px;color:#65758A;font-size:9px}
+.sr-incident-location svg{flex:0 0 auto;color:#8B9BB0}
+.sr-incident-severity{display:inline-flex;align-items:center;min-height:21px;padding:3px 7px;border-radius:5px;font-size:9px;font-weight:650}
+.sr-incident-severity--low{background:#F0F3F6;color:#64748B}
+.sr-incident-severity--medium{background:#F7F3EA;color:#92743D}
+.sr-incident-severity--high{background:#F8EEEE;color:#A65B5B}
+.sr-status--closed{background:#F0F3F6;color:#66758A}
+.sr-subheading{margin-top:14px!important}
+@media(max-width:1100px){.sr-incident-intro{align-items:flex-start;flex-wrap:wrap}.sr-incident-intro>.sr-demo-tag{margin-left:43px}}
+@media(max-width:760px){.sr-incident-intro{gap:8px}.sr-incident-intro>.sr-demo-tag{margin-left:40px}.sr-table-footer{flex-direction:column}}
