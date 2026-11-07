@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import type { CSSProperties } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import {
-  AlertCircle, ArrowDownToLine, ArrowLeft, BookOpen, Check, CheckCircle2, ChevronRight,
-  Clock3, Download, Eye, File, FileText, FilterX, FolderOpen, GraduationCap, Info,
-  Library, MessageSquareText, Search, ShieldAlert, Upload, Users, X, XCircle,
+  AlertCircle, BookOpen, Check, CheckCircle2, Clock3, Download, Eye, File, FileText,
+  FilterX, FolderOpen, Info, Library, MessageSquareText, Search, ShieldAlert, Users, X,
 } from "lucide-react";
 import { academicYearRepository } from "../../services/academic-years";
 import { classesGroupsRepository } from "../../services/classes-groups";
@@ -80,7 +79,7 @@ function makeDemo(academic: Academic, subjectData: SubjectData, teacherData: Tea
     };
   });
 }
-function Badge({ children, tone = "neutral" }: { children: React.ReactNode; tone?: string }) { return <span className={"ce-badge ce-badge--" + tone}>{children}</span>; }
+function Badge({ children, tone = "neutral" }: { children: ReactNode; tone?: string }) { return <span className={"ce-badge ce-badge--" + tone}>{children}</span>; }
 export function CoursesExercisesPage({ user, onNavigate }: Props) {
   const canRead = user.permissions.includes("pedagogy.content.view");
   const [loading, setLoading] = useState(true), [loadError, setLoadError] = useState("");
@@ -88,7 +87,7 @@ export function CoursesExercisesPage({ user, onNavigate }: Props) {
   const [resources, setResources] = useState<Resource[]>([]);
   const [tab, setTab] = useState<Tab>(() => new URLSearchParams(window.location.search).get("tab") === "exercises" ? "queue" : "queue");
   const [selectedId, setSelectedId] = useState<string | null>(() => new URLSearchParams(window.location.search).get("item"));
-  const [search, setSearch] = useState(""), [typeFilter, setTypeFilter] = useState("all"), [yearFilter, setYearFilter] = useState("all");
+  const [search, setSearch] = useState(""), [typeFilter, setTypeFilter] = useState(() => new URLSearchParams(window.location.search).get("tab") === "exercises" ? "Exercice" : "all"), [yearFilter, setYearFilter] = useState("all");
   const [programFilter, setProgramFilter] = useState("all"), [levelFilter, setLevelFilter] = useState("all"), [classFilter, setClassFilter] = useState("all");
   const [subjectFilter, setSubjectFilter] = useState("all"), [teacherFilter, setTeacherFilter] = useState("all"), [statusFilter, setStatusFilter] = useState("all");
   const [dialog, setDialog] = useState<"approve" | "reject" | "correction" | "information" | "publish" | "unpublish" | null>(null);
@@ -122,7 +121,6 @@ export function CoursesExercisesPage({ user, onNavigate }: Props) {
     library: resources.filter(r => r.review === "approved").length,
     returned: resources.filter(r => r.review === "rejected" || r.review === "correction" || r.review === "information").length,
   }), [resources]);
-  const selectedYear = academic?.academicYears.find(y => y.id === yearFilter);
   const clearFilters = () => { setSearch(""); setTypeFilter("all"); setYearFilter("all"); setProgramFilter("all"); setLevelFilter("all"); setClassFilter("all"); setSubjectFilter("all"); setTeacherFilter("all"); setStatusFilter("all"); };
   function changeTab(next: Tab) { setTab(next); setSelectedId(null); setStatusFilter("all"); }
   function openResource(r: Resource) { setSelectedId(r.id); setDialog(null); setMessage(""); setActionError(""); }
