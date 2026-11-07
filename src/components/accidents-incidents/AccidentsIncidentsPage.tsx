@@ -144,7 +144,7 @@ export function AccidentsIncidentsPage({ user }: Props) {
       const studentData = results[1] as Awaited<ReturnType<typeof studentsRepository.list>> | null;
       const employeeData = results[2] as Awaited<ReturnType<typeof employeesRepository.list>> | null;
       const teacherData = results[3] as Awaited<ReturnType<typeof teachersRepository.list>> | null;
-      setStudents(studentData?.students.filter(s => s.accountStatus === "Actif" && s.enrollment?.status === "Actif") ?? []);
+      setStudents(studentData?.students ?? []);
       const employeeRows: StaffOption[] = employeeData?.employees.filter(e => e.employmentStatus === "Actif").map(e => ({ id: e.id, name: e.fullName, category: "Employé" })) ?? [];
       const teacherRows: StaffOption[] = teacherData?.teachers.filter(t => t.employmentStatus === "Actif").map(t => ({ id: t.id, name: t.fullName, category: "Enseignant" })) ?? [];
       setStaff([...teacherRows, ...employeeRows]);
