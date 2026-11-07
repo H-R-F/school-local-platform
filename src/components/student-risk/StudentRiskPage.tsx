@@ -31,7 +31,7 @@ export function StudentRiskPage({ user, onNavigate }: Props) {
 
   const activeCount = records.filter(item => item.status === "Suivi en cours").length;
   const reviewCount = records.filter(item => item.status === "À démarrer").length;
-  const uniqueStudents = new Set(records.map(item => item.id)).size;
+  const uniqueStudents = new Set(records.map(item => item.student)).size;
   const categoryCounts = reasons.map(reason => ({ reason, count: records.filter(item => item.indicator === reason).length, pending: records.filter(item => item.indicator === reason && item.status === "À démarrer").length }));
 
   const resetFilters = () => { setQuery(""); setClassFilter("Toutes les classes"); setReasonFilter("Tous les motifs"); setStatusFilter("Tous les statuts"); };
