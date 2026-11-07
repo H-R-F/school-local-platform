@@ -69,8 +69,9 @@ const DEMO_SEED: IncidentRecord[] = [
     history: [{ id: "EV-3", label: "Incident déclaré", detail: "Création d'un exemple de démonstration.", actor: "Service de vie scolaire", createdAt: "2026-10-29T10:00" }, { id: "EV-4", label: "Incident clôturé", detail: "Exemple clôturé dans le registre local.", actor: "Service de vie scolaire", createdAt: "2026-10-30T12:00" }]
   }
 ];
+const localDateValue = () => { const now = new Date(); const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000); return local.toISOString().slice(0, 10); };
 const emptyForm = (): FormState => ({
-  date: new Date().toISOString().slice(0, 10), time: new Date().toTimeString().slice(0, 5),
+  date: localDateValue(), time: new Date().toTimeString().slice(0, 5),
   category: INCIDENT_CATEGORIES[0], location: "", description: "", circumstances: "",
   immediateActions: "", responsibleId: "", selectedPersonId: "", selectedPersonCategory: "Élève",
   selectedPersonRole: "Personne concernée"
@@ -190,10 +191,10 @@ export function AccidentsIncidentsPage({ user }: Props) {
     if (!form.date || !form.time || !form.location.trim() || !form.description.trim()) {
       setError("Renseignez la date, l'heure, le lieu et la description des faits."); return;
     }
-    if (form.date > new Date().toISOString().slice(0, 10)) { setError("La date de l'incident ne peut pas être dans le futur."); return; }
+    if (form.date > localDateValue()) { setError("La date de l'incident ne peut pas être dans le futur."); return; }
     setSaving(true); setError("");
     try {
-      const now = new Date().toISOString().slice(0, 16);
+      const now = new Date().toISOString();
       const id = "INC-" + now.replace(/\D/g, "").slice(2, 12) + "-" + Math.floor(Math.random() * 90 + 10);
       const responsible = staff.find(s => s.id === form.responsibleId);
       const actor = user.displayName;
