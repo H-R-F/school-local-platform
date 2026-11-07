@@ -1,8 +1,8 @@
 import { useMemo, useState, type FormEvent } from "react";
 import {
-  AlertCircle, ArrowDownRight, ArrowUpRight, CalendarDays, Check, CheckCircle2,
-  ChevronLeft, ChevronRight, Clock3, Download, FileText, FilterX, History,
-  Info, Paperclip, Pencil, Plus, Receipt, Search, ShieldCheck, Upload, Wallet, X
+  AlertCircle, CalendarDays, Check, CheckCircle2,
+  ChevronLeft, ChevronRight, Clock3, Download, FileText, FilterX,
+  Info, Paperclip, Pencil, Plus, Search, ShieldCheck, Upload, Wallet, X
 } from "lucide-react";
 import type { AuthenticatedSidebarUser } from "../../types/navigation";
 import "./ExpensesPage.css";
