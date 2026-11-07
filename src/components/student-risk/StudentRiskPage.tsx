@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { AlertCircle, ArrowUpRight, BookOpen, CalendarClock, ChevronRight, CircleHelp, FilterX, Info, MapPin, Search, ShieldAlert, ShieldCheck, Users, X } from "lucide-react";
+import { AlertCircle, ArrowUpRight, BookOpen, ChevronRight, CircleHelp, FilterX, Info, MapPin, Search, ShieldAlert, ShieldCheck, Users, X } from "lucide-react";
 import { academicAlerts } from "../../data/pedagogical-dashboard";
 import type { AuthenticatedSidebarUser } from "../../types/navigation";
 import "./StudentRiskPage.css";
