@@ -10,8 +10,8 @@ interface Props { user: AuthenticatedSidebarUser }
 type FeeKind = "Inscription" | "Scolarité" | "Service";
 type Tariff = { id:string; kind:FeeKind; label:string; yearId:string; levelId?:string; programId?:string; amount:number; frequency:string; status:"Actif"|"Inactif"; description:string };
 const seed:Tariff[] = [
- {id:"TAR-001",kind:"Inscription",label:"Frais d'inscription",yearId:"AY-2026-2027",levelId:"LEVEL-PR-TC-SCI",amount:1200,frequency:"Une fois par année",status:"Actif",description:"Frais d'inscription annuels — primaire"},
- {id:"TAR-002",kind:"Inscription",label:"Frais d'inscription",yearId:"AY-2026-2027",levelId:"LEVEL-PR-SE-1",amount:1500,frequency:"Une fois par année",status:"Actif",description:"Frais d'inscription annuels — collège"},
+ {id:"TAR-001",kind:"Inscription",label:"Frais d'inscription",yearId:"AY-2026-2027",levelId:"LEVEL-PR-TC-SCI",amount:1200,frequency:"Une fois par année",status:"Actif",description:"Frais d'inscription annuels — Tronc Commun"},
+ {id:"TAR-002",kind:"Inscription",label:"Frais d'inscription",yearId:"AY-2026-2027",levelId:"LEVEL-PR-SE-1",amount:1500,frequency:"Une fois par année",status:"Actif",description:"Frais d'inscription annuels — Première année Baccalauréat"},
  {id:"TAR-003",kind:"Inscription",label:"Frais d'inscription",yearId:"AY-2026-2027",levelId:"LEVEL-PR-SMA",programId:"PR-SMA",amount:1800,frequency:"Une fois par année",status:"Actif",description:"Inscription — sciences mathématiques"},
  {id:"TAR-004",kind:"Scolarité",label:"Frais de scolarité",yearId:"AY-2026-2027",levelId:"LV-PRI-1",amount:18000,frequency:"Mensuelle",status:"Actif",description:"Mensualité de scolarité — niveau Tronc Commun"},
  {id:"TAR-005",kind:"Scolarité",label:"Frais de scolarité",yearId:"AY-2026-2027",levelId:"LV-COL-1",amount:22000,frequency:"Mensuelle",status:"Actif",description:"Mensualité de scolarité — niveau Première Bac"},
