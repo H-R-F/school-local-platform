@@ -43,12 +43,12 @@ export const navigation: readonly NavigationGroup[] = [
   {id:"affairs.risk",label:"Suivi des élèves à risque",icon:Stethoscope,route:"/student-risk",permission:"student.analytics.view",roles:pedagogy},
   {id:"affairs.activities",label:"Activités des élèves",icon:CalendarCheck,route:"/student-activities",permission:"student.activities.view",roles:academic}]},
  {id:"finance",label:"Finances",items:[
+  {id:"finance.reports",label:"Rapports financiers",icon:ChartNoAxesCombined,route:"/financial-reports",permission:"finance.reports.view",roles:finance},
   {id:"finance.registers",label:"Registres de paiement",icon:Receipt,route:"/cash-registers",permission:"finance.registers.view",roles:finance},
   {id:"finance.tariffs",label:"Tarification et frais",icon:Tags,route:"/payment-registers",permission:"finance.registers.view",roles:finance},
   {id:"finance.payments",label:"Paiements",icon:Banknote,route:"/payments",permission:"finance.payments.manage",roles:finance},
   {id:"finance.balances",label:"Soldes et services des élèves",icon:Wallet,route:"/student-balances",permission:"finance.balances.view",roles:finance},
-  {id:"finance.expenses",label:"Dépenses",icon:HandCoins,route:"/expenses",permission:"finance.expenses.manage",roles:finance},
-  {id:"finance.reports",label:"Rapports financiers",icon:ChartNoAxesCombined,route:"/financial-reports",permission:"finance.reports.view",roles:finance}]},
+  {id:"finance.expenses",label:"Dépenses",icon:HandCoins,route:"/expenses",permission:"finance.expenses.manage",roles:finance}]},
  {id:"logistics",label:"Logistique",items:[
   {id:"logistics.transport",label:"Transport",icon:Bus,route:"/transport",permission:"logistics.transport.manage",roles:finance},
   {id:"logistics.trips",label:"Sorties et excursions",icon:Truck,route:"/trips-outings",permission:"logistics.trips.manage",roles:operations},
