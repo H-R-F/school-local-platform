@@ -141,8 +141,7 @@
   --app-radius-control: var(--radius-md);
   --app-shadow-card: var(--shadow-sm);
   --app-shadow-overlay: var(--shadow-lg);
-/* School Local Platform — single source of truth for visual tokens */
-:root{
+/* School Local Platform — additional light-theme compatibility tokens */
   color-scheme:light;
   /* Brand */
   --color-primary:#1D4ED8;
