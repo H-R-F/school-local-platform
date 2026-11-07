@@ -181,7 +181,6 @@ export function AccidentsIncidentsPage({ user }: Props) {
   };
   const persist = (rows: IncidentRecord[]) => { writeIncidents(rows); setIncidents(rows); };
   const [formPeople, setFormPeople] = useState<IncidentPerson[]>([]);
-  const removeFormPerson = (id: string) => setFormPeople(old => old.filter(p => p.id !== id));
   const updateForm = <K extends keyof FormState>(key: K, value: FormState[K]) => setForm(old => ({ ...old, [key]: value }));
 
   const openCreate = () => {
@@ -267,7 +266,7 @@ export function AccidentsIncidentsPage({ user }: Props) {
         <article><i><CheckCircle2 size={18}/></i><div><small>INCIDENTS CLÔTURÉS</small><strong>{closedCount}</strong><span>Historique conservé</span></div></article>
       </section>
       <section className="ai-panel">
-        <div className="ai-panel-heading"><div><span className="ai-eyebrow">REGISTRE DES ÉVÉNEMENTS</span><h2>Incidents déclarés</h2><p>Consultez les événements et ouvrez un dossier pour suivre les actions.</p></div><span className="ai-result-count">{filtered.length} résultat{filtered.length>1?"s":""}</span></div>
+        <div className="ai-panel-heading"><div><span className="ai-eyebrow">REGISTRE DES ÉVÉNEMENTS</span><h2>Incidents déclarés</h2><p>Consultez les événements et ouvrez un dossier pour suivre les actions.</p></div><div className="ai-panel-tools"><button className="ai-sort" onClick={()=>setSortNewest(v=>!v)}>{sortNewest?"Plus récents":"Plus anciens"}</button><span className="ai-result-count">{filtered.length} résultat{filtered.length>1?"s":""}</span></div></div>
         <div className="ai-filters">
           <label className="ai-search"><Search size={15}/><input value={query} onChange={e=>{setQuery(e.target.value);setPage(1);}} placeholder="Référence, description, personne…"/></label>
           <label><span>Du</span><input type="date" value={dateFrom} onChange={e=>{setDateFrom(e.target.value);setPage(1);}}/></label>
@@ -333,8 +332,8 @@ export function AccidentsIncidentsPage({ user }: Props) {
             <section className="ai-muted-section"><h3>Documents joints</h3><p>Le service de stockage documentaire n'est pas connecté.</p></section>
             <section className="ai-muted-section"><h3>Communications</h3><p>Aucune communication parentale ou notification n'est enregistrée par cette démonstration.</p></section>
           </>}
-          {detailTab==="Suivi et actions"&&<><section><h3>Responsable du suivi</h3><div className="ai-inline-control"><select disabled={selected.status==="Clôturé"} value={newResponsible||selected.responsibleId} onChange={e=>setNewResponsible(e.target.value)}><option value="">Non affecté</option>{staff.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}</select><button className="ai-btn ai-btn--secondary" onClick={assignResponsible} disabled={!newResponsible||newResponsible===selected.responsibleId}>Affecter</button></div></section>
-            <section><h3>Statut du dossier</h3><div className="ai-inline-control"><select disabled={selected.status==="Clôturé"} value={newStatus} onChange={e=>setNewStatus(e.target.value as IncidentStatus)}>{STATUS_OPTIONS.map(s=><option key={s}>{s}</option>)}</select><button className="ai-btn ai-btn--secondary" onClick={updateStatus} disabled={newStatus===selected.status}>Mettre à jour</button></div>{selected.status!=="Clôturé"&&<button className="ai-close-btn" onClick={closeIncident}>Clôturer le dossier</button>}</section>
+          {detailTab==="Suivi et actions"&&<><section><h3>Responsable du suivi</h3><div className="ai-inline-control"><select disabled={selected.status==="Clôturé"} value={newResponsible||selected.responsibleId} onChange={e=>setNewResponsible(e.target.value)}><option value="">Non affecté</option>{staff.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}</select><button className="ai-btn ai-btn--secondary" onClick={assignResponsible} disabled={selected.status==="Clôturé"||!newResponsible||newResponsible===selected.responsibleId}>Affecter</button></div></section>
+            <section><h3>Statut du dossier</h3><div className="ai-inline-control"><select disabled={selected.status==="Clôturé"} value={newStatus} onChange={e=>setNewStatus(e.target.value as IncidentStatus)}>{STATUS_OPTIONS.map(s=><option key={s}>{s}</option>)}</select><button className="ai-btn ai-btn--secondary" onClick={updateStatus} disabled={selected.status==="Clôturé"||newStatus===selected.status}>Mettre à jour</button></div>{selected.status!=="Clôturé"&&<button className="ai-close-btn" onClick={closeIncident}>Clôturer le dossier</button>}</section>
             <section><h3>Ajouter une note de suivi</h3><textarea disabled={selected.status==="Clôturé"} rows={4} value={followUpNote} onChange={e=>setFollowUpNote(e.target.value)} placeholder="Consignez une action ou un élément de suivi…"/><button className="ai-btn ai-btn--primary" onClick={addFollowUp} disabled={selected.status==="Clôturé"||!followUpNote.trim()}>Ajouter la note</button></section>
             <section><h3>Notes enregistrées ({selected.followUps.length})</h3>{selected.followUps.length?selected.followUps.slice().reverse().map(n=><article className="ai-follow-card" key={n.id}><strong>{responsibleLabel(n.actor)}</strong><small>{formatDate(n.createdAt,true)}</small><p>{n.note}</p></article>):<p>Aucune note de suivi.</p>}</section>
           </>}
