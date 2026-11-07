@@ -2,6 +2,7 @@
    Components should consume these variables; legacy aliases are maintained in design-system.css. */
 :root {
   color-scheme: light;
+  color-scheme: light;
   --ds-color-surface-default:#F8FAFC;
   --ds-color-surface-raised:#FFFFFF;
   --ds-color-surface-sunken:#F1F5F9;
@@ -67,58 +68,6 @@
   --ds-focus-offset:2px;
   --ds-motion-fast:150ms ease;
   --ds-control-height:40px;
-}
-:root[data-theme="dark"] {
-  color-scheme:dark;
-  --ds-color-surface-default:#0F1117;
-  --ds-color-surface-raised:#1A1D27;
-  --ds-color-surface-sunken:#080A0F;
-  --ds-color-text-primary:#F1F5F9;
-  --ds-color-text-secondary:#94A3B8;
-  --ds-color-text-tertiary:#64748B;
-  --ds-color-border-default:#2D3142;
-  --ds-color-border-strong:#41465A;
-  --ds-color-action-primary:#818CF8;
-  --ds-color-action-primary-hover:#A5B4FC;
-  --ds-color-action-primary-pressed:#6366F1;
-  --ds-color-action-subtle:#292D4A;
-  --ds-color-accent:#5EEAD4;
-  --ds-color-success:#4ADE80;
-  --ds-color-success-subtle:#123522;
-  --ds-color-warning:#FBBF24;
-  --ds-color-warning-subtle:#3A2B0B;
-  --ds-color-error:#F87171;
-  --ds-color-error-subtle:#3B171B;
-  --ds-color-info:#60A5FA;
-  --ds-color-info-subtle:#172B48;
-  --ds-focus-ring:0 0 0 2px #A5B4FC;
-}
-@media (prefers-color-scheme:dark) {
-  :root:not([data-theme="light"]) {
-    color-scheme:dark;
-    --ds-color-surface-default:#0F1117;
-    --ds-color-surface-raised:#1A1D27;
-    --ds-color-surface-sunken:#080A0F;
-    --ds-color-text-primary:#F1F5F9;
-    --ds-color-text-secondary:#94A3B8;
-    --ds-color-text-tertiary:#64748B;
-    --ds-color-border-default:#2D3142;
-    --ds-color-border-strong:#41465A;
-    --ds-color-action-primary:#818CF8;
-    --ds-color-action-primary-hover:#A5B4FC;
-    --ds-color-action-primary-pressed:#6366F1;
-    --ds-color-action-subtle:#292D4A;
-    --ds-color-accent:#5EEAD4;
-    --ds-color-success:#4ADE80;
-    --ds-color-success-subtle:#123522;
-    --ds-color-warning:#FBBF24;
-    --ds-color-warning-subtle:#3A2B0B;
-    --ds-color-error:#F87171;
-    --ds-color-error-subtle:#3B171B;
-    --ds-color-info:#60A5FA;
-    --ds-color-info-subtle:#172B48;
-    --ds-focus-ring:0 0 0 2px #A5B4FC;
-  }
 }
 :where(button,input,select,textarea,a,[tabindex]):focus-visible {
   outline:2px solid var(--ds-color-action-primary);
