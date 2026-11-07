@@ -27,7 +27,6 @@ export function StudentAttendancePage({user,onNavigate}:Props){
  const yearClasses=useMemo(()=>classes.filter(c=>c.academicYearId===yearId&&c.status==="Actif"),[classes,yearId]);
  const levels=useMemo(()=>Array.from(new Map(yearClasses.map(c=>[c.levelId,{id:c.levelId,name:c.levelName}])).values()),[yearClasses]);
  const filteredClasses=useMemo(()=>yearClasses.filter(c=>levelId==="all"||c.levelId===levelId),[yearClasses,levelId]);
- const classOptions=useMemo(()=>filteredClasses.filter(c=>classId==="all"||c.id===classId),[filteredClasses,classId]);
  const groups=useMemo(()=>classId==="all"?filteredClasses.flatMap(c=>c.groups.filter(g=>g.status==="Actif").map(g=>({...g,className:c.name}))):yearClasses.find(c=>c.id===classId)?.groups.filter(g=>g.status==="Actif")??[],[classId,filteredClasses,yearClasses]);
  const allRows=useMemo(()=>makeRows(students.filter(s=>s.enrollment?.academicYearId===yearId),date),[students,yearId,date]);
  const scopedRows=useMemo(()=>allRows.filter(r=>(classId==="all"||r.student.enrollment?.classId===classId)&&(groupId==="all"||r.student.enrollment?.groupId===groupId)&&(status==="all"||r.status===status)&&(justification==="all"||r.justification===justification)),[allRows,classId,groupId,status,justification]);
