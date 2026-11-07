@@ -4,7 +4,7 @@
 /* School Local Platform — shared design system
    Visual layer only: page logic and domain-specific styles remain in their modules. */
 :root {
-  color-scheme: light;
+  /* color-scheme is controlled by the active theme tokens. */
   /* Compatibility aliases. Canonical values live in styles/tokens.css. */
   --app-primary:var(--ds-color-action-primary);
   --app-primary-hover:var(--ds-color-action-primary-hover);
