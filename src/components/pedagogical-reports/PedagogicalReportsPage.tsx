@@ -1,0 +1,105 @@
+import { useEffect, useMemo, useState } from "react";
+import { AlertCircle, CalendarDays, Check, CheckCircle2, ChevronRight, Clock3, Download, Eye, FileText, FilterX, History, Search, ShieldAlert, Users, X } from "lucide-react";
+import { academicYearRepository } from "../../services/academic-years";
+import { classesGroupsRepository } from "../../services/classes-groups";
+import { subjectsRepository } from "../../services/subjects";
+import { teachersRepository } from "../../services/teachers";
+import type { AuthenticatedSidebarUser } from "../../types/navigation";
+import "./PedagogicalReportsPage.css";
+
+interface Props { user: AuthenticatedSidebarUser; onNavigate: (route: string) => void }
+type ReportStatus = "pending" | "approved" | "rejected";
+type Report = {
+ id:string; teacherId:string; teacher:string; classId:string; className:string; group:string;
+ subjectId:string; subject:string; yearId:string; year:string; period:string; type:string;
+ title:string; submittedAt:string; status:ReportStatus; content:string; reviewer?:string;
+ reviewedAt?:string; feedback?:string; attachment?:{name:string;format:string;size:string;preview:boolean};
+ history:{actor:string;action:string;date:string;from?:string;to?:string;comment?:string}[];
+};
+const statusText:Record<ReportStatus,string>={pending:"En attente",approved:"Validé",rejected:"Rejeté"};
+const statusTone:Record<ReportStatus,string>={pending:"pending",approved:"approved",rejected:"rejected"};
+const dateTime=(value:string)=>new Intl.DateTimeFormat("fr-FR",{dateStyle:"medium",timeStyle:"short"}).format(new Date(value));
+const dateOnly=(value:string)=>new Intl.DateTimeFormat("fr-FR",{dateStyle:"medium"}).format(new Date(value));
+
+function makeReports(classes:any[], subjects:any[], teachers:any[], years:any[]):Report[]{
+ const year=years.find(x=>x.status==="Active")??years[0];
+ if(!year||!classes.length||!subjects.length||!teachers.length)return [];
+ const templates=[
+  {id:"RAP-2026-0142",type:"Suivi pédagogique",title:"Suivi pédagogique — période d’octobre",period:"Octobre 2026",status:"pending" as const,submittedAt:"2026-11-06T09:35:00",content:"La classe présente une progression régulière sur les compétences travaillées durant le mois d’octobre. La majorité des élèves maîtrise les notions fondamentales.\n\nLes activités de résolution de problèmes ont permis d’identifier un petit groupe d’élèves qui nécessite un accompagnement supplémentaire. Des exercices différenciés ont été proposés et seront réévalués lors de la prochaine séquence.",attachment:{name:"Bilan_octobre_3eB.pdf",format:"PDF",size:"428 Ko",preview:true}},
+  {id:"RAP-2026-0141",type:"Progression pédagogique",title:"État d’avancement du programme",period:"Octobre 2026",status:"pending" as const,submittedAt:"2026-11-05T14:10:00",content:"Le programme avance conformément à la progression annuelle. Les séquences prévues pour cette période ont été abordées.\n\nUne séance de consolidation sera ajoutée avant le prochain contrôle afin de renforcer la compréhension et l’expression écrite.",attachment:{name:"Progression_semestre.xlsx",format:"XLSX",size:"96 Ko",preview:false}},
+  {id:"RAP-2026-0140",type:"Difficultés d’apprentissage",title:"Élèves nécessitant un accompagnement",period:"Septembre 2026",status:"rejected" as const,submittedAt:"2026-11-03T10:25:00",reviewer:"Nadia El Fassi",reviewedAt:"2026-11-04T08:40:00",feedback:"Merci de préciser les compétences non acquises et de distinguer les difficultés ponctuelles des besoins d’accompagnement durable.",content:"Plusieurs élèves rencontrent des difficultés dans la compréhension des consignes et la mémorisation du vocabulaire. Des activités de reprise ont été organisées en petits groupes.",attachment:undefined},
+  {id:"RAP-2026-0139",type:"Fin de période",title:"Bilan de fin de période",period:"Septembre 2026",status:"approved" as const,submittedAt:"2026-11-02T08:50:00",reviewer:"Nadia El Fassi",reviewedAt:"2026-11-03T11:15:00",content:"Le bilan de période fait ressortir une participation satisfaisante et une progression globale positive. Les objectifs principaux ont été couverts.\n\nLes résultats seront pris en compte dans la préparation de la prochaine période.",attachment:{name:"Bilan_fin_periode.docx",format:"DOCX",size:"72 Ko",preview:false}}
+ ];
+ return templates.map((t,i)=>{
+  const cls=classes[i%classes.length];
+  const subject=subjects.find((s:any)=>s.assignments?.some((a:any)=>a.academicYearId===cls.academicYearId&&a.programId===cls.programId&&a.levelId===cls.levelId))??subjects[i%subjects.length];
+  const teacher=teachers.find((x:any)=>x.assignmentsResolved?.some((a:any)=>a.classId===cls.id&&a.subjectId===subject.id))??teachers[i%teachers.length];
+  const history:Report["history"]=[{actor:teacher.fullName,action:"Rapport transmis",date:t.submittedAt,to:"En attente"}];
+  if(t.status!=="pending")history.push({actor:t.reviewer!,action:t.status==="approved"?"Rapport validé":"Rapport rejeté",date:t.reviewedAt!,from:"En attente",to:statusText[t.status],comment:t.feedback});
+  return {...t,teacherId:teacher.id,teacher:teacher.fullName,classId:cls.id,className:cls.name,group:cls.groups?.[0]?.name??"",subjectId:subject.id,subject:subject.name,yearId:cls.academicYearId,year:year.name,history} as Report;
+ });
+}
+
+export function PedagogicalReportsPage({user}:Props){
+ const canRead=user.permissions.includes("pedagogy.reports.view");
+ const canReview=user.role==="director"||user.role==="pedagogical";
+ const [loading,setLoading]=useState(true),[loadError,setLoadError]=useState("");
+ const [academic,setAcademic]=useState<any>(null),[years,setYears]=useState<any[]>([]),[subjects,setSubjects]=useState<any>(null),[teachers,setTeachers]=useState<any>(null);
+ const [reports,setReports]=useState<Report[]>([]),[selectedId,setSelectedId]=useState<string|null>(null);
+ const [search,setSearch]=useState(""),[yearId,setYearId]=useState(""),[period,setPeriod]=useState(""),[teacherId,setTeacherId]=useState(""),[subjectId,setSubjectId]=useState(""),[classId,setClassId]=useState(""),[type,setType]=useState(""),[status,setStatus]=useState("all");
+ const [page,setPage]=useState(1),[dialog,setDialog]=useState<"approve"|"reject"|null>(null),[reason,setReason]=useState(""),[actionError,setActionError]=useState(""),[actionBusy,setActionBusy]=useState(false);
+ const [notice,setNotice]=useState("");
+ useEffect(()=>{if(!canRead){setLoading(false);return;}let active=true;Promise.all([academicYearRepository.list(),classesGroupsRepository.list(),subjectsRepository.list(),teachersRepository.list()]).then(([y,a,s,t])=>{if(!active)return;setYears(y);setAcademic(a);setSubjects(s);setTeachers(t);const demo=makeReports(a.classes.filter((c:any)=>c.status==="Actif"),s.subjects.filter((x:any)=>x.status==="Actif"),t.teachers,y);setReports(demo);setYearId(y.find((x:any)=>x.status==="Active")?.id??"");}).catch(e=>{if(active)setLoadError(e instanceof Error?e.message:"Impossible de charger les données pédagogiques.");}).finally(()=>{if(active)setLoading(false);});return()=>{active=false;}},[canRead]);
+ const classes=academic?.classes??[];
+ const availableClasses=useMemo(()=>classes.filter((c:any)=>(!yearId||c.academicYearId===yearId)),[classes,yearId]);
+ const availableSubjects=useMemo(()=>{const cls=classes.find((c:any)=>c.id===classId);return (subjects?.subjects??[]).filter((s:any)=>s.status==="Actif"&&(!cls||s.assignments.some((a:any)=>a.academicYearId===cls.academicYearId&&a.programId===cls.programId&&a.levelId===cls.levelId)));},[subjects,classes,classId]);
+ const availableTeachers=useMemo(()=> (teachers?.teachers??[]).filter((t:any)=>!classId||t.assignmentsResolved?.some((a:any)=>a.classId===classId)),[teachers,classId]);
+ const periods=useMemo(()=>Array.from(new Set(reports.filter(r=>!yearId||r.yearId===yearId).map(r=>r.period))),[reports,yearId]);
+ const filtered=useMemo(()=>reports.filter(r=>{const q=search.trim().toLocaleLowerCase("fr-FR");return (!yearId||r.yearId===yearId)&&(!period||r.period===period)&&(!teacherId||r.teacherId===teacherId)&&(!subjectId||r.subjectId===subjectId)&&(!classId||r.classId===classId)&&(!type||r.type===type)&&(status==="all"||r.status===status)&&(!q||[r.id,r.teacher,r.title,r.className,r.subject].some(v=>v.toLocaleLowerCase("fr-FR").includes(q)));}),[reports,search,yearId,period,teacherId,subjectId,classId,type,status]);
+ const counts=useMemo(()=>({all:reports.length,pending:reports.filter(r=>r.status==="pending").length,approved:reports.filter(r=>r.status==="approved").length,rejected:reports.filter(r=>r.status==="rejected").length}),[reports]);
+ const selected=reports.find(r=>r.id===selectedId)??null;
+ const pageSize=8,pageCount=Math.max(1,Math.ceil(filtered.length/pageSize));
+ const pageRows=filtered.slice((page-1)*pageSize,page*pageSize);
+ const clearFilters=()=>{setSearch("");setYearId("");setPeriod("");setTeacherId("");setSubjectId("");setClassId("");setType("");setStatus("all");setPage(1);};
+ const openReport=(id:string)=>{setSelectedId(id);setActionError("");};
+ const runReview=()=>{if(!selected||!dialog)return;if(dialog==="reject"&&!reason.trim()){setActionError("Le motif du rejet est obligatoire.");return;}setActionBusy(true);window.setTimeout(()=>{setReports(rows=>rows.map(r=>r.id!==selected.id?r:{...r,status:dialog==="approve"?"approved":"rejected",reviewer:user.displayName,reviewedAt:new Date().toISOString(),feedback:dialog==="reject"?reason.trim():undefined,history:[...r.history,{actor:user.displayName,action:dialog==="approve"?"Rapport validé":"Rapport rejeté",date:new Date().toISOString(),from:statusText[r.status],to:dialog==="approve"?"Validé":"Rejeté",comment:dialog==="reject"?reason.trim():undefined}]}));setActionBusy(false);setDialog(null);setReason("");setActionError("");setNotice(dialog==="approve"?"Le rapport a été validé dans cette démonstration.":"Le rapport a été rejeté dans cette démonstration.");},350);};
+ if(!canRead)return <main className="pr-page"><section className="pr-access"><ShieldAlert size={25}/><h2>Accès non autorisé</h2><p>Votre compte ne dispose pas de l’autorisation nécessaire pour consulter les rapports pédagogiques.</p></section></main>;
+ return <main className="pr-page">
+  <header className="pr-header"><div className="pr-breadcrumb">Opérations pédagogiques <ChevronRight size={12}/> <strong>Rapports pédagogiques</strong></div><div className="pr-title-row"><div><h1>Rapports pédagogiques</h1><p>Consultez, examinez et suivez les rapports pédagogiques.</p></div><span className="pr-pending-indicator"><Clock3 size={13}/>{counts.pending} en attente de lecture</span></div></header>
+  <div className="pr-demo-notice"><AlertCircle size={16}/><div><strong>Mode démonstration — données fictives</strong><p>Le projet ne dispose pas encore de modèle ni de service de rapports pédagogiques. Les quatre rapports affichés illustrent l’interface ; les actions de validation et de rejet ne sont pas enregistrées sur un serveur.</p></div></div>
+  <section className="pr-kpis" aria-label="Indicateurs des rapports"><article><span>Total des rapports</span><strong>156</strong><small>Valeur illustrative</small></article><article><span>En attente de validation</span><strong className="is-pending">24</strong><small>Valeur illustrative</small></article><article><span>Validés</span><strong className="is-approved">112</strong><small>Valeur illustrative</small></article><article><span>Rejetés</span><strong className="is-rejected">20</strong><small>Valeur illustrative</small></article></section>
+  <section className="pr-panel">
+   <div className="pr-panel-head"><div><h2>Suivi des rapports</h2><p>Consultez les soumissions et ouvrez un rapport pour examiner son contenu.</p></div><span>{filtered.length} résultat(s)</span></div>
+   <div className="pr-filters">
+    <label className="pr-search"><span>Recherche</span><div><Search size={14}/><input value={search} onChange={e=>{setSearch(e.target.value);setPage(1);}} placeholder="Rechercher une référence, un enseignant ou un titre..."/></div></label>
+    <label><span>Année scolaire</span><select value={yearId} onChange={e=>{setYearId(e.target.value);setClassId("");setPeriod("");setPage(1);}}><option value="">Toutes les années</option>{years.map((y:any)=><option key={y.id} value={y.id}>{y.name}</option>)}</select></label>
+    <label><span>Période</span><select value={period} onChange={e=>setPeriod(e.target.value)}><option value="">Toutes les périodes</option>{periods.map(p=><option key={p}>{p}</option>)}</select></label>
+    <label><span>Enseignant</span><select value={teacherId} onChange={e=>setTeacherId(e.target.value)}><option value="">Tous les enseignants</option>{availableTeachers.map((t:any)=><option key={t.id} value={t.id}>{t.fullName}</option>)}</select></label>
+    <label><span>Matière</span><select value={subjectId} onChange={e=>setSubjectId(e.target.value)}><option value="">Toutes les matières</option>{availableSubjects.map((s:any)=><option key={s.id} value={s.id}>{s.name}</option>)}</select></label>
+    <label><span>Classe / Groupe</span><select value={classId} onChange={e=>{setClassId(e.target.value);setTeacherId("");setSubjectId("");}}><option value="">Toutes les classes</option>{availableClasses.map((c:any)=><option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
+    <label><span>Type de rapport</span><select value={type} onChange={e=>setType(e.target.value)}><option value="">Tous les types</option>{Array.from(new Set(reports.map(r=>r.type))).map(t=><option key={t}>{t}</option>)}</select></label>
+    <label><span>Statut</span><select value={status} onChange={e=>setStatus(e.target.value)}><option value="all">Tous les statuts</option><option value="pending">En attente</option><option value="approved">Validé</option><option value="rejected">Rejeté</option></select></label>
+   </div>
+   <div className="pr-filter-footer"><span><strong>{filtered.length}</strong> rapport(s) correspondant aux critères</span><button onClick={clearFilters}><FilterX size={13}/>Réinitialiser les filtres</button></div>
+   <div className="pr-table-wrap"><table><thead><tr><th>Référence</th><th>Enseignant</th><th>Classe / Groupe</th><th>Matière</th><th>Type de rapport</th><th>Période</th><th>Date de soumission</th><th>Statut</th><th>Actions</th></tr></thead><tbody>
+    {loading?<tr><td colSpan={9}><div className="pr-loading"><span className="pr-spinner"/>Chargement des rapports et des données académiques…</div></td></tr>:loadError?<tr><td colSpan={9}><div className="pr-error"><AlertCircle size={17}/><div><strong>Chargement impossible</strong><p>{loadError}</p></div></div></td></tr>:pageRows.map(r=><tr key={r.id} className={selectedId===r.id?"is-selected":""} onClick={()=>openReport(r.id)}><td><strong className="pr-reference">{r.id}</strong></td><td><strong className="pr-primary-text">{r.teacher}</strong></td><td>{r.className}{r.group&&<small className="pr-subline">{r.group}</small>}</td><td>{r.subject}</td><td>{r.type}</td><td>{r.period}</td><td>{dateOnly(r.submittedAt)}</td><td><span className={`pr-status pr-status--${statusTone[r.status]}`}>{statusText[r.status]}</span></td><td><button className="pr-row-action" onClick={e=>{e.stopPropagation();openReport(r.id);}}><Eye size={13}/>Consulter</button></td></tr>)}
+    {!loading&&!loadError&&pageRows.length===0&&<tr><td colSpan={9}><div className="pr-empty"><FileText size={23}/><strong>{reports.length===0?"Aucun rapport disponible":"Aucun résultat"}</strong><p>{reports.length===0?"Aucun rapport n’a été transmis pour le moment.":"Aucun rapport ne correspond à votre recherche. Modifiez les filtres ou réinitialisez-les."}</p></div></td></tr>}
+   </tbody></table></div>
+   <footer className="pr-pagination"><span>Affichage de {filtered.length?((page-1)*pageSize+1):0} à {Math.min(page*pageSize,filtered.length)} sur {filtered.length}</span><div><button disabled={page<=1} onClick={()=>setPage(p=>p-1)}>Précédent</button><span>Page {page} / {pageCount}</span><button disabled={page>=pageCount} onClick={()=>setPage(p=>p+1)}>Suivant</button></div></footer>
+  </section>
+  {selected&&<div className="pr-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget)setSelectedId(null);}}><aside className="pr-drawer" aria-label={`Détail du rapport ${selected.id}`}>
+   <header className="pr-drawer-head"><div><span>RAPPORT PÉDAGOGIQUE</span><h2>{selected.title}</h2><p>{selected.id} · Transmis le {dateTime(selected.submittedAt)}</p></div><button aria-label="Fermer" onClick={()=>setSelectedId(null)}><X size={18}/></button></header>
+   <div className="pr-drawer-body">
+    <div className="pr-detail-status"><span className={`pr-status pr-status--${statusTone[selected.status]}`}>{statusText[selected.status]}</span><span>{selected.period}</span></div>
+    <section className="pr-detail-section"><h3>Informations générales</h3><div className="pr-info-grid"><div><small>Enseignant</small><strong>{selected.teacher}</strong></div><div><small>Classe</small><strong>{selected.className}</strong></div><div><small>Groupe</small><strong>{selected.group||"Classe entière"}</strong></div><div><small>Matière</small><strong>{selected.subject}</strong></div><div><small>Année scolaire</small><strong>{selected.year}</strong></div><div><small>Période</small><strong>{selected.period}</strong></div><div><small>Type de rapport</small><strong>{selected.type}</strong></div><div><small>Date de soumission</small><strong>{dateTime(selected.submittedAt)}</strong></div></div></section>
+    <section className="pr-detail-section"><h3>Contenu du rapport</h3><div className="pr-report-content">{selected.content.split("\n\n").map((p,i)=><p key={i}>{p}</p>)}</div><small className="pr-muted">Contenu transmis par l’enseignant — lecture seule.</small></section>
+    <section className="pr-detail-section"><h3>Pièces jointes <span>{selected.attachment?1:0}</span></h3>{selected.attachment?<div className="pr-attachment"><span className="pr-file-icon"><FileText size={17}/></span><div><strong>{selected.attachment.name}</strong><small>{selected.attachment.format} · {selected.attachment.size}</small></div><button title="Téléchargement indisponible en démonstration" disabled><Download size={14}/>Télécharger</button></div>:<p className="pr-muted">Aucune pièce jointe associée à ce rapport.</p>}{selected.attachment&&!selected.attachment.preview&&<div className="pr-preview-fallback">L’aperçu de ce fichier n’est pas disponible. Téléchargez le document pour le consulter.</div>}{selected.attachment?.preview&&<div className="pr-file-preview"><div><FileText size={19}/><strong>Aperçu PDF simulé</strong><small>Le fichier source n’est pas encore relié à un service de stockage.</small></div><span>PDF</span></div>}</section>
+    {selected.feedback&&<section className="pr-feedback"><strong>Motif du rejet / commentaire du réviseur</strong><p>{selected.feedback}</p><small>{selected.reviewer??"Réviseur"} · {selected.reviewedAt?dateTime(selected.reviewedAt):"Date non disponible"}</small></section>}
+    <section className="pr-detail-section"><h3>Historique de validation</h3>{selected.history.length?<ol className="pr-timeline">{[...selected.history].reverse().map((h,i)=><li key={i}><span className="pr-timeline-dot"/><div><strong>{h.action}</strong><small>{h.actor} · {dateTime(h.date)}</small>{h.from&&<span>{h.from} → {h.to}</span>}{h.comment&&<p>{h.comment}</p>}</div></li>)}</ol>:<p className="pr-muted">Aucun événement de validation enregistré.</p>}</section>
+   </div>
+   <footer className="pr-drawer-footer"><span>Lecture seule · Mode démonstration</span>{canReview&&selected.status==="pending"&&<><button className="pr-button pr-button--secondary" onClick={()=>{setDialog("reject");setReason("");setActionError("");}}>Rejeter</button><button className="pr-button pr-button--primary" onClick={()=>{setDialog("approve");setActionError("");}}>Valider</button></>}</footer>
+  </aside></div>}
+  {dialog&&selected&&<div className="pr-dialog-backdrop"><section className="pr-dialog"><button className="pr-dialog-close" onClick={()=>setDialog(null)} aria-label="Fermer"><X size={16}/></button><span className="pr-dialog-eyebrow">CONFIRMATION DE REVUE</span><h2>{dialog==="approve"?"Valider ce rapport ?":"Rejeter ce rapport ?"}</h2><p>Vous êtes sur le point de {dialog==="approve"?"valider":"rejeter"} <strong>{selected.id}</strong> — {selected.title}.</p>{dialog==="reject"&&<label className="pr-reason"><span>Motif du rejet <b>*</b></span><textarea value={reason} onChange={e=>{setReason(e.target.value);setActionError("");}} placeholder="Précisez les éléments à reprendre…" rows={4}/></label>}{actionError&&<div className="pr-inline-error"><AlertCircle size={14}/>{actionError}</div>}<div className="pr-dialog-actions"><button className="pr-button pr-button--secondary" onClick={()=>setDialog(null)}>Annuler</button><button className="pr-button pr-button--primary" disabled={actionBusy} onClick={runReview}>{actionBusy?"Traitement…":"Confirmer"}</button></div></section></div>}
+  {notice&&<div className="pr-toast" role="status"><CheckCircle2 size={15}/>{notice}<button onClick={()=>setNotice("")} aria-label="Fermer"><X size={13}/></button></div>}
+ </main>;
+}
