@@ -1,6 +1,6 @@
 import { academicYearRepository, type AcademicYear } from "./academic-years";
 import { levelsRepository, type LevelRecord } from "./levels";
-import { sectorsProgramsRepository, type EducationalCycle, type EntityStatus, type SectorProgramData } from "./sectors-programs";
+import { sectorsProgramsRepository, type EducationalCycle, type SectorProgramData } from "./sectors-programs";
 
 export type ClassStatus = "Actif" | "Inactif";
 export interface SchoolGroup {

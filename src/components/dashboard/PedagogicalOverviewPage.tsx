@@ -8,7 +8,7 @@ import {
   academicAlerts, badgeOverview, contentReviews, gradeSubmissions,
   pedagogicalActivities, pedagogicalKpis, pedagogicalQuickActions,
   performanceByClass, performanceByLevel, performanceTrends, performanceTrendsByTerm, teacherReports,
-  timetableOverview, type ContentKind,
+  timetableOverview,
 } from "../../data/pedagogical-dashboard";
 import type { AuthenticatedSidebarUser, Permission } from "../../types/navigation";
 

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type CSSProperties, type FormEvent } from "react";
-import { AlertCircle, ArrowDown, ArrowUp, ArrowUpDown, BookOpen, Check, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, Eye, Filter, GraduationCap, Layers3, MoreHorizontal, Pencil, Plus, Search, ShieldCheck, SlidersHorizontal, X } from "lucide-react";
+import { AlertCircle, ArrowDown, ArrowUp, ArrowUpDown, BookOpen, Check, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, Eye, GraduationCap, Layers3, MoreHorizontal, Pencil, Plus, Search, ShieldCheck, SlidersHorizontal, X } from "lucide-react";
 import { levelsRepository, type LevelInput, type LevelRecord } from "../../services/levels";
 import { sectorsProgramsRepository, type EducationalCycle, type SectorProgramData, type EntityStatus } from "../../services/sectors-programs";
 import type { AuthenticatedSidebarUser } from "../../types/navigation";

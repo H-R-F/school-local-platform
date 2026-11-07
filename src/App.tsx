@@ -1,5 +1,11 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AppSidebar } from "./components/AppSidebar";
+import { CommandPalette } from "./components/shell/CommandPalette";
+import { StatusBar } from "./components/shell/StatusBar";
+import { TopBar } from "./components/shell/TopBar";
+import "./components/shell/shell.css";
+import { navigation } from "./data/navigation";
+import { systemStatus } from "./config/system-status";
 import { StaffSignIn } from "./components/auth/StaffSignIn";
 import { DirectorOverviewPage } from "./components/dashboard/DirectorOverviewPage";
 import { AdministrativeOverviewPage } from "./components/dashboard/AdministrativeOverviewPage";
@@ -32,6 +38,45 @@ function readSavedUser(): AuthenticatedSidebarUser | null {
 export default function App() {
   const [user, setUser] = useState<AuthenticatedSidebarUser | null>(readSavedUser);
   const [currentPath, setCurrentPath] = useState(() => window.location.pathname || "/overview");
+  const [collapsed, setCollapsed] = useState(() => {
+    try { return window.localStorage.getItem("school-sidebar-collapsed") === "1"; } catch { return false; }
+  });
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [narrow, setNarrow] = useState(() => window.matchMedia("(max-width: 1100px)").matches);
+  useEffect(() => {
+    const query = window.matchMedia("(max-width: 1100px)");
+    const onChange = (event: MediaQueryListEvent) => setNarrow(event.matches);
+    query.addEventListener("change", onChange);
+    return () => query.removeEventListener("change", onChange);
+  }, []);
+  const sidebarCollapsed = collapsed || narrow;
+
+  const updateCollapsed = useCallback((next: boolean) => {
+    setCollapsed(next);
+    try { window.localStorage.setItem("school-sidebar-collapsed", next ? "1" : "0"); } catch { /* storage may be unavailable */ }
+  }, []);
+
+  // Global shortcuts: Ctrl/Cmd+K opens search, Ctrl/Cmd+B toggles the sidebar.
+  useEffect(() => {
+    if (!user) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (!(event.ctrlKey || event.metaKey) || event.altKey) return;
+      const key = event.key.toLowerCase();
+      if (key === "k") { event.preventDefault(); setSearchOpen((open) => !open); }
+      else if (key === "b") { event.preventDefault(); updateCollapsed(!sidebarCollapsed); }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [user, sidebarCollapsed, updateCollapsed]);
+
+  // Per-page document title, skip-link target and scroll reset on navigation.
+  useEffect(() => {
+    if (!user) { document.title = `Connexion · ${schoolBranding.name}`; return; }
+    const item = navigation.flatMap((group) => group.items).find((entry) => entry.route === currentPath);
+    document.title = `${item?.label ?? "Espace du personnel"} · ${schoolBranding.name}`;
+    window.scrollTo(0, 0);
+    document.querySelector(".sidebar-demo > main")?.setAttribute("id", "main-content");
+  }, [user, currentPath]);
 
   useEffect(() => {
     const syncPath = () => setCurrentPath(window.location.pathname || "/overview");
@@ -77,8 +122,15 @@ export default function App() {
   const isRolesPermissionsPage = currentPath === "/roles-permissions";
 
   return (
-    <div className="sidebar-demo">
-      <AppSidebar user={user} school={schoolBranding} currentPath={currentPath} onNavigate={navigate} onExit={handleSignOut} />
+    <div className={`sidebar-demo${sidebarCollapsed ? " is-collapsed" : ""}`}>
+      <a className="skip-link" href="#main-content">Aller au contenu principal</a>
+      <AppSidebar user={user} school={schoolBranding} currentPath={currentPath} onNavigate={navigate} onExit={handleSignOut} collapsed={sidebarCollapsed} onCollapsedChange={updateCollapsed} />
+      <TopBar user={user} school={schoolBranding} onOpenSearch={() => setSearchOpen(true)} onNavigate={navigate} onSignOut={handleSignOut} />
+      {systemStatus.license.mode === "restricted" && (
+        <div className="license-banner" role="alert">
+          <strong>Mode restreint :</strong> la création et la modification sont désactivées. Les données existantes restent disponibles. Renouvelez la licence pour rétablir l’accès complet.
+        </div>
+      )}
       {isDirectorOverview ? (
         <DirectorOverviewPage user={user} onNavigate={navigate} />
       ) : isAdministrativeOverview ? (
@@ -117,6 +169,8 @@ export default function App() {
           <span className="workspace-note">Les modules sont construits progressivement, sans modifier les espaces déjà en place.</span>
         </main>
       )}
+      <StatusBar />
+      <CommandPalette open={searchOpen} user={user} onClose={() => setSearchOpen(false)} onNavigate={navigate} />
     </div>
   );
 }
