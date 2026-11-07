@@ -5,7 +5,7 @@ import "./PaymentRegistersPage.css";
 
 interface Props { user: AuthenticatedSidebarUser }
 type Direction = "Entrée" | "Sortie";
-type TxStatus = "Payé" | "En attente" | "Échoué" | "Annulé";
+type TxStatus = "Payé" | "En attente" | "Partiel" | "Échoué";
 type Register = { id:string; name:string; reference:string; type:string; manager:string; openingBalance:number; openingDate:string; status:"Actif"|"Inactif"; description:string };
 type Transaction = { id:string; registerId:string; date:string; direction:Direction; operation:string; payer:string; studentRef?:string; description:string; method:string; amount:number; recordedBy:string; status:TxStatus; createdAt:string };
 const registers:Register[]=[
@@ -32,8 +32,8 @@ const transactions:Transaction[]=[
 const money=(n:number)=>new Intl.NumberFormat("fr-FR",{minimumFractionDigits:2,maximumFractionDigits:2}).format(n)+" DH";
 const dateLabel=(s:string)=>new Intl.DateTimeFormat("fr-FR",{day:"2-digit",month:"short",year:"numeric"}).format(new Date(s+"T12:00:00"));
 const startDefault="2026-11-01";const endDefault="2026-11-07";
-const statusClass=(s:TxStatus)=>s==="Payé"?"paid":s==="En attente"?"pending":s==="Échoué"?"failed":"cancelled";
-const statusLabels:TxStatus[]=["Payé","En attente","Échoué","Annulé"];
+const statusClass=(s:TxStatus)=>s==="Payé"?"paid":s==="En attente"||s==="Partiel"?"pending":"failed";
+const statusLabels:TxStatus[]=["Payé","En attente","Partiel","Échoué"];
 export function PaymentRegistersPage({user}:Props){
  const allowed=user.permissions.includes("finance.registers.view");
  const [selectedRegister,setSelectedRegister]=useState("REG-001");
@@ -44,11 +44,12 @@ export function PaymentRegistersPage({user}:Props){
  const selected=registers.find(r=>r.id===selectedRegister)||registers[0];
  const dateValid=start<=end;
  const inRange=(d:string)=>dateValid&&d>=start&&d<=end;
+ const balanceAt=(r:Register)=>r.openingBalance+transactions.filter(t=>t.registerId===r.id&&t.date>=r.openingDate&&t.date<=end&&t.status==="Payé").reduce((sum,t)=>sum+(t.direction==="Entrée"?t.amount:-t.amount),0);
  const registerTx=transactions.filter(t=>t.registerId===selectedRegister&&inRange(t.date));
  const posted=registerTx.filter(t=>t.status==="Payé");
  const inflows=posted.filter(t=>t.direction==="Entrée").reduce((s,t)=>s+t.amount,0);
  const outflows=posted.filter(t=>t.direction==="Sortie").reduce((s,t)=>s+t.amount,0);
- const currentBalance=selected.openingBalance+inflows-outflows;
+ const currentBalance=balanceAt(selected);
  const filtered=useMemo(()=>transactions.filter(t=>t.registerId===selectedRegister&&inRange(t.date)&&
   (t.id+" "+t.payer+" "+t.description).toLocaleLowerCase("fr-FR").includes(search.toLocaleLowerCase("fr-FR"))&&
   (operation==="all"||t.operation===operation)&&(method==="all"||t.method===method)&&(status==="all"||t.status===status)&&(manager==="all"||t.recordedBy===manager)
@@ -64,7 +65,7 @@ export function PaymentRegistersPage({user}:Props){
  return <main className="payment-registers-page">
   <header className="pr-header"><div className="pr-breadcrumb"><span>Finances</span><ChevronRight size={13}/><strong>Registres de paiement</strong></div><div className="pr-heading"><div><h1>Registres de paiement</h1><p>Consultez et suivez les opérations financières par registre.</p></div><div className="pr-header-side"><span className="pr-period-chip"><CalendarDays size={14}/>{dateLabel(start)} – {dateLabel(end)}</span></div></div></header>
   <section className="pr-demo-banner"><Info size={16}/><div><strong>Mode démonstration · Données financières fictives</strong><span>Les registres, soldes, payeurs et opérations ci-dessous sont des exemples de présentation. Aucun registre réel ni service comptable n’est connecté. Les montants ne constituent pas des écritures comptables.</span></div><span className="pr-demo-tag">DÉMO</span></section>
-  <section className="pr-period-bar"><div><label htmlFor="pr-start">Période affichée</label><div className="pr-date-controls"><input id="pr-start" type="date" value={start} max={end} onChange={e=>{setStart(e.target.value);setPage(1);}}/><span>au</span><input aria-label="Date de fin" type="date" value={end} min={start} onChange={e=>{setEnd(e.target.value);setPage(1);}}/></div></div><span className="pr-period-note">Les soldes présentés sont calculés pour la démonstration à partir du solde d’ouverture fictif et des opérations marquées « Payé ».</span></section>
+  <section className="pr-period-bar"><div><label htmlFor="pr-start">Période affichée</label><div className="pr-date-controls"><input id="pr-start" type="date" value={start} max={end} onChange={e=>{setStart(e.target.value);setPage(1);}}/><span>au</span><input aria-label="Date de fin" type="date" value={end} min={start} onChange={e=>{setEnd(e.target.value);setPage(1);}}/></div></div><span className="pr-period-note">Les mouvements sont filtrés par période. Le solde actuel indicatif cumule les opérations « Payé » depuis la date d’ouverture fictive jusqu’à la fin de période.</span></section>
   {!dateValid&&<div className="pr-validation"><CircleAlert size={14}/>La date de début doit être antérieure ou égale à la date de fin.</div>}
   <section className="pr-kpis">
    <article><span className="pr-kpi-icon blue"><Banknote size={17}/></span><div><strong>{money(totalCollected)}</strong><span>Total encaissé sur la période</span><small>Entrées au statut « Payé » · tous registres</small></div></article>
@@ -72,7 +73,7 @@ export function PaymentRegistersPage({user}:Props){
    <article><span className="pr-kpi-icon teal"><Landmark size={17}/></span><div><strong>{activeRegisters}</strong><span>Registres actifs</span><small>Dans le jeu de démonstration</small></div></article>
   </section>
   <section className="pr-register-section"><div className="pr-section-heading"><div><span className="pr-eyebrow">VUE D’ENSEMBLE</span><h2>Registres disponibles</h2><p>Sélectionnez un registre pour consulter ses mouvements et son solde indicatif.</p></div><span className="pr-readonly"><Eye size={13}/> Consultation · Démo</span></div>
-   <div className="pr-register-grid">{registers.map(r=>{const tx=transactions.filter(t=>t.registerId===r.id&&inRange(t.date)&&t.status==="Payé");const ins=tx.filter(t=>t.direction==="Entrée").reduce((s,t)=>s+t.amount,0);const outs=tx.filter(t=>t.direction==="Sortie").reduce((s,t)=>s+t.amount,0);return <button type="button" key={r.id} className={"pr-register-card "+(selectedRegister===r.id?"selected":"")} onClick={()=>{setSelectedRegister(r.id);setPage(1);setShowRegisterInfo(false);}}><div className="pr-register-card-top"><span className="pr-register-icon"><Wallet size={17}/></span><span className="pr-register-status">{r.status}</span></div><strong className="pr-register-name">{r.name}</strong><small className="pr-register-ref">{r.reference} · {r.type}</small><div className="pr-register-balance"><small>Solde actuel indicatif</small><b>{money(r.openingBalance+ins-outs)}</b></div><div className="pr-register-mini"><span><i className="in"/>Entrées <b>{money(ins)}</b></span><span><i className="out"/>Sorties <b>{money(outs)}</b></span></div><span className="pr-register-select">{selectedRegister===r.id?"Registre sélectionné":"Consulter le registre"}<ChevronRight size={13}/></span></button>;})}</div>
+   <div className="pr-register-grid">{registers.map(r=>{const tx=transactions.filter(t=>t.registerId===r.id&&inRange(t.date)&&t.status==="Payé");const ins=tx.filter(t=>t.direction==="Entrée").reduce((s,t)=>s+t.amount,0);const outs=tx.filter(t=>t.direction==="Sortie").reduce((s,t)=>s+t.amount,0);return <button type="button" key={r.id} className={"pr-register-card "+(selectedRegister===r.id?"selected":"")} onClick={()=>{setSelectedRegister(r.id);setPage(1);setShowRegisterInfo(false);}}><div className="pr-register-card-top"><span className="pr-register-icon"><Wallet size={17}/></span><span className="pr-register-status">{r.status}</span></div><strong className="pr-register-name">{r.name}</strong><small className="pr-register-ref">{r.reference} · {r.type}</small><div className="pr-register-balance"><small>Solde actuel indicatif</small><b>{money(balanceAt(r))}</b></div><div className="pr-register-mini"><span><i className="in"/>Entrées <b>{money(ins)}</b></span><span><i className="out"/>Sorties <b>{money(outs)}</b></span></div><span className="pr-register-select">{selectedRegister===r.id?"Registre sélectionné":"Consulter le registre"}<ChevronRight size={13}/></span></button>;})}</div>
   </section>
   <section className="pr-register-detail"><div className="pr-detail-head"><div><span className="pr-eyebrow">REGISTRE SÉLECTIONNÉ · {selected.reference}</span><h2>{selected.name}</h2><p>{selected.type} <span>·</span> Responsable : {selected.manager}</p></div><button type="button" className="pr-outline-button" onClick={()=>setShowRegisterInfo(v=>!v)}><Eye size={14}/>{showRegisterInfo?"Masquer les informations":"Détails du registre"}<ChevronDown size={13}/></button></div>
    {showRegisterInfo&&<div className="pr-register-info"><div><small>Référence</small><b>{selected.reference}</b></div><div><small>Responsable</small><b>{selected.manager}</b></div><div><small>Date d’ouverture indicative</small><b>{dateLabel(selected.openingDate)}</b></div><div><small>Statut de démonstration</small><b>{selected.status}</b></div><p>{selected.description}</p></div>}
