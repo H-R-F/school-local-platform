@@ -69,7 +69,7 @@ export function TripsOutingsPage({user}:Props){
  const [detailTab,setDetailTab]=useState("Informations générales");
  const pageSize=8;
 
- useEffect(()=>{let live=true;setLoading(true);setError("");
+ useEffect(()=>{if(!canManage){setLoading(false);return;}let live=true;setLoading(true);setError("");
   const jobs:Promise<unknown>[]=[academicYearRepository.list()];
   jobs.push(canStudents?studentsRepository.list():Promise.resolve(null));
   jobs.push(canClasses?classesGroupsRepository.list():Promise.resolve(null));
@@ -88,7 +88,7 @@ export function TripsOutingsPage({user}:Props){
    setTrips(readTrips(seed));
   }).catch(e=>{if(live)setError(e instanceof Error?e.message:"Impossible de charger les données de référence.");}).finally(()=>{if(live)setLoading(false);});
   return()=>{live=false;};
- },[canStudents,canClasses,canTeachers,canEmployees,canTransport]);
+ },[canManage,canStudents,canClasses,canTeachers,canEmployees,canTransport]);
 
  const activeYear=years.find(y=>y.status==="Active")??years[0];
  const activeStudents=useMemo(()=>students.filter(s=>s.accountStatus==="Actif"&&s.enrollment?.status==="Actif"),[students]);
