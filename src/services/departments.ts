@@ -1,6 +1,6 @@
-import { subjectsRepository } from "./subjects";
+import { subjectsRepository, type SubjectCategory } from "./subjects";
 export interface DepartmentStaff {id:string;name:string;employeeCode:string;position:string;kind:"Enseignant"|"Personnel administratif"}
-export interface DepartmentSubject {id:string;name:string;code:string;category:string}
+export interface DepartmentSubject {id:string;name:string;code:string;category:SubjectCategory}
 export interface Department {id:string;name:string;code:string;type:string;description:string;status:"Actif"|"Inactif";headId:string|null;createdAt:string}
 export interface DepartmentRecord extends Department {head:DepartmentStaff|null;teachers:DepartmentStaff[];subjects:DepartmentSubject[]}
 export interface DepartmentsData {departments:DepartmentRecord[];staff:DepartmentStaff[];subjects:DepartmentSubject[]}

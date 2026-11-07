@@ -11,9 +11,10 @@ import {
   recentIncidents, rechargeRequests, transportLines, upcomingTrips,
   type FinancePeriod,
 } from "../../data/finance-logistics-dashboard";
+import { demoAccounts } from "../../data/demo-accounts";
 import type { AuthenticatedSidebarUser, Permission } from "../../types/navigation";
 
-interface Props { user: AuthenticatedSidebarUser; onNavigate: (route: string) => void; }
+interface Props { user: AuthenticatedSidebarUser; onNavigate: (route: string) => void; onSwitchUser?: (user: AuthenticatedSidebarUser) => void; }
 type RequestDecision = { id: string; action: "Approuver" | "Rejeter" } | null;
 const currency = new Intl.NumberFormat(financeSchoolSettings.locale, { style: "currency", currency: financeSchoolSettings.currency, maximumFractionDigits: 0 });
 const money = (amount: number) => currency.format(amount);
@@ -36,7 +37,7 @@ function FinancialChart({ rows }: { rows: typeof financeMonthlyFlow }) {
   </div>;
 }
 
-export function FinanceLogisticsOverviewPage({ user, onNavigate }: Props) {
+export function FinanceLogisticsOverviewPage({ user, onNavigate, onSwitchUser }: Props) {
   const [period,setPeriod]=useState<FinancePeriod>("month");
   const [paymentSearch,setPaymentSearch]=useState("");
   const [paymentStatus,setPaymentStatus]=useState("Tous");
@@ -78,7 +79,6 @@ export function FinanceLogisticsOverviewPage({ user, onNavigate }: Props) {
 
   function requestAction(action:"Approuver"|"Rejeter") {
     if(!requestDecision)return;
-    // No financial API exists in this frontend-only project. Never mutate demo transaction state as if a real transaction succeeded.
     setRequestNotice(`La demande ${requestDecision.id} ne peut pas être ${action.toLocaleLowerCase("fr-FR")} : aucun service financier connecté n'est disponible. Aucune modification n'a été effectuée.`);
     setRequestDecision(null);
   }
@@ -89,8 +89,28 @@ export function FinanceLogisticsOverviewPage({ user, onNavigate }: Props) {
         <h1>Vue d'ensemble</h1><p>{greeting}, {firstName}. Voici votre aperçu financier et logistique.</p>
         <div className="fl-context"><span><CalendarDays size={14}/>{dateLabel}</span><span>Année scolaire {financeSchoolSettings.academicYear}</span><span>Devise : {financeSchoolSettings.currency}</span></div>
       </div>
-      <div className="fl-period-control"><label htmlFor="fl-period">Période financière</label><select id="fl-period" value={period} onChange={e=>setPeriod(e.target.value as FinancePeriod)}>{Object.entries(periodLabels).map(([value,label])=><option key={value} value={value}>{label}</option>)}</select>
+      <div className="fl-period-control">
+        <label htmlFor="fl-period">Période financière</label>
+        <select id="fl-period" value={period} onChange={e=>setPeriod(e.target.value as FinancePeriod)}>
+          {Object.entries(periodLabels).map(([value,label])=><option key={value} value={value}>{label}</option>)}
+        </select>
         {period==="custom"&&<div className="fl-custom-range"><input aria-label="Date de début" type="date" value={customStart} onChange={e=>setCustomStart(e.target.value)}/><span>au</span><input aria-label="Date de fin" type="date" value={customEnd} min={customStart} onChange={e=>setCustomEnd(e.target.value)}/></div>}
+        {onSwitchUser && (
+          <div className="dash-role-pills" style={{ marginTop: "6px" }}>
+            {demoAccounts.map(account => (
+              <button
+                key={account.user.id}
+                type="button"
+                className={`dash-role-pill ${account.user.id === user.id ? "dash-role-pill--active" : ""}`}
+                onClick={() => onSwitchUser(account.user)}
+                title={`Passer à ${account.user.displayName}`}
+              >
+                <span className="dash-role-avatar">{account.user.initials}</span>
+                <span>{account.user.displayName.split(" ")[0]}</span>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </header>
 
