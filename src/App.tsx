@@ -29,6 +29,7 @@ import { ClassRankingsPage } from "./components/class-rankings/ClassRankingsPage
 import { StudentRiskPage } from "./components/student-risk/StudentRiskPage";
 import { StudentActivitiesPage } from "./components/student-activities/StudentActivitiesPage";
 import { PaymentRegistersPage } from "./components/payment-registers/PaymentRegistersPage";
+import { CashRegistersPage } from "./components/cash-registers/CashRegistersPage";
 import { PaymentsPage } from "./components/payments/PaymentsPage";
 import { StudentBalancesPage } from "./components/student-balances/StudentBalancesPage";
 import { ExpensesPage } from "./components/expenses/ExpensesPage";
@@ -105,6 +106,7 @@ export default function App() {
   const isStudentRiskPage = currentPath === "/student-risk";
   const isStudentActivitiesPage = currentPath === "/student-activities";
   const isPaymentRegistersPage = currentPath === "/payment-registers";
+  const isCashRegistersPage = currentPath === "/cash-registers";
   const isPaymentsPage = currentPath === "/payments";
   const isStudentBalancesPage = currentPath === "/student-balances";
   const isExpensesPage = currentPath === "/expenses";
@@ -169,6 +171,8 @@ export default function App() {
         <StudentActivitiesPage user={user} />
       ) : isPaymentRegistersPage ? (
         <PaymentRegistersPage user={user} />
+      ) : isCashRegistersPage ? (
+        <CashRegistersPage user={user} />
       ) : isPaymentsPage ? (
         <PaymentsPage user={user} />
       ) : isStudentBalancesPage ? (
