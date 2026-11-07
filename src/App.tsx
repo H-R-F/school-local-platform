@@ -44,7 +44,7 @@ export default function App() {
 
   function navigate(route: string) {
     if (window.location.pathname !== route) window.history.pushState({}, "", route);
-    setCurrentPath(route);
+    setCurrentPath(window.location.pathname || "/overview");
   }
 
   function handleSignIn(nextUser: AuthenticatedSidebarUser) {
