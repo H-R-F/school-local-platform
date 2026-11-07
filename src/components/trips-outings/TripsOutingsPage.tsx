@@ -37,7 +37,7 @@ const staffLabel=(id:string,staff:StaffOption[])=>staff.find(s=>s.id===id)?.name
 const readTrips=(seed:TripRecord[])=>{try{const raw=localStorage.getItem(STORE_KEY);if(!raw){localStorage.setItem(STORE_KEY,JSON.stringify(seed));return seed;}const parsed:unknown=JSON.parse(raw);if(!Array.isArray(parsed))throw new Error();return parsed as TripRecord[];}catch{throw new Error("Impossible de charger les sorties enregistrées dans ce navigateur.");}};
 const writeTrips=(rows:TripRecord[])=>{try{localStorage.setItem(STORE_KEY,JSON.stringify(rows));return rows;}catch{throw new Error("Enregistrement local impossible. Vérifiez l’espace disponible dans le navigateur.");}};
 const defaultForm=(yearId:string,staff:StaffOption[]):TripForm=>({title:"",type:"Pédagogique",description:"",objective:"",programme:"",destination:"",departureDate:plusDays(14),departureTime:"08:00",returnDate:plusDays(14),returnTime:"16:00",meetingPoint:"Établissement scolaire",responsibleId:staff[0]?.id??"",accompanyingIds:[],academicYearId:yearId,classIds:[],participantIds:[],transportMode:"À organiser",vehicleId:null,transportNotes:""});
-function seedTrips(students:StudentRecord[],years:AcademicYear[],classes:ClassRecord[],staff:StaffOption[],vehicles:TransportVehicle[]):TripRecord[]{
+function seedTrips(students:StudentRecord[],years:AcademicYear[],classes:ClassRecord[],staff:StaffOption[]):TripRecord[]{
  const year=years.find(y=>y.status==="Active")??years[0];const active=students.filter(s=>s.enrollment?.status==="Actif"&&s.enrollment.academicYearId===year?.id);
  const firstClass=classes.find(c=>c.academicYearId===year?.id&&c.status==="Actif");
  const studentsFor=(n:number)=>active.slice(0,n).map(s=>s.id);
@@ -47,7 +47,7 @@ function seedTrips(students:StudentRecord[],years:AcademicYear[],classes:ClassRe
   {id:"TRP-DEMO-002",reference:"SOR-2026-002",title:"Sortie scientifique au Parc de la Ligue Arabe",type:"Pédagogique",description:"Observation de la biodiversité urbaine et collecte de données simples.",objective:"Relier les notions étudiées en sciences à l’environnement local.",programme:"09 h 00 · Départ\n09 h 30 · Observation guidée\n11 h 00 · Activité scientifique en groupes\n12 h 30 · Retour",destination:"Parc de la Ligue Arabe · Casablanca",departureDate:plusDays(19),departureTime:"09:00",returnDate:plusDays(19),returnTime:"12:30",meetingPoint:"Cour principale",classIds:firstClass?[firstClass.id]:[],participantIds:studentsFor(3),status:"Brouillon",updatedAt:new Date().toISOString(),...base},
   {id:"TRP-DEMO-003",reference:"SOR-2026-003",title:"Visite culturelle à la Villa des Arts",type:"Culturelle",description:"Parcours culturel accompagné autour de l’art contemporain.",objective:"Élargir les références culturelles des élèves.",programme:"10 h 00 · Accueil\n10 h 30 · Parcours culturel\n12 h 00 · Échange et synthèse",destination:"Villa des Arts · Casablanca",departureDate:plusDays(-17),departureTime:"10:00",returnDate:plusDays(-17),returnTime:"13:00",meetingPoint:"Entrée de l’établissement",classIds:firstClass?[firstClass.id]:[],participantIds:studentsFor(5),status:"Terminée",updatedAt:new Date().toISOString(),...base}
  ];
- return rows.map(t=>({...t,participantIds:t.participantIds.filter(id=>{const student=students.find(s=>s.id===id);return !!student&&student.enrollment?.status==="Actif"&&student.enrollment.academicYearId===t.academicYearId;}),responsibleId:staff[0]?.id??"",vehicleId:vehicles.find(v=>v.status==="Disponible")?.id??null}));
+ return rows.map(t=>({...t,participantIds:t.participantIds.filter(id=>{const student=students.find(s=>s.id===id);return !!student&&student.enrollment?.status==="Actif"&&student.enrollment.academicYearId===t.academicYearId; }),responsibleId:staff[0]?.id??""}));
 }
 function statusClass(status:TripStatus){return status==="Planifiée"?"planned":status==="En cours"?"ongoing":status==="Terminée"?"done":status==="Annulée"?"cancelled":"draft";}
 function uniqueCount(rows:TripRecord[]){return new Set(rows.flatMap(t=>t.participantIds)).size;}
@@ -84,7 +84,7 @@ export function TripsOutingsPage({user}:Props){
    const tr=results[5] as Awaited<ReturnType<typeof transportRepository.list>>|null;
    const staffRows:StaffOption[]=[...(t?.teachers.filter(x=>x.employmentStatus==="Actif").map(x=>({id:x.id,name:x.fullName,role:"Enseignant",source:"teacher" as const}))??[]),...(e?.employees.filter(x=>x.employmentStatus==="Actif").map(x=>({id:x.id,name:x.fullName,role:x.jobTitle,source:"employee" as const}))??[])];
    setYears(y);setStudents(s?.students??[]);setClasses(c?.classes??[]);setStaff(staffRows);setVehicles(tr?.vehicles??[]);
-   const seed=seedTrips(s?.students??[],y,c?.classes??[],staffRows,tr?.vehicles??[]);
+   const seed=seedTrips(s?.students??[],y,c?.classes??[],staffRows);
    setTrips(readTrips(seed));
   }).catch(e=>{if(live)setError(e instanceof Error?e.message:"Impossible de charger les données de référence.");}).finally(()=>{if(live)setLoading(false);});
   return()=>{live=false;};
