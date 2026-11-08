@@ -178,7 +178,9 @@
       "borderWidth": 1,
       "focusWidth": 2,
       "commandTopOffset": "12vh",
-      "commandMaxHeight": "70vh"
+      "commandMaxHeight": "70vh",
+      "contentReadingWidth": "42rem",
+      "sectorPanelViewportOffset": "290px"
     }
   },
   "accessibility": {
