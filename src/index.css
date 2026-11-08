@@ -1317,7 +1317,7 @@ button{cursor:pointer;transition:background-color var(--transition-fast,150ms ea
   position:fixed;
   top:var(--ds-space-4);
   right:var(--ds-space-4);
-  z-index:calc(var(--ds-layer-sticky) + 1);
+  z-index:calc(var(--ds-layer-control) + 1);
   background:var(--sp-surface);
 }
 .sp-page--redesign .sp-drawer .sp-form{
