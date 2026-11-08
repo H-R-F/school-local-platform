@@ -16,6 +16,7 @@
 
 3. **Moved the shell stylesheet import from `src/App.tsx` to `src/main.tsx`.**
    - Shell CSS now loads after theme, baseline and design-system CSS.
+   - Removed duplicate nested imports of `theme.css` and `tokens.css` from `design-system.css`; the entry point now imports each global layer explicitly.
    - Reason: predictable cascade ownership. No page rendering or route dispatch logic was changed.
 
 ### Components retained
