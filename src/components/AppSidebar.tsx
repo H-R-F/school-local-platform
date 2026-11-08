@@ -63,8 +63,8 @@ export function AppSidebar({user,school,currentPath,onNavigate,onExit,collapsed:
       {visibleGroups.length===0&&!collapsed&&<p className="nav-empty">Aucune page ne correspond à votre recherche.</p>}
     </nav>
     <div className="sidebar-footer">
-      <div className="sidebar-user-avatar" title={user.displayName}>{user.initials}</div>
-      {!collapsed&&<div className="sidebar-user-copy"><strong>{user.displayName}</strong><span>{user.role==="finance"?"Responsable financier et logistique":user.role==="administrative"?"Responsable administratif":user.role==="pedagogical"?"Responsable pédagogique":"Directeur"}</span></div>}
+      <div className="sidebar-user-avatar" title={user.displayName} aria-hidden="true">{user.initials}</div>
+      {!collapsed&&<div className="sidebar-user-copy"><span className="sidebar-user-kicker">SESSION ACTIVE</span><strong>{user.displayName}</strong><span>{user.role==="finance"?"Responsable financier et logistique":user.role==="administrative"?"Responsable administratif":user.role==="pedagogical"?"Responsable pédagogique":"Directeur"}</span></div>}
       {onExit && <button type="button" className="sidebar-exit" onClick={onExit} aria-label="Se déconnecter" title="Se déconnecter"><LogOut size={16} aria-hidden="true"/></button>}
     </div>
   </aside>;
