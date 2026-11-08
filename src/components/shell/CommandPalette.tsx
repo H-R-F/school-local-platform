@@ -10,12 +10,13 @@ interface Props {
   onNavigate: (route: string) => void;
 }
 
-const fold = (value: string) => value.normalize("NFD").replace(/[̀-ͯ]/g, "").toLocaleLowerCase("fr");
+const fold = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("fr");
 
 export function CommandPalette({ open, user, onClose, onNavigate }: Props) {
   const [query, setQuery] = useState("");
   const [index, setIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
 
   const results = useMemo(() => {
@@ -30,10 +31,19 @@ export function CommandPalette({ open, user, onClose, onNavigate }: Props) {
   }, [query, user.role, user.permissions]);
 
   useEffect(() => {
+    if (!open) return;
+    const previouslyFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const focusTimer = window.setTimeout(() => inputRef.current?.focus(), 0);
+    return () => {
+      window.clearTimeout(focusTimer);
+      if (previouslyFocused?.isConnected) previouslyFocused.focus();
+    };
+  }, [open]);
+
+  useEffect(() => {
     if (open) {
       setQuery("");
       setIndex(0);
-      window.setTimeout(() => inputRef.current?.focus(), 0);
     }
   }, [open]);
 
@@ -50,7 +60,7 @@ export function CommandPalette({ open, user, onClose, onNavigate }: Props) {
     onNavigate(route);
   };
 
-  const onKeyDown = (event: React.KeyboardEvent) => {
+  const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.key === "Escape") {
       event.preventDefault();
       onClose();
@@ -63,28 +73,42 @@ export function CommandPalette({ open, user, onClose, onNavigate }: Props) {
     } else if (event.key === "Enter" && results[index]) {
       event.preventDefault();
       choose(results[index].route);
+    } else if (event.key === "Tab") {
+      const focusable = dialogRef.current?.querySelectorAll<HTMLElement>('input:not([disabled]),button:not([disabled]),[href],[tabindex]:not([tabindex="-1"])');
+      if (!focusable?.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     }
   };
 
   return (
-    <div className="cmdk-backdrop" onMouseDown={onClose}>
-      <div className="cmdk" role="dialog" aria-modal="true" aria-label="Recherche globale" onMouseDown={(e) => e.stopPropagation()} onKeyDown={onKeyDown}>
+    <div className="cmdk-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
+      <div ref={dialogRef} className="cmdk" role="dialog" aria-modal="true" aria-labelledby="cmdk-title" aria-describedby="cmdk-help" onKeyDown={onKeyDown}>
         <div className="cmdk-input">
-          <Search size={17} aria-hidden="true" />
+          <Search size={18} aria-hidden="true" />
+          <span id="cmdk-title" className="sr-only">Recherche globale</span>
           <input
             ref={inputRef}
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Aller à une page…"
             role="combobox"
+            aria-autocomplete="list"
             aria-expanded="true"
             aria-controls="cmdk-list"
             aria-activedescendant={results[index] ? `cmdk-opt-${index}` : undefined}
             aria-label="Rechercher une page"
           />
-          <kbd>Échap</kbd>
+          <kbd aria-hidden="true">Échap</kbd>
         </div>
-        <ul id="cmdk-list" className="cmdk-list" role="listbox" ref={listRef}>
+        <ul id="cmdk-list" className="cmdk-list" role="listbox" aria-label="Résultats de navigation" ref={listRef}>
           {results.map((item, i) => {
             const Icon = item.icon;
             return (
@@ -98,16 +122,16 @@ export function CommandPalette({ open, user, onClose, onNavigate }: Props) {
                 onMouseMove={() => setIndex(i)}
                 onClick={() => choose(item.route)}
               >
-                <Icon size={17} aria-hidden="true" />
+                <Icon size={18} aria-hidden="true" />
                 <span>{item.label}</span>
                 <small>{item.group}</small>
-                {i === index && <CornerDownLeft size={14} aria-hidden="true" />}
+                {i === index && <CornerDownLeft size={16} aria-hidden="true" />}
               </li>
             );
           })}
-          {results.length === 0 && <li className="cmdk-empty">Aucun résultat pour « {query} ».</li>}
+          {results.length === 0 && <li className="cmdk-empty" role="presentation">Aucun résultat pour « {query} ».</li>}
         </ul>
-        <div className="cmdk-foot"><span><kbd>↑</kbd><kbd>↓</kbd> naviguer</span><span><kbd>↵</kbd> ouvrir</span><span><kbd>Échap</kbd> fermer</span></div>
+        <div id="cmdk-help" className="cmdk-foot"><span><kbd>↑</kbd><kbd>↓</kbd> naviguer</span><span><kbd>↵</kbd> ouvrir</span><span><kbd>Échap</kbd> fermer</span></div>
       </div>
     </div>
   );
