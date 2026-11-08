@@ -525,7 +525,7 @@ body{font-family:var(--font-sans);font-optical-sizing:auto;font-kerning:normal;l
 .sidebar--collapsed .sidebar-footer{min-height:65px!important;padding:8px 0!important;justify-content:center}
 .sidebar--collapsed .sidebar-user-avatar{width:36px!important;height:36px!important}
 :root[data-user-theme="dark"] .sidebar{background:linear-gradient(180deg,#080f1d,#0b1422 58%,#080f1a)!important}
-:root[data-user-theme="light"] .sidebar{background:linear-gradient(180deg,#101d31 0%,#0d192b 58%,#0b1626 100%)!important}
+:root[data-user-theme="light"] .sidebar{background:linear-gradient(180deg,#ffffff 0%,#fbfcfe 100%)!important;border-right:1px solid #e3e8ef!important}
 @media(max-width:760px){
  .sidebar{box-shadow:8px 0 30px rgba(15,23,42,.2)!important}
 }
