@@ -185,3 +185,12 @@ The shared shell has been repaired at source level. It is **not marked VERIFIED*
 ## Verification gate
 
 **Shared shell is FIXED but not VERIFIED.** Phase 2 must remain on this patient until B-001 and B-002 are resolved and the build, rendered light/dark/system themes, responsive layout, keyboard flow, screen-reader semantics and WCAG contrast checks are recorded. Do not start authentication or another page yet.
+
+
+## 2026-11-08 — Drawer positioning correction
+
+- Corrected global form-drawer selectors to match the application's actual `*-modal-backdrop`, `*-modal-overlay` and `*-dialog-backdrop` class naming patterns.
+- Drawers are flush to the right edge of the workspace and fill the vertical space below the application header and above the status bar.
+- The workspace backdrop begins at `--sidebar-w`, so the drawer respects both expanded and collapsed sidebar widths; the navigation rail remains visible and undimmed.
+- At widths below 1100px the drawer uses the full workspace width; at mobile widths it uses the full viewport.
+- Source-level selector/layout review only. Browser visual verification remains pending; affected pages remain FIXED, not VERIFIED.
