@@ -101,6 +101,10 @@
       "regular": 400,
       "medium": 500,
       "semibold": 600
+    },
+    "letterSpacing": {
+      "label": "0.06em",
+      "overline": "0.08em"
     }
   },
   "spacing": {
@@ -122,7 +126,9 @@
     "sm": 4,
     "md": 6,
     "lg": 8,
-    "xl": 12
+    "xl": 12,
+    "circle": "50%",
+    "activeIndicator": "0 4px 4px 0"
   },
   "shadows": {
     "sm": "0 1px 2px rgba(15,23,42,0.06)",
@@ -146,12 +152,39 @@
         5
       ],
       "minimumTouchTarget": 44
+    },
+    "shell": {
+      "sidebarBrandHeight": 76,
+      "sidebarFooterHeight": 68,
+      "controlHeight": 44,
+      "brandMarkSize": 40,
+      "avatarSize": 40,
+      "navIconSize": 24,
+      "navIndicatorWidth": 4,
+      "indicatorDotSize": 8,
+      "navCountMinWidth": 24,
+      "navCountHeight": 24,
+      "collapsedNavItemSize": 48,
+      "topbarSearchMaxWidth": 440,
+      "userLabelMaxWidth": 200,
+      "statusLabelMaxWidth": 132,
+      "statusPopoverMaxWidth": 320,
+      "commandDialogMaxWidth": 640,
+      "commandDialogMaxHeight": 720,
+      "commandInputHeight": 56,
+      "commandEmptyHeight": 72,
+      "pageContentMaxWidth": 1600
     }
   },
   "accessibility": {
     "focusRing": "2px solid color.action.primary",
     "focusOffset": 2,
     "reducedMotion": "Respect prefers-reduced-motion and user preference",
-    "minimumInteractiveTarget": 44
+    "minimumInteractiveTarget": 44,
+    "focusWidth": "2px"
+  },
+  "motion": {
+    "fast": "150ms ease",
+    "reduced": "0.01ms"
   }
 }
