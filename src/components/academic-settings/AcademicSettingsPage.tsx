@@ -92,11 +92,14 @@ export function AcademicSettingsPage({user}:Props){
  const mathCoeff=mathAssignment?.coefficient??3;
  const frenchCoeff=frenchAssignment?.coefficient??2;
  const historyCoeff=historyAssignment?.coefficient??1;
+ const mathSource=mathAssignment?.source??false;
+ const frenchSource=frenchAssignment?.source??false;
+ const historySource=historyAssignment?.source??false;
  const preview=useMemo(()=>{
   if(!draft)return null;
   const entered=14.567*(draft.gradingScale/20);
   const shown=roundValue(entered,draft.decimals,draft.rounding);
-  const marks=[{name:"Mathématiques",grade:16*draft.gradingScale/20,coefficient:mathCoeff,source:mathAssignment?.source??false},{name:"Français",grade:14*draft.gradingScale/20,coefficient:frenchCoeff,source:frenchAssignment?.source??false},{name:"Histoire-Géographie",grade:12*draft.gradingScale/20,coefficient:historyCoeff,source:historyAssignment?.source??false}];
+  const marks=[{name:"Mathématiques",grade:16*draft.gradingScale/20,coefficient:mathCoeff,source:mathSource},{name:"Français",grade:14*draft.gradingScale/20,coefficient:frenchCoeff,source:frenchSource},{name:"Histoire-Géographie",grade:12*draft.gradingScale/20,coefficient:historyCoeff,source:historySource}];
   const denominator=marks.reduce((sum,row)=>sum+(draft.averageMode==="weighted"?row.coefficient:1),0);
   const averageRaw=marks.reduce((sum,row)=>sum+row.grade*(draft.averageMode==="weighted"?row.coefficient:1),0)/denominator;
   const average=roundValue(averageRaw,draft.calculationDecimals,draft.rounding);
@@ -106,7 +109,7 @@ export function AcademicSettingsPage({user}:Props){
   const eligibility=average>=passing&&draft.gradingScale===20?"Seuil atteint — examen des conditions complémentaires requis":average>=passing?"Seuil indicatif atteint":"Seuil indicatif non atteint";
   const bulletin=marks.map(m=>({name:m.name,grade:roundValue(m.grade,draft.decimals,draft.rounding)}));
   return {entered,shown,marks,average:averageDisplayed,averageRaw:average,averageOn20:roundValue(averageOn20,draft.decimals,draft.rounding),eligibility,bulletin};
- },[draft,mathCoeff,frenchCoeff,historyCoeff]);
+ },[draft,mathCoeff,frenchCoeff,historyCoeff,mathSource,frenchSource,historySource]);
  function update<K extends keyof AcademicPolicyDemo>(key:K,value:AcademicPolicyDemo[K]){
   setDraft(current=>current?({...current,[key]:value}):current);setNotice("");setError("");setValidation([]);
  }
