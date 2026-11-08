@@ -14,6 +14,7 @@
   --ds-color-action-primary-hover:#4338CA;
   --ds-color-action-primary-pressed:#3730A3;
   --ds-color-action-subtle:#E0E7FF;
+  --ds-color-on-action:#FFFFFF;
   --ds-color-accent:#0F766E;
   --ds-color-success:#16A34A;
   --ds-color-success-subtle:#DCFCE7;
@@ -97,6 +98,8 @@
   --ds-color-action-primary-hover:#C7D2FE;
   --ds-color-action-primary-pressed:#818CF8;
   --ds-color-action-subtle:#293653;
+  --ds-color-on-action:#111827;
+  --ds-color-on-action:#111827;
   --ds-color-accent:#5EEAD4;
   --ds-color-success:#4ADE80;
   --ds-color-success-subtle:#143D2B;
@@ -122,6 +125,7 @@
     --ds-color-action-primary-hover:#C7D2FE;
     --ds-color-action-primary-pressed:#818CF8;
     --ds-color-action-subtle:#293653;
+    --ds-color-on-action:#111827;
     --ds-color-accent:#5EEAD4;
     --ds-color-success:#4ADE80;
     --ds-color-success-subtle:#143D2B;
