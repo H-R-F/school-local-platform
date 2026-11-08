@@ -22,7 +22,8 @@
         "primary": "#4F46E5",
         "hover": "#4338CA",
         "pressed": "#3730A3",
-        "subtle": "#E0E7FF"
+        "subtle": "#E0E7FF",
+        "onAction": "#FFFFFF"
       },
       "semantic": {
         "success": "#16A34A",
