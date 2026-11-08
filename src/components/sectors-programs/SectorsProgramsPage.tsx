@@ -19,13 +19,9 @@ type ModalState = {type:"sector-create"}|{type:"sector-edit";sector:Sector}|{typ
 type PendingChange = {entity:"sector"|"program";id:string;name:string;next:EntityStatus}|null;
 const cycles:EducationalCycle[]=["Enseignement primaire","Enseignement secondaire collégial","Enseignement secondaire qualifiant"];
 const statuses:EntityStatus[]=["Actif","Inactif"];
-const cycleShort=(cycle:EducationalCycle)=>cycle==="Enseignement secondaire qualifiant"?"Secondaire qualifiant":cycle==="Enseignement secondaire collégial"?"Secondaire collégial":"Primaire";
-
 function StatusPill({status}:{status:EntityStatus}) {
   return <span className={`sp-status ${status==="Actif"?"sp-status--active":"sp-status--inactive"}`}><i/>{status}</span>;
 }
-function CyclePill({cycle}:{cycle:EducationalCycle}) { return <span className="sp-cycle-pill">{cycleShort(cycle)}</span>; }
-
 function SectorForm({initial,saving,error,onCancel,onSubmit}:{initial?:Sector;saving:boolean;error:string;onCancel:()=>void;onSubmit:(value:SectorInput)=>void}) {
   const [name,setName]=useState(initial?.name??"");
   const [code,setCode]=useState(initial?.code??"");
