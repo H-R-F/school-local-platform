@@ -142,7 +142,7 @@ No IT-support role, route, or dedicated IT support screen was found. This is an 
 |---|---|---|---|
 | Page drawers, detail panels, tabs, forms and confirmations | Embedded in page TSX files listed above | NOT STARTED | Inventory each actual overlay during its owning page's Step A. Do not mark this aggregate complete until every owning page is checked. |
 | Top bar account menu | `TopBar.tsx` | FIXED | Source behavior updated; runtime keyboard/focus verification pending. |
-| Status popovers | `StatusBar.tsx` | NOT STARTED | Keyboard dismissal, semantics, placement and theme. |
+| Status popovers | `StatusBar.tsx` | FIXED | Disclosure semantics, controlled regions, Escape dismissal and focus return implemented; runtime verification pending. |
 | Command palette dialog | `CommandPalette.tsx` | FIXED | Focus entry/containment/return and keyboard selection implemented in source; runtime verification pending. |
 | Generic unmatched-route fallback | `App.tsx` | NOT STARTED | Currently “Module en préparation”; verify visual treatment and decide 404 handling without adding a route. |
 | Empty/loading/error/offline states | Each data page | NOT STARTED | Record only states supported by current data/services; any missing sync/backend capability is a blocker, not a styling feature to invent. |
