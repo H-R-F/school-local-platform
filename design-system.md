@@ -177,3 +177,25 @@ Do not add new sidebar/header/statusbar/command-palette rules to `index.css` or 
 ## 8. Migration status
 
 The shared shell has been migrated to `--ds-*` tokens. The wider application has not. Page-specific CSS still contains hard-coded values and legacy aliases; those are addressed page-by-page under `PROGRESS.md`. Do not claim project-wide token compliance until every page is verified.
+
+
+## 9. Additional shell sizing and interaction tokens
+
+The canonical shell stylesheet contains no literal hex/RGB/HSL colors and no literal component spacing, font-size, radius or shadow values. Remaining viewport units are used for viewport-aware layout and media-query breakpoints.
+
+Additional semantic sizing tokens in `src/styles/tokens.css` include:
+
+- `--ds-border-width`, `--ds-focus-width`
+- `--ds-brand-mark-size`, `--ds-avatar-size`, `--ds-nav-icon-size`
+- `--ds-nav-indicator-width`, `--ds-indicator-dot-size`
+- `--ds-nav-count-min-width`, `--ds-nav-count-height`
+- `--ds-collapsed-nav-item-size`
+- `--ds-menu-min-width`, `--ds-topbar-search-max-width`, `--ds-user-label-max-width`
+- `--ds-status-label-max-width`, `--ds-status-popover-max-width`
+- `--ds-command-dialog-max-width`, `--ds-command-dialog-max-height`, `--ds-command-input-height`, `--ds-command-empty-height`
+- `--ds-page-content-max-width`
+- `--ds-letter-spacing-label`, `--ds-letter-spacing-overline`, `--ds-line-height-tight`
+- `--ds-disabled-opacity`, `--ds-active-filter`
+- `--ds-layer-*` stacking tokens and `--ds-motion-reduced-duration`
+
+These additions are also represented in `design-tokens.json`. Viewport breakpoints and viewport-relative dimensions remain in media queries because CSS custom properties are not consistently supported as media-query conditions.
