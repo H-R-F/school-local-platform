@@ -273,3 +273,41 @@ The following have **not** been performed:
 - Full modal/drawer census across every page.
 
 Accordingly, no route is marked `VERIFIED` in `PROGRESS.md`. The next action is user review of this inventory and tracker. Phase 2 does not begin until approval.
+
+
+---
+
+## Phase 2 addendum — shared shell surgery (2026-11-08)
+
+**Approval:** User approved Phase 2.  
+**Patient:** Shared application shell.  
+**Source status:** FIXED.  
+**Verification status:** NOT VERIFIED — runtime checks blocked (see `BLOCKERS.md`).
+
+### Confirmed repairs
+
+- Replaced the duplicated shell stylesheet with a single token-driven `src/components/shell/shell.css`.
+- Moved shell stylesheet loading to the end of the global stylesheet import sequence in `src/main.tsx`.
+- Removed the legacy dark sidebar rule block and appended competing sidebar light/dark override block from `src/design-system.css`.
+- Added semantic dark-mode tokens and `--ds-color-on-action`; added shell layout and 44px control-target tokens.
+- Updated `design-tokens.json` and created `design-system.md` to document the current token contract.
+- Improved accessible names for collapsed navigation and the school identity mark.
+- Added keyboard navigation and focus handling for the account menu.
+- Added focus entry, containment and return behavior for the command palette.
+- Added disclosure semantics and Escape focus return for status details.
+- Clarified that server, backup and licence values are simulated; the Internet state is browser-reported.
+- No route, permission, authentication, API, database or business logic was changed.
+
+### Source-level verification performed
+
+- Re-fetched all modified shell files after commits.
+- Confirmed the canonical shell stylesheet is imported once from `src/main.tsx`, after the global styles.
+- Confirmed the old hard-coded dark sidebar gradient and prior literal sidebar color fallback are absent from the updated shell files.
+- Confirmed the canonical shell stylesheet contains no literal hex colors.
+- Confirmed shell CSS includes visible focus, active, disabled, reduced-motion and responsive rules.
+- Confirmed the command palette exposes a modal dialog and listbox/combobox semantics.
+- Confirmed the status bar identifies demo infrastructure data in its details.
+
+### Verification not performed
+
+No local checkout/runtime was available to execute `npm run build`, TypeScript compilation, browser rendering, responsive viewport checks, keyboard-only end-to-end testing, screen-reader testing, axe, or rendered WCAG contrast measurements. Therefore the shell is **not marked VERIFIED**, and no subsequent patient has been started.
