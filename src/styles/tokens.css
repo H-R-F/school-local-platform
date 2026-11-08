@@ -60,9 +60,14 @@
   --ds-shadow-sm:0 1px 2px rgba(15,23,42,.06);
   --ds-shadow-md:0 2px 4px rgba(15,23,42,.08);
   --ds-shadow-lg:0 4px 8px rgba(15,23,42,.10);
-  --ds-sidebar-width:252px;
-  --ds-sidebar-collapsed-width:64px;
+  --ds-sidebar-width:264px;
+  --ds-sidebar-collapsed-width:72px;
   --ds-header-height:60px;
+  --ds-statusbar-height:40px;
+  --ds-sidebar-brand-height:76px;
+  --ds-sidebar-footer-height:68px;
+  --ds-sidebar-control-radius:8px;
+  --ds-shell-overlay:rgb(15 23 42 / 48%);
   --ds-focus-ring:0 0 0 2px var(--ds-color-action-primary);
   --ds-focus-offset:2px;
   --ds-motion-fast:150ms ease;
