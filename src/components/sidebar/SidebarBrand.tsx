@@ -6,7 +6,7 @@ export function SidebarBrand({school,collapsed}:Props) {
  const [logoFailed,setLogoFailed]=useState(false);
  useEffect(()=>setLogoFailed(false),[school.logoUrl]);
  return <div className="sidebar-brand">
-  <div className="brand-mark" aria-label={school.name} title={collapsed ? school.name : undefined}>
+  <div className="brand-mark" role="img" aria-label={school.name} title={collapsed ? school.name : undefined}>
    {school.logoUrl&&!logoFailed?<img src={school.logoUrl} alt="" onError={()=>setLogoFailed(true)}/>:<School size={21} strokeWidth={1.9}/>}
   </div>
   {!collapsed&&<div className="brand-copy">
