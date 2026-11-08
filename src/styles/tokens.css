@@ -120,7 +120,7 @@
   outline-offset:var(--ds-focus-offset);
 }
 @media(prefers-reduced-motion:reduce) {
-  *,*::before,*::after {scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  *,*::before,*::after {scroll-behavior:auto!important;animation-duration:var(--ds-motion-reduced-duration)!important;animation-iteration-count:1!important;transition-duration:var(--ds-motion-reduced-duration)!important}
 }
 
 
