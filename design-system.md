@@ -218,3 +218,11 @@ These additions are also represented in `design-tokens.json`. Viewport breakpoin
 - Page-scoped classes are prefixed with `sp-page--redesign`; this prevents page styles from leaking into other academic modules.
 - New layout tokens: `--ds-sector-workspace-min-height`, `--ds-sector-empty-state-min-height`, `--ds-sector-textarea-min-height`, `--ds-dialog-max-width`, and `--ds-motion-spin`.
 - Responsive behavior retains the shared shell's sidebar offset and padding. The sector list stacks above the programme panel at tablet widths; the programme table scrolls horizontally on narrow screens.
+
+
+### Form presentation pattern — right-side drawer
+
+- Multi-field create/edit forms use the right-side drawer pattern on desktop; read-only detail and confirmation dialogs remain centered.
+- Drawer header and action footer stay visible while the form content scrolls.
+- On small screens the drawer occupies the full viewport width.
+- Drawer styling uses the shared dialog, surface, border, radius, spacing, layer, and motion tokens; honor `prefers-reduced-motion`.
