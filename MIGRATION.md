@@ -45,3 +45,13 @@ No application component, route, permission, API call, authentication flow or da
 Source was re-read after changes and checked for duplicate shell stylesheet imports, stale dark-sidebar gradient declarations, literal hex values in the canonical shell stylesheet, conflict markers and shell focus/disabled rules.
 
 No browser rendering, build, TypeScript compilation, screen-reader test, keyboard end-to-end test or rendered contrast audit was possible in this editing session. Therefore the shared shell is marked `FIXED`, not `VERIFIED`. No next page has been started.
+
+
+## 2026-11-08 — Filières et programmes content simplification
+
+- Removed the three summary KPI cards from this page; they repeated counts already visible in the sector list and program list.
+- Removed long sector descriptions and cycle badges from each compact list row; the selected sector keeps its name, code, status and program count.
+- Simplified program table columns from seven to five. Program code now appears under the program name; the redundant description and separate code columns were removed from the table.
+- Shortened page helper copy, headings, search placeholder, and action labels.
+- Removed the now-unused `CyclePill` helper and `cycleShort` formatter after removing the redundant cycle badge from the sector list.
+- Business data, local repository operations, validation, permissions, CRUD actions and status rules were not changed.
