@@ -24,6 +24,8 @@ import { EmployeesPage } from "./components/employees/EmployeesPage";
 import { EmployeeManagementPage } from "./components/employee-management/EmployeeManagementPage";
 import { AccessControlPage } from "./components/access-control/AccessControlPage";
 import { AuditActivityPage } from "./components/audit-activity/AuditActivityPage";
+import { SchoolProfilePage } from "./components/school-profile/SchoolProfilePage";
+import { readSchoolProfile, toSchoolBranding, SCHOOL_PROFILE_UPDATED_EVENT, type SchoolProfile } from "./services/school-profile";
 import { RolesPermissionsPage } from "./components/roles-permissions/RolesPermissionsPage";
 import { GradesValidationPage } from "./components/grades-validation/GradesValidationPage";
 import { ExaminationsPage } from "./components/examinations/ExaminationsPage";
@@ -68,6 +70,7 @@ function readSavedUser(): AuthenticatedSidebarUser | null {
 
 export default function App() {
   const [user, setUser] = useState<AuthenticatedSidebarUser | null>(readSavedUser);
+  const [schoolProfile, setSchoolProfile] = useState<SchoolProfile>(readSchoolProfile);
   const [currentPath, setCurrentPath] = useState(() => window.location.pathname || "/overview");
   const [collapsed, setCollapsed] = useState(() => {
     try { return window.localStorage.getItem("school-sidebar-collapsed") === "1"; } catch { return false; }
@@ -81,6 +84,30 @@ export default function App() {
     return () => query.removeEventListener("change", onChange);
   }, []);
   const sidebarCollapsed = collapsed || narrow;
+  const currentSchool = toSchoolBranding(schoolProfile);
+  useEffect(() => {
+    const syncProfile = (event: Event) => {
+      const detail = (event as CustomEvent<SchoolProfile>).detail;
+      setSchoolProfile(detail ?? readSchoolProfile());
+    };
+    const syncStorage = (event: StorageEvent) => {
+      if (event.key === "school-profile-demo-v1") setSchoolProfile(readSchoolProfile());
+    };
+    window.addEventListener(SCHOOL_PROFILE_UPDATED_EVENT, syncProfile);
+    window.addEventListener("storage", syncStorage);
+    return () => { window.removeEventListener(SCHOOL_PROFILE_UPDATED_EVENT, syncProfile); window.removeEventListener("storage", syncStorage); };
+  }, []);
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty("--color-primary", schoolProfile.primaryColor);
+    root.style.setProperty("--color-primary-soft", schoolProfile.secondaryColor);
+    root.style.setProperty("--app-primary", schoolProfile.primaryColor);
+    root.style.setProperty("--app-primary-soft", schoolProfile.secondaryColor);
+    return () => {
+      root.style.removeProperty("--color-primary"); root.style.removeProperty("--color-primary-soft");
+      root.style.removeProperty("--app-primary"); root.style.removeProperty("--app-primary-soft");
+    };
+  }, [schoolProfile.primaryColor, schoolProfile.secondaryColor]);
 
   const updateCollapsed = useCallback((next: boolean) => {
     setCollapsed(next);
@@ -102,12 +129,12 @@ export default function App() {
 
   // Per-page document title, skip-link target and scroll reset on navigation.
   useEffect(() => {
-    if (!user) { document.title = `Connexion · ${schoolBranding.name}`; return; }
+    if (!user) { document.title = `Connexion · ${currentSchool.name}`; return; }
     const item = navigation.flatMap((group) => group.items).find((entry) => entry.route === currentPath);
-    document.title = `${item?.label ?? "Espace du personnel"} · ${schoolBranding.name}`;
+    document.title = `${item?.label ?? "Espace du personnel"} · ${currentSchool.name}`;
     window.scrollTo(0, 0);
     document.querySelector(".sidebar-demo > main")?.setAttribute("id", "main-content");
-  }, [user, currentPath]);
+  }, [user, currentPath, currentSchool.name]);
 
   useEffect(() => {
     const syncPath = () => setCurrentPath(window.location.pathname || "/overview");
@@ -154,6 +181,7 @@ export default function App() {
   const isRolesPermissionsPage = currentPath === "/roles-permissions";
   const isAccessControlPage = currentPath === "/access-control";
   const isAuditActivityPage = currentPath === "/audit-activity";
+  const isSchoolProfilePage = currentPath === "/school-profile";
   const isGradesValidationPage = currentPath === "/grades-validation";
   const isExaminationsPage = currentPath === "/examinations";
   const isCoursesExercisesPage = currentPath === "/courses-exercises";
@@ -186,8 +214,8 @@ export default function App() {
   return (
     <div className={`sidebar-demo${sidebarCollapsed ? " is-collapsed" : ""}`}>
       <a className="skip-link" href="#main-content">Aller au contenu principal</a>
-      <AppSidebar user={user} school={schoolBranding} currentPath={currentPath} onNavigate={navigate} onExit={handleSignOut} collapsed={sidebarCollapsed} onCollapsedChange={updateCollapsed} />
-      <TopBar user={user} school={schoolBranding} onOpenSearch={() => setSearchOpen(true)} onNavigate={navigate} onSignOut={handleSignOut} />
+      <AppSidebar user={user} school={currentSchool} currentPath={currentPath} onNavigate={navigate} onExit={handleSignOut} collapsed={sidebarCollapsed} onCollapsedChange={updateCollapsed} />
+      <TopBar user={user} school={currentSchool} onOpenSearch={() => setSearchOpen(true)} onNavigate={navigate} onSignOut={handleSignOut} />
       {systemStatus.license.mode === "restricted" && (
         <div className="license-banner" role="alert">
           <strong>Mode restreint :</strong> la création et la modification sont désactivées. Les données existantes restent disponibles. Renouvelez la licence pour rétablir l’accès complet.
@@ -229,6 +257,8 @@ export default function App() {
         <AccessControlPage user={user} onNavigate={navigate} />
       ) : isAuditActivityPage ? (
         <AuditActivityPage user={user} />
+      ) : isSchoolProfilePage ? (
+        <SchoolProfilePage user={user} />
       ) : isGradesValidationPage ? (
         <GradesValidationPage user={user} onNavigate={navigate} />
       ) : isExaminationsPage ? (
