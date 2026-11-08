@@ -532,3 +532,18 @@ body{font-family:var(--font-sans);font-optical-sizing:auto;font-kerning:normal;l
 @media(prefers-reduced-motion:reduce){
  .sidebar,.sidebar *{transition-duration:.01ms!important;animation-duration:.01ms!important}
 }
+
+/* Final shell alignment overrides */
+.sidebar-demo{--sidebar-w:264px}
+.sidebar-demo.is-collapsed{--sidebar-w:72px}
+.sidebar .sidebar-top{min-height:82px!important}
+.sidebar .brand-name{font-size:12px!important;line-height:17px!important}
+.sidebar .brand-caption{font-size:10px!important;line-height:14px!important}
+.sidebar .sidebar-search input{font-size:11px!important}
+.sidebar .nav-group-heading{font-size:9px!important;min-height:34px!important}
+.sidebar .nav-item{min-height:39px!important;font-size:11px!important}
+.sidebar .sidebar-user-copy strong{font-size:11px!important}
+.sidebar .sidebar-user-copy span{font-size:9px!important;white-space:nowrap!important;line-height:13px!important}
+.sidebar .sidebar-user-copy .sidebar-user-kicker{font-size:8px!important;line-height:11px!important;letter-spacing:.12em!important}
+.sidebar .sidebar-user-avatar{width:36px!important;height:36px!important;flex-basis:36px!important;font-size:11px!important}
+.sidebar .sidebar-exit{flex:0 0 31px;width:31px;height:31px}
