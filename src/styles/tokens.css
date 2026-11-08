@@ -73,6 +73,41 @@
   --ds-focus-offset:2px;
   --ds-motion-fast:150ms ease;
   --ds-control-height:44px;
+  --ds-border-width:1px;
+  --ds-focus-width:2px;
+  --ds-brand-mark-size:40px;
+  --ds-avatar-size:40px;
+  --ds-nav-icon-size:24px;
+  --ds-nav-indicator-width:4px;
+  --ds-indicator-dot-size:8px;
+  --ds-nav-count-min-width:24px;
+  --ds-nav-count-height:24px;
+  --ds-collapsed-nav-item-size:48px;
+  --ds-menu-min-width:240px;
+  --ds-topbar-search-max-width:440px;
+  --ds-user-label-max-width:200px;
+  --ds-status-label-max-width:132px;
+  --ds-status-popover-max-width:320px;
+  --ds-command-dialog-max-width:640px;
+  --ds-command-dialog-max-height:720px;
+  --ds-command-input-height:56px;
+  --ds-command-empty-height:72px;
+  --ds-page-content-max-width:1600px;
+  --ds-command-top-offset:12vh;
+  --ds-command-max-height:70vh;
+  --ds-letter-spacing-label:.06em;
+  --ds-letter-spacing-overline:.08em;
+  --ds-line-height-tight:1;
+  --ds-disabled-opacity:.55;
+  --ds-active-filter:brightness(.96);
+  --ds-layer-topbar:30;
+  --ds-layer-sidebar:35;
+  --ds-layer-menu:45;
+  --ds-layer-popover:50;
+  --ds-layer-dialog:80;
+  --ds-layer-skip-link:100;
+  --ds-motion-reduced-duration:.01ms;
+
 }
 :where(button,input,select,textarea,a,[tabindex]):focus-visible {
   outline:2px solid var(--ds-color-action-primary);
