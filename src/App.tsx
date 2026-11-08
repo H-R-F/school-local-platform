@@ -29,6 +29,7 @@ import { ArchivePage } from "./components/archive/ArchivePage";
 import { SchoolSettingsPage } from "./components/school-settings/SchoolSettingsPage";
 import { AcademicSettingsPage } from "./components/academic-settings/AcademicSettingsPage";
 import { SystemSettingsPage } from "./components/system-settings/SystemSettingsPage";
+import { UserSettingsPage } from "./components/user-settings/UserSettingsPage";
 import { readSchoolProfile, toSchoolBranding, SCHOOL_PROFILE_UPDATED_EVENT, type SchoolProfile } from "./services/school-profile";
 import { RolesPermissionsPage } from "./components/roles-permissions/RolesPermissionsPage";
 import { GradesValidationPage } from "./components/grades-validation/GradesValidationPage";
@@ -189,6 +190,7 @@ export default function App() {
   const isSchoolSettingsPage = currentPath === "/settings/school";
   const isAcademicSettingsPage = currentPath === "/settings/academic";
   const isSystemSettingsPage = currentPath === "/settings/system";
+  const isUserSettingsPage = currentPath === "/settings/user";
   const isGradesValidationPage = currentPath === "/grades-validation";
   const isExaminationsPage = currentPath === "/examinations";
   const isCoursesExercisesPage = currentPath === "/courses-exercises";
@@ -274,6 +276,8 @@ export default function App() {
         <AcademicSettingsPage user={user} />
       ) : isSystemSettingsPage ? (
         <SystemSettingsPage user={user} />
+      ) : isUserSettingsPage ? (
+        <UserSettingsPage user={user} />
       ) : isGradesValidationPage ? (
         <GradesValidationPage user={user} onNavigate={navigate} />
       ) : isExaminationsPage ? (
