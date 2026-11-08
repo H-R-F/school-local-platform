@@ -200,3 +200,9 @@ Additional semantic sizing tokens in `src/styles/tokens.css` include:
 - `--ds-layer-*` stacking tokens (control, banner, topbar, sidebar, menu, popover, dialog, skip link) and `--ds-motion-reduced-duration`
 
 These additions are also represented in `design-tokens.json`. Viewport breakpoints and viewport-relative dimensions remain in media queries because CSS custom properties are not consistently supported as media-query conditions.
+
+
+### Sector and program page layout tokens
+
+- `--ds-content-reading-width`: maximum line width for short page descriptions.
+- `--ds-sector-panel-viewport-offset`: viewport space reserved above/below the sector list panel.
