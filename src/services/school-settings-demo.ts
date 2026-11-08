@@ -37,6 +37,7 @@ export function validateSchoolSettingsDemo(value: SchoolSettingsDemo, validAcade
     errors.push("L’année scolaire par défaut doit correspondre à une année existante.");
   }
   if (!isValidTimeZone(value.timeZone)) errors.push("Saisissez un fuseau horaire IANA valide, par exemple Africa/Casablanca.");
+  if (!Number.isInteger(value.firstDayOfWeek) || value.firstDayOfWeek < 0 || value.firstDayOfWeek > 6) errors.push("Sélectionnez un premier jour de semaine valide.");
   if (!Array.isArray(value.workingDays) || value.workingDays.length === 0) errors.push("Sélectionnez au moins un jour ouvrable.");
   if (value.workingDays.some(day => !Number.isInteger(day) || day < 0 || day > 6) || new Set(value.workingDays).size !== value.workingDays.length) {
     errors.push("La sélection des jours ouvrables est invalide.");
