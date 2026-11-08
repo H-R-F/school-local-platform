@@ -93,7 +93,7 @@ button{cursor:pointer;transition:background-color var(--transition-fast,150ms ea
 .auth-submit{display:flex;align-items:center;justify-content:center;gap:var(--space-2);height:47px;margin-top:var(--space-1);color:var(--color-on-primary);font-size:var(--text-sm);font-weight:var(--weight-semibold);background:var(--color-primary);border:0;border-radius:var(--radius-md);box-shadow:var(--shadow-md);transition:background var(--duration) var(--ease),transform var(--duration) var(--ease)}
 .auth-submit:hover{background:var(--color-primary);transform:translateY(-1px)}
 .auth-submit:disabled{opacity:.65;cursor:wait;transform:none}
-.auth-demo{margin-top:var(--space-6);padding-top:var(--space-5);border-top:1px solid var(--color-border)}
+.auth-demo{margin-top:var(--space-6);padding-top:var(--space-5);border-top:var(--ds-border-width) solid var(--color-border)}
 .auth-demo-heading{display:flex;align-items:center;justify-content:space-between;color:var(--color-text);font-size:var(--text-sm);font-weight:var(--weight-semibold);letter-spacing:0.05em}
 .auth-demo-badge{padding:var(--space-1) var(--space-2);color:var(--color-text-secondary);font-size:var(--text-xs);letter-spacing:0.05em;background:var(--color-primary-soft);border-radius:var(--radius-sm)}
 .auth-demo>p{margin:var(--space-2) 0 var(--space-3);color:var(--color-text-secondary);font-size:var(--text-sm);line-height:1.6}
