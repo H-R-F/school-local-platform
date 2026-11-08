@@ -1,8 +1,8 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import {
-  Activity, AlertCircle, AlertTriangle, Archive, ArrowDownToLine, ArrowRight,
-  ArrowUpRight, Check, CheckCircle2, ChevronRight, CircleHelp, Clock3,
-  Database, FileSearch, HardDrive, Info, Laptop, ListFilter, LockKeyhole,
+  Activity, AlertCircle, AlertTriangle, Archive, ArrowRight,
+  CheckCircle2, ChevronRight, Clock3, Database, FileSearch, HardDrive, Info,
+  Laptop, LockKeyhole,
   Network, RefreshCw, RotateCcw, Search, Server, ShieldAlert, ShieldCheck,
   Wifi, WifiOff, X, Zap
 } from "lucide-react";
@@ -34,7 +34,7 @@ const initialStates = {
   central: "down" as HealthState, backup: "warning" as HealthState,
 };
 
-function StatePill({ state, children }: { state: HealthState; children: React.ReactNode }) {
+function StatePill({ state, children }: { state: HealthState; children: ReactNode }) {
   const label = state === "healthy" ? "Opérationnel" : state === "warning" ? "Attention" : state === "down" ? "Indisponible" : "Non vérifié";
   return <span className={`sys-pill ${state}`}><i />{children || label}</span>;
 }
@@ -48,7 +48,7 @@ function Panel({ title, description, action, children }: { title: string; descri
 export function SystemSettingsPage({ user }: Props) {
   const allowed = user.permissions.includes("settings.system.manage") && user.role === "director";
   const [tab, setTab] = useState<Tab>("overview");
-  const [states, setStates] = useState(initialStates);
+  const states = initialStates;
   const [lastCheck, setLastCheck] = useState("08/11/2026 · 22:10");
   const [logs, setLogs] = useState<DemoLog[]>(demoLogs);
   const [backups, setBackups] = useState<DemoBackup[]>(demoBackups);
