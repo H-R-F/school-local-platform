@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { KeyboardEvent as ReactKeyboardEvent } from "react";
 import { CornerDownLeft, Search } from "lucide-react";
 import { navigation } from "../../data/navigation";
 import type { AuthenticatedSidebarUser } from "../../types/navigation";
@@ -60,7 +61,7 @@ export function CommandPalette({ open, user, onClose, onNavigate }: Props) {
     onNavigate(route);
   };
 
-  const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+  const onKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
     if (event.key === "Escape") {
       event.preventDefault();
       onClose();
