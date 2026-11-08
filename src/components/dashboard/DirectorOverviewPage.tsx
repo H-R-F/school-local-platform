@@ -1,9 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  Activity, AlertCircle, ArrowDownRight, ArrowRight, ArrowUpRight, Banknote,
-  BookOpen, CalendarDays, CheckCircle2, Clock3, FileCheck2, GraduationCap,
-  RefreshCw, ShieldAlert, Users, Wallet, UserRoundCheck, ClipboardList,
-  CalendarCheck, Bus, Package, Eye, TrendingUp, XCircle,
+  Activity, AlertCircle, ArrowRight, ArrowUpRight, BookOpen, CalendarDays,
+  FileCheck2, GraduationCap, RefreshCw, ShieldAlert, Users, Wallet,
+  UserRoundCheck, ClipboardList, CalendarCheck, Bus, Package, TrendingUp,
 } from "lucide-react";
 import { studentsRepository, type StudentsData } from "../../services/students";
 import { teachersRepository, type TeachersData } from "../../services/teachers";
@@ -16,7 +15,7 @@ interface Props { user: AuthenticatedSidebarUser; onNavigate: (route: string) =>
 type LoadState<T> = { status: "loading" } | { status: "ready"; data: T } | { status: "error"; message: string };
 type DemoRow = { id: string; title: string; detail: string; date: string; route: string; tag?: string; tone?: "warning" | "danger" | "success" | "info" };
 const fmt = (n: number) => new Intl.NumberFormat("fr-FR").format(n);
-const dh = (n: number) => new Intl.NumberFormat("fr-MA", { style: "currency", currency: "MAD", maximumFractionDigits: 0 }).format(n);
+const dh = (n: number) => `${fmt(n)} DH`;
 const dateLabel = new Intl.DateTimeFormat("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(new Date());
 const timeLabel = (value: string) => new Intl.DateTimeFormat("fr-FR", { hour: "2-digit", minute: "2-digit" }).format(new Date(value));
 const DEMO = {
