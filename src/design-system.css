@@ -74,7 +74,7 @@ button{transition:background-color var(--duration) var(--ease),border-color var(
 
 /* Normalize the existing page families without changing their markup or behavior. */
 .st-page,.pa-page,.te-page,.em-page,.dp-page,.sb-page,.rp-page,
-.ay-page,.sp-page,.lv-page,.cg-page,.dash-page{
+.ay-page,.lv-page,.cg-page,.dash-page{
   
   
   padding:var(--space-5)!important;
@@ -84,11 +84,11 @@ button{transition:background-color var(--duration) var(--ease),border-color var(
   font-size:var(--text-base)!important;
 }
 .st-page h1,.pa-page h1,.te-page h1,.em-page h1,.dp-page h1,.sb-page h1,
-.ay-page h1,.sp-page h1,.lv-page h1,.cg-page h1,.dash-page h1{
+.ay-page h1,.lv-page h1,.cg-page h1,.dash-page h1{
   color:var(--app-text)!important;font:var(--weight-semibold) var(--text-2xl)/32px var(--font-sans) !important;letter-spacing:-0.02em!important;
 }
 .st-page p,.pa-page p,.te-page p,.em-page p,.dp-page p,.sb-page p,
-.ay-page p,.sp-page p,.lv-page p,.cg-page p,.dash-page p{line-height:1.55}
+.ay-page p,.lv-page p,.cg-page p,.dash-page p{line-height:1.55}
 .st-page [class*="breadcrumb"],.pa-page [class*="crumb"],.te-page [class*="crumb"],
 .em-page [class*="crumb"],.dp-page [class*="breadcrumb"],.sb-page [class*="breadcrumb"]{font-size:var(--text-sm)!important;color:var(--app-muted)!important}
 .st-panel,.st-card,.pa-panel,.te-panel,.em-panel,.dp-panel,.sb-panel,
