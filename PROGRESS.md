@@ -2,7 +2,7 @@
 
 **Audit ref:** `backup-before-removing-commits`  
 **Audit commit:** `32c6f4a88e05c0d37961c75f382415427426946f`  
-**Phase:** 2 — shared shell surgery completed at source level; runtime verification blocked  
+**Phase:** 2 — shared shell fixed pending verification; global form-drawer standard implemented pending runtime verification  
 **Approval:** User approved Phase 2 on 2026-11-08. Shared shell source changes are committed. No other page has been started.
 
 ## Status definitions
@@ -28,7 +28,7 @@
 
 The 49 route entries are from `src/data/navigation.ts`. Page components are selected in `src/App.tsx`. The route list does not imply that every route is visible to every role; the existing role and permission filters remain authoritative.
 
-## Phase 2 execution tracker
+## Global form presentation standard (2026-11-08)\n\n- User clarified that the right-side form drawer is a project-wide convention, not a page-specific treatment.\n- Added `src/styles/form-drawers.css`, imported after all page and shell styles. Any existing create/edit overlay containing a form is presented as a right-side drawer; read-only details and confirmation dialogs without forms remain centered.\n- The rule is structural (`:has(form)`) and applies to current and future page modules without changing their handlers, validation, permissions or data calls. Mobile drawers occupy the full viewport width.\n- All route-level form screens are covered by the shared selector, but per-route runtime verification remains pending. This global presentation change is marked FIXED, not VERIFIED.\n\n## Phase 2 execution tracker
 
 ### 1. Shared shell — first patient
 
