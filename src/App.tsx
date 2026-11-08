@@ -23,6 +23,7 @@ import { TeachersPage } from "./components/teachers/TeachersPage";
 import { EmployeesPage } from "./components/employees/EmployeesPage";
 import { EmployeeManagementPage } from "./components/employee-management/EmployeeManagementPage";
 import { AccessControlPage } from "./components/access-control/AccessControlPage";
+import { AuditActivityPage } from "./components/audit-activity/AuditActivityPage";
 import { RolesPermissionsPage } from "./components/roles-permissions/RolesPermissionsPage";
 import { GradesValidationPage } from "./components/grades-validation/GradesValidationPage";
 import { ExaminationsPage } from "./components/examinations/ExaminationsPage";
@@ -152,6 +153,7 @@ export default function App() {
   const isEmployeeManagementPage = currentPath === "/employee-management";
   const isRolesPermissionsPage = currentPath === "/roles-permissions";
   const isAccessControlPage = currentPath === "/access-control";
+  const isAuditActivityPage = currentPath === "/audit-activity";
   const isGradesValidationPage = currentPath === "/grades-validation";
   const isExaminationsPage = currentPath === "/examinations";
   const isCoursesExercisesPage = currentPath === "/courses-exercises";
@@ -225,6 +227,8 @@ export default function App() {
         <RolesPermissionsPage user={user} onNavigate={navigate} />
       ) : isAccessControlPage ? (
         <AccessControlPage user={user} onNavigate={navigate} />
+      ) : isAuditActivityPage ? (
+        <AuditActivityPage user={user} />
       ) : isGradesValidationPage ? (
         <GradesValidationPage user={user} onNavigate={navigate} />
       ) : isExaminationsPage ? (
