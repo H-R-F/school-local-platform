@@ -113,6 +113,32 @@ export default function App() {
     };
   }, [schoolProfile.primaryColor, schoolProfile.secondaryColor]);
 
+  useEffect(() => {
+    if (!user) return;
+    const apply = () => {
+      try {
+        const raw = window.localStorage.getItem("school-user-settings-demo-v1:" + user.id);
+        const prefs = raw ? JSON.parse(raw) as {theme?:string;density?:string;reducedMotion?:boolean;largerText?:boolean;sidebar?:string} : {};
+        const root = document.documentElement;
+        root.dataset.userTheme = prefs.theme ?? "light";
+        root.dataset.userDensity = prefs.density ?? "comfortable";
+        root.dataset.userMotion = prefs.reducedMotion ? "reduced" : "normal";
+        root.dataset.userText = prefs.largerText ? "large" : "normal";
+        if (prefs.sidebar) {
+          setCollapsed(prefs.sidebar === "collapsed");
+          try { window.localStorage.setItem("school-sidebar-collapsed", prefs.sidebar === "collapsed" ? "1" : "0"); } catch { /* unavailable */ }
+        }
+      } catch { /* keep defaults if local storage is unavailable */ }
+    };
+    const onUpdated = (event: Event) => {
+      const detail = (event as CustomEvent<{userId:string}>).detail;
+      if (!detail || detail.userId === user.id) apply();
+    };
+    apply();
+    window.addEventListener("school-user-preferences-updated", onUpdated);
+    return () => window.removeEventListener("school-user-preferences-updated", onUpdated);
+  }, [user?.id]);
+
   const updateCollapsed = useCallback((next: boolean) => {
     setCollapsed(next);
     try { window.localStorage.setItem("school-sidebar-collapsed", next ? "1" : "0"); } catch { /* storage may be unavailable */ }
