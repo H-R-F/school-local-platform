@@ -194,8 +194,8 @@ Additional semantic sizing tokens in `src/styles/tokens.css` include:
 - `--ds-status-label-max-width`, `--ds-status-popover-max-width`
 - `--ds-command-dialog-max-width`, `--ds-command-dialog-max-height`, `--ds-command-input-height`, `--ds-command-empty-height`
 - `--ds-page-content-max-width`
-- `--ds-letter-spacing-label`, `--ds-letter-spacing-overline`, `--ds-line-height-tight`
+- `--ds-letter-spacing-label`, `--ds-letter-spacing-overline`, `--ds-letter-spacing-none`, `--ds-line-height-tight`
 - `--ds-disabled-opacity`, `--ds-active-filter`
-- `--ds-layer-*` stacking tokens and `--ds-motion-reduced-duration`
+- `--ds-layer-*` stacking tokens (control, banner, topbar, sidebar, menu, popover, dialog, skip link) and `--ds-motion-reduced-duration`
 
 These additions are also represented in `design-tokens.json`. Viewport breakpoints and viewport-relative dimensions remain in media queries because CSS custom properties are not consistently supported as media-query conditions.
