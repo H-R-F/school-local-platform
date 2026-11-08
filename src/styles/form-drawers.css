@@ -1,0 +1,108 @@
+/* Global form presentation: every create/edit dialog that contains a form becomes a right-side drawer.
+   Read-only detail and confirmation dialogs remain centered. Imported after page styles. */
+:root {
+  --ds-form-drawer-width: 38rem;
+  --ds-form-drawer-mobile-width: 100vw;
+  --ds-form-drawer-shadow: var(--ds-shadow-lg);
+  --ds-form-drawer-backdrop: rgb(15 23 42 / 48%);
+  --ds-form-drawer-padding: var(--ds-space-6);
+  --ds-form-drawer-header-height: 4.5rem;
+  --ds-form-drawer-footer-height: 4.5rem;
+}
+:root[data-user-theme="dark"] {
+  --ds-form-drawer-backdrop: rgb(0 0 0 / 64%);
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-user-theme="system"] {
+    --ds-form-drawer-backdrop: rgb(0 0 0 / 64%);
+  }
+}
+[class*="overlay"]:has(> form),
+[class*="overlay"]:has(> [role="dialog"] form),
+[class*="overlay"]:has(> section form) {
+  position: fixed;
+  inset: 0;
+  z-index: var(--ds-layer-dialog);
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-end;
+  padding: 0;
+  background: var(--ds-form-drawer-backdrop);
+  backdrop-filter: blur(2px);
+}
+[class*="overlay"]:has(> form) > form,
+[class*="overlay"]:has(> [role="dialog"] form) > [role="dialog"],
+[class*="overlay"]:has(> section form) > section:has(form) {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(var(--ds-form-drawer-width), 100vw);
+  height: 100dvh;
+  max-height: 100dvh;
+  min-height: 0;
+  margin: 0;
+  overflow: hidden;
+  color: var(--ds-color-text-primary);
+  background: var(--ds-color-surface-raised);
+  border: 0;
+  border-left: var(--ds-border-width) solid var(--ds-color-border-default);
+  border-radius: 0;
+  box-shadow: var(--ds-form-drawer-shadow);
+  animation: ds-form-drawer-enter var(--ds-motion-fast) both;
+}
+[class*="overlay"]:has(form) > [role="dialog"] form,
+[class*="overlay"]:has(form) > section:has(form) form,
+[class*="overlay"]:has(> form) > form {
+  min-height: 0;
+}
+[class*="overlay"]:has(form) > [role="dialog"] form,
+[class*="overlay"]:has(form) > section:has(form) form {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  overflow: auto;
+}
+[class*="overlay"]:has(form) > [role="dialog"] form > :is([class*="actions"], [class*="foot"], [class*="footer"]),
+[class*="overlay"]:has(form) > section:has(form) form > :is([class*="actions"], [class*="foot"], [class*="footer"]),
+[class*="overlay"]:has(> form) > form > :is([class*="actions"], [class*="foot"], [class*="footer"]) {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  margin-top: auto;
+  padding: var(--ds-space-4) var(--ds-form-drawer-padding);
+  background: var(--ds-color-surface-raised);
+  border-top: var(--ds-border-width) solid var(--ds-color-border-default);
+}
+[class*="overlay"]:has(form) :is(input, select, textarea) {
+  max-width: 100%;
+}
+[class*="overlay"]:has(form) :is(button, input, select, textarea, a):focus-visible {
+  outline: var(--ds-focus-width) solid var(--ds-focus-ring-color, var(--ds-color-action-primary));
+  outline-offset: var(--ds-focus-offset);
+}
+[class*="overlay"]:has(form) :is(button, input, select) {
+  min-height: var(--ds-control-height);
+}
+@keyframes ds-form-drawer-enter {
+  from { transform: translateX(1rem); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+@media (max-width: 640px) {
+  [class*="overlay"]:has(> form),
+  [class*="overlay"]:has(> [role="dialog"] form),
+  [class*="overlay"]:has(> section form) {
+    justify-content: stretch;
+  }
+  [class*="overlay"]:has(> form) > form,
+  [class*="overlay"]:has(> [role="dialog"] form) > [role="dialog"],
+  [class*="overlay"]:has(> section form) > section:has(form) {
+    width: var(--ds-form-drawer-mobile-width);
+    border-left: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [class*="overlay"]:has(form) > :is(form, section, [role="dialog"]) {
+    animation: none;
+  }
+}
