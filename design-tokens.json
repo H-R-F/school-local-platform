@@ -180,7 +180,12 @@
       "commandTopOffset": "12vh",
       "commandMaxHeight": "70vh",
       "contentReadingWidth": "42rem",
-      "sectorPanelViewportOffset": "290px"
+      "sectorPanelViewportOffset": "290px",
+      "sectorSidebarMinWidth": "16rem",
+      "sectorSidebarMaxWidth": "19rem",
+      "sectorPanelMobileMaxHeight": "28rem",
+      "sectorListMobileMaxHeight": "20rem",
+      "programTableMinWidth": "40rem"
     }
   },
   "accessibility": {
