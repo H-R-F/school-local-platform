@@ -1285,6 +1285,79 @@ button{cursor:pointer;transition:background-color var(--transition-fast,150ms ea
 }
 
 
+/* Sector and programme create/edit forms use a consistent right-side drawer */
+.sp-page--redesign .sp-drawer-overlay{
+  display:flex;
+  justify-content:flex-end;
+  align-items:stretch;
+  padding:0;
+}
+.sp-page--redesign .sp-drawer{
+  display:flex;
+  flex-direction:column;
+  width:min(100%,var(--ds-dialog-max-width));
+  height:100vh;
+  max-height:100vh;
+  margin:0;
+  overflow:auto;
+  border-radius:var(--ds-radius-xl) 0 0 var(--ds-radius-xl);
+  border-inline-end:0;
+  animation:sp-drawer-in var(--ds-motion-normal) var(--ds-ease-out);
+}
+.sp-page--redesign .sp-drawer .sp-modal-heading{
+  position:sticky;
+  top:calc(-1 * var(--ds-space-6));
+  z-index:var(--ds-layer-sticky);
+  margin:calc(-1 * var(--ds-space-6)) calc(-1 * var(--ds-space-6)) var(--ds-space-5);
+  padding:var(--ds-space-6) var(--ds-space-12) var(--ds-space-5) var(--ds-space-6);
+  background:var(--sp-surface);
+  border-bottom:var(--ds-border-width) solid var(--sp-border);
+}
+.sp-page--redesign .sp-drawer .sp-modal-close{
+  position:fixed;
+  top:var(--ds-space-4);
+  right:var(--ds-space-4);
+  z-index:calc(var(--ds-layer-sticky) + 1);
+  background:var(--sp-surface);
+}
+.sp-page--redesign .sp-drawer .sp-form{
+  flex:1;
+  align-content:start;
+  padding-bottom:var(--ds-space-8);
+}
+.sp-page--redesign .sp-drawer .sp-modal-actions{
+  position:sticky;
+  bottom:calc(-1 * var(--ds-space-6));
+  margin:var(--ds-space-4) calc(-1 * var(--ds-space-6)) calc(-1 * var(--ds-space-6));
+  padding:var(--ds-space-4) var(--ds-space-6);
+  background:var(--sp-surface);
+  border-top:var(--ds-border-width) solid var(--sp-border);
+}
+@keyframes sp-drawer-in{
+  from{transform:translateX(100%)}
+  to{transform:translateX(0)}
+}
+@media(prefers-reduced-motion:reduce){
+  .sp-page--redesign .sp-drawer{animation:none}
+}
+@media(max-width:40rem){
+  .sp-page--redesign .sp-drawer{
+    width:100%;
+    max-width:none;
+    border-radius:0;
+  }
+  .sp-page--redesign .sp-drawer .sp-modal-heading{
+    top:calc(-1 * var(--ds-space-4));
+    margin:calc(-1 * var(--ds-space-4)) calc(-1 * var(--ds-space-4)) var(--ds-space-4);
+    padding:var(--ds-space-5) var(--ds-space-12) var(--ds-space-4) var(--ds-space-4);
+  }
+  .sp-page--redesign .sp-drawer .sp-modal-actions{
+    bottom:calc(-1 * var(--ds-space-4));
+    margin:var(--ds-space-4) calc(-1 * var(--ds-space-4)) calc(-1 * var(--ds-space-4));
+    padding:var(--ds-space-3) var(--ds-space-4);
+  }
+}
+
 /* Niveaux scolaires */
 .lv-page{--lv-ink:var(--color-text);--lv-muted:var(--color-text-secondary);--lv-line:var(--color-border);margin-left:258px;min-height:100vh;padding:var(--space-6) var(--space-6) var(--space-5);background:var(--color-primary-soft);color:var(--lv-ink);font-size:var(--text-sm)}
 .lv-header{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--space-4);margin-bottom:var(--space-5)}
