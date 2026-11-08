@@ -9,7 +9,6 @@ export type AcademicPolicyDemo = {
   averageMode: "simple" | "weighted";
   missingAverage: "exclude" | "block";
   calculationDecimals: 2 | 3 | 4;
-  periodModel: "semesters" | "trimesters";
   updatedAt: string;
   updatedBy: string;
 };
@@ -29,7 +28,6 @@ export function validateAcademicPolicyDemo(value: AcademicPolicyDemo): string[] 
   if (![2,3,4].includes(value.calculationDecimals)) errors.push("La précision de calcul doit être comprise entre 2 et 4 décimales.");
   if (!["simple","weighted"].includes(value.averageMode)) errors.push("Sélectionnez un mode de calcul valide.");
   if (!["exclude","block"].includes(value.missingAverage)) errors.push("Sélectionnez un traitement valide des notes manquantes.");
-  if (!["semesters","trimesters"].includes(value.periodModel)) errors.push("Sélectionnez une structure de périodes valide.");
   return errors;
 }
 function isPolicy(value: unknown): value is AcademicPolicyDemo {
@@ -39,7 +37,7 @@ function isPolicy(value: unknown): value is AcademicPolicyDemo {
     typeof row.rounding === "string" && typeof row.passingGrade === "number" &&
     row.missingGrade === "exclude" && row.unassessed === "exclude" &&
     typeof row.averageMode === "string" && typeof row.missingAverage === "string" &&
-    typeof row.calculationDecimals === "number" && typeof row.periodModel === "string" &&
+    typeof row.calculationDecimals === "number" &&
     typeof row.updatedAt === "string" && typeof row.updatedBy === "string";
 }
 function readAll(): Record<string, AcademicPolicyDemo> {
