@@ -47,7 +47,7 @@ export function AppSidebar({user,school,currentPath,onNavigate,onExit,collapsed:
   return <aside className={`sidebar ${collapsed?"sidebar--collapsed":""}`} style={cssVariables}>
     <div className="sidebar-top">
       <SidebarBrand school={school} collapsed={collapsed}/>
-      <button type="button" className="sidebar-collapse-button" onClick={()=>setCollapsed(value=>!value)}
+      <button type="button" className="sidebar-collapse-button" aria-controls="school-primary-navigation" aria-keyshortcuts="Control+B Meta+B" onClick={()=>setCollapsed(value=>!value)}
         aria-label={collapsed?"Développer le menu":"Réduire le menu"} aria-expanded={!collapsed} title={(collapsed?"Développer le menu":"Réduire le menu")+" (Ctrl+B)"}>
         {collapsed?<PanelLeftOpen size={17}/>:<PanelLeftClose size={17}/>}
       </button>
@@ -57,7 +57,7 @@ export function AppSidebar({user,school,currentPath,onNavigate,onExit,collapsed:
       <input type="search" value={search} onChange={event=>setSearch(event.target.value)} placeholder="Rechercher dans le menu" aria-label="Rechercher dans le menu"/>
       {search&&<button type="button" onClick={()=>setSearch("")} aria-label="Effacer la recherche">×</button>}
     </div>}
-    <nav className="nav-scroll" aria-label="Navigation de l’établissement" tabIndex={-1}>
+    <nav id="school-primary-navigation" className="nav-scroll" aria-label="Navigation de l’établissement" tabIndex={-1}>
       {visibleGroups.map(group=><SidebarGroup key={group.id} group={group} activePath={path} collapsed={collapsed}
         expanded={search.trim().length>0 || (expandedGroups[group.id]??group.id===activeGroupId)} onToggle={()=>toggleGroup(group.id)} onNavigate={onNavigate}/>)}
       {visibleGroups.length===0&&!collapsed&&<p className="nav-empty">Aucune page ne correspond à votre recherche.</p>}
