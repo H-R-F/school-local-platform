@@ -96,6 +96,8 @@
   --ds-command-input-height:56px;
   --ds-command-empty-height:72px;
   --ds-page-content-max-width:1600px;
+  --ds-content-reading-width:42rem;
+  --ds-sector-panel-viewport-offset:290px;
   --ds-command-top-offset:12vh;
   --ds-command-max-height:70vh;
   --ds-letter-spacing-label:.06em;
