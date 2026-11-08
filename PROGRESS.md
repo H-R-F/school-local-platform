@@ -194,3 +194,9 @@ The shared shell has been repaired at source level. It is **not marked VERIFIED*
 - The workspace backdrop begins at `--sidebar-w`, so the drawer respects both expanded and collapsed sidebar widths; the navigation rail remains visible and undimmed.
 - At widths below 1100px the drawer uses the full workspace width; at mobile widths it uses the full viewport.
 - Source-level selector/layout review only. Browser visual verification remains pending; affected pages remain FIXED, not VERIFIED.
+
+
+### Global form drawer viewport alignment — 2026-11-08
+- Corrected the drawer backdrop's right inset calculation. The previous `calc(-1 * var(...))` expression is not valid CSS arithmetic in broadly supported browsers, so the overlay could remain constrained to the content column and leave a strip visible at the right edge.
+- The drawer now extends by the live `--sidebar-w` value, inherited from the shared shell, so its viewport edge remains aligned when navigation is expanded or collapsed.
+- Updated `src/styles/form-drawers.css`; runtime/browser verification is still pending.
