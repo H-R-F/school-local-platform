@@ -3,7 +3,6 @@ import { AppSidebar } from "./components/AppSidebar";
 import { CommandPalette } from "./components/shell/CommandPalette";
 import { StatusBar } from "./components/shell/StatusBar";
 import { TopBar } from "./components/shell/TopBar";
-import "./components/shell/shell.css";
 import { navigation } from "./data/navigation";
 import { systemStatus } from "./config/system-status";
 import { StaffSignIn } from "./components/auth/StaffSignIn";
