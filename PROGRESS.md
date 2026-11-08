@@ -2,8 +2,8 @@
 
 **Audit ref:** `backup-before-removing-commits`  
 **Audit commit:** `32c6f4a88e05c0d37961c75f382415427426946f`  
-**Phase:** 1 complete — awaiting user review/approval  
-**Rule:** No application UI code has been changed as part of Phase 1. Every implementation item starts as `NOT STARTED`.
+**Phase:** 2 — shared shell surgery completed at source level; runtime verification blocked  
+**Approval:** User approved Phase 2 on 2026-11-08. Shared shell source changes are committed. No other page has been started.
 
 ## Status definitions
 
@@ -16,7 +16,7 @@
 
 | Inventory | Count | Current status |
 |---|---:|---|
-| Shared shell components | 6 | NOT STARTED |
+| Shared shell components | 7 | FIXED — awaiting runtime verification |
 | Staff authentication screens | 1 | NOT STARTED |
 | Routed navigation entries | 49 | NOT STARTED |
 | Role-specific overview variants | 4 (within `/overview`) | NOT STARTED |
@@ -34,12 +34,12 @@ The 49 route entries are from `src/data/navigation.ts`. Page components are sele
 
 | Patient | Source | Status | Verification note |
 |---|---|---|---|
-| Application shell/layout wrapper | `src/App.tsx`, `src/index.css` | NOT STARTED | Composition, content offsets, fixed bars, scroll and responsive behavior require review. |
-| Sidebar and navigation | `src/components/AppSidebar.tsx`, `src/components/sidebar/*` | NOT STARTED | Includes expanded/collapsed states, groups, active route, search and permission-filtered items. |
-| Top bar | `src/components/shell/TopBar.tsx` | NOT STARTED | Search trigger, notification entry, account menu and keyboard behavior. |
-| Status bar | `src/components/shell/StatusBar.tsx` | NOT STARTED | Connectivity/system indicators and popovers; demo values must remain clearly demo. |
-| Command palette | `src/components/shell/CommandPalette.tsx` | NOT STARTED | Dialog semantics, focus management, keyboard selection and empty results. |
-| Shared shell styles | `src/components/shell/shell.css`, `src/design-system.css` | NOT STARTED | Resolve duplicate ownership and theme behavior without changing shell logic. |
+| Application shell/layout wrapper | `src/App.tsx`, `src/index.css`, `src/main.tsx` | FIXED | Source-level review completed after consolidating the shell stylesheet, adding theme-aware tokens, improving keyboard/focus semantics, and removing duplicate sidebar overrides. Runtime build/browser/a11y verification is blocked by the unavailable local runtime; see BLOCKERS.md. |
+| Sidebar and navigation | `src/components/AppSidebar.tsx`, `src/components/sidebar/*` | FIXED | Source reviewed: token-driven light/dark styles, collapsed labels, 44px controls, permission filtering retained. Runtime theme/keyboard checks pending. |
+| Top bar | `src/components/shell/TopBar.tsx` | FIXED | Account menu now supports focus entry, Escape, ArrowUp/ArrowDown, Home/End and existing actions. Runtime keyboard check pending. |
+| Status bar | `src/components/shell/StatusBar.tsx` | FIXED | Disclosure semantics and Escape focus return added; copy now distinguishes browser connectivity from simulated infrastructure values. Runtime/offline checks pending. |
+| Command palette | `src/components/shell/CommandPalette.tsx` | FIXED | Dialog labelling, combobox/listbox semantics, focus entry/containment/return, arrow selection, Enter and empty results reviewed in source. Runtime screen-reader/keyboard check pending. |
+| Shared shell styles | `src/components/shell/shell.css`, `src/design-system.css`, `src/styles/tokens.css` | FIXED | Duplicate sidebar override blocks removed; canonical shell stylesheet imported last and uses semantic tokens. Rendered contrast/responsive checks pending. |
 
 ### 2. Authentication
 
@@ -141,9 +141,9 @@ No IT-support role, route, or dedicated IT support screen was found. This is an 
 | Patient group | Source scope | Status | Verification note |
 |---|---|---|---|
 | Page drawers, detail panels, tabs, forms and confirmations | Embedded in page TSX files listed above | NOT STARTED | Inventory each actual overlay during its owning page's Step A. Do not mark this aggregate complete until every owning page is checked. |
-| Top bar account menu | `TopBar.tsx` | NOT STARTED | Escape, outside-click, focus entry/return and menu keyboard behavior. |
+| Top bar account menu | `TopBar.tsx` | FIXED | Source behavior updated; runtime keyboard/focus verification pending. |
 | Status popovers | `StatusBar.tsx` | NOT STARTED | Keyboard dismissal, semantics, placement and theme. |
-| Command palette dialog | `CommandPalette.tsx` | NOT STARTED | Focus trap/return, keyboard operation and empty results. |
+| Command palette dialog | `CommandPalette.tsx` | FIXED | Focus entry/containment/return and keyboard selection implemented in source; runtime verification pending. |
 | Generic unmatched-route fallback | `App.tsx` | NOT STARTED | Currently “Module en préparation”; verify visual treatment and decide 404 handling without adding a route. |
 | Empty/loading/error/offline states | Each data page | NOT STARTED | Record only states supported by current data/services; any missing sync/backend capability is a blocker, not a styling feature to invent. |
 
@@ -175,12 +175,13 @@ Every patient must complete this checklist before status can advance from `IN PR
 
 ## Page verification log
 
-No patient has entered surgery. No runtime or accessibility verification has been performed.
+The shared shell has been repaired at source level. It is **not marked VERIFIED** because build, browser, responsive, contrast and end-to-end accessibility checks cannot be run from the current editing environment.
 
 | Date | Patient | Status change | Evidence |
 |---|---|---|---|
-| 2026-11-08 | Phase 1 inventory | COMPLETE — awaiting review | Source files and route catalogue reviewed; no application code modified. |
+| 2026-11-08 | Phase 1 inventory | COMPLETE | Source files and route catalogue reviewed; audit and tracker created before application changes. |
+| 2026-11-08 | Shared shell | IN PROGRESS → FIXED | Tokenized shell stylesheet, duplicate sidebar override removal, accessible account menu/status disclosures/command palette, theme-aware token additions. See MIGRATION.md and BLOCKERS.md. |
 
-## Approval gate
+## Verification gate
 
-**Phase 2 is paused.** The first patient after approval is the shared shell. Do not start page fixes until the user has reviewed `AUDIT.md` and this tracker and explicitly approved Phase 2.
+**Shared shell is FIXED but not VERIFIED.** Phase 2 must remain on this patient until B-001 and B-002 are resolved and the build, rendered light/dark/system themes, responsive layout, keyboard flow, screen-reader semantics and WCAG contrast checks are recorded. Do not start authentication or another page yet.
