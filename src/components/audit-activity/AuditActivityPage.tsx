@@ -52,6 +52,7 @@ export function AuditActivityPage({ user }: Props) {
   const [role,setRole] = useState("Tous");
   const [module,setModule] = useState("Tous");
   const [result,setResult] = useState("Tous");
+  const [quickFilter,setQuickFilter] = useState<"all"|"sensitive"|"failed"|"denied"|"permissions">("all");
   const [sortKey,setSortKey] = useState<SortKey>("at");
   const [sortDirection,setSortDirection] = useState<"asc"|"desc">("desc");
   const [page,setPage] = useState(1);
@@ -76,17 +77,18 @@ export function AuditActivityPage({ user }: Props) {
     const q = query.trim().toLocaleLowerCase("fr");
     return periodItems.filter(item => {
       const matchesQuery = !q || [item.id,item.actor,item.actorId,item.role,item.type,item.action,item.module,item.target].some(value=>value.toLocaleLowerCase("fr").includes(q));
-      return matchesQuery && (category==="Toutes" || item.category===category) &&
+      const matchesQuick = quickFilter==="all" || (quickFilter==="sensitive" && ["Données sensibles","Finance","Administration"].includes(item.category)) || (quickFilter==="failed" && item.category==="Authentification" && item.result==="Échoué") || (quickFilter==="denied" && item.result==="Refusé") || (quickFilter==="permissions" && item.type.toLocaleLowerCase("fr").includes("permission"));
+      return matchesQuery && matchesQuick && (category==="Toutes" || item.category===category) &&
         (actor==="Tous" || item.actor===actor) && (role==="Tous" || item.role===role) &&
         (module==="Tous" || item.module===module) && (result==="Tous" || item.result===result);
     }).sort((a,b) => {
       const sign = sortDirection==="asc" ? 1 : -1;
       const left = sortKey==="at" ? new Date(a.at).getTime() : a[sortKey].toLocaleLowerCase("fr");
       const right = sortKey==="at" ? new Date(b.at).getTime() : b[sortKey].toLocaleLowerCase("fr");
-      const comparison = left < right ? -1 : left > right ? 1 : a.id.localeCompare(b.id);
+      const comparison = sortKey==="at" ? (Number(left)-Number(right)) : String(left).localeCompare(String(right),"fr");
       return comparison * sign;
     });
-  },[periodItems,query,category,actor,role,module,result,sortKey,sortDirection]);
+  },[periodItems,query,category,actor,role,module,result,quickFilter,sortKey,sortDirection]);
   const pages = Math.max(1,Math.ceil(filtered.length/pageSize));
   const visible = filtered.slice((page-1)*pageSize,page*pageSize);
   const counts = useMemo(() => ({
@@ -105,12 +107,13 @@ export function AuditActivityPage({ user }: Props) {
   const actors = useMemo(()=>Array.from(new Set(items.map(e=>e.actor))).sort((a,b)=>a.localeCompare(b,"fr")),[items]);
   const roles = useMemo(()=>Array.from(new Set(items.map(e=>e.role))).sort((a,b)=>a.localeCompare(b,"fr")),[items]);
   const modules = useMemo(()=>Array.from(new Set(items.map(e=>e.module))).sort((a,b)=>a.localeCompare(b,"fr")),[items]);
-  const hasFilters = query || category!=="Toutes" || actor!=="Tous" || role!=="Tous" || module!=="Tous" || result!=="Tous";
-  function resetFilters() { setCategory("Toutes");setQuery("");setActor("Tous");setRole("Tous");setModule("Tous");setResult("Tous");setPage(1); }
+  const hasFilters = query || category!=="Toutes" || actor!=="Tous" || role!=="Tous" || module!=="Tous" || result!=="Tous" || quickFilter!=="all";
+  function resetFilters() { setCategory("Toutes");setQuery("");setActor("Tous");setRole("Tous");setModule("Tous");setResult("Tous");setQuickFilter("all");setPage(1); }
   function changePeriod(value: Period) { setPeriod(value);setPage(1);setPeriodNotice(""); }
   function refresh() { setRefreshedAt(new Date());setRefreshNotice("Données locales de démonstration actualisées. Aucun journal de production n’est connecté."); }
   function toggleSort(key: SortKey) { if(sortKey===key)setSortDirection(d=>d==="asc"?"desc":"asc");else{setSortKey(key);setSortDirection(key==="at"?"desc":"asc");}setPage(1); }
-  function selectCategory(value: string) { setCategory(value);setPage(1); }
+  function selectCategory(value: string) { setCategory(value);setQuickFilter("all");setPage(1); }
+  function selectQuick(value: "all"|"sensitive"|"failed"|"denied"|"permissions") { setQuickFilter(value);setCategory("Toutes");setResult("Tous");setQuery("");setPage(1); }
   if (!authorized) return <main className="audit-page"><section className="audit-denied"><ShieldAlert size={28}/><h1>Accès non autorisé</h1><p>Votre rôle ne dispose pas de l’autorisation nécessaire pour consulter le journal d’audit.</p></section></main>;
 
   return <main className="audit-page">
@@ -121,11 +124,11 @@ export function AuditActivityPage({ user }: Props) {
     <section className="audit-period-bar"><div><CalendarDays size={15}/><strong>Période d’analyse</strong></div><div className="audit-period-options"><button className={period==="today"?"active":""} onClick={()=>changePeriod("today")}>Aujourd’hui</button><button className={period==="7"?"active":""} onClick={()=>changePeriod("7")}>7 jours</button><button className={period==="30"?"active":""} onClick={()=>changePeriod("30")}>30 jours</button><button className={period==="90"?"active":""} onClick={()=>changePeriod("90")}>90 jours</button><button className={period==="all"?"active":""} onClick={()=>changePeriod("all")}>Tout</button><button className={period==="custom"?"active":""} onClick={()=>changePeriod("custom")}>Personnalisée</button></div></section>
     {period==="custom"&&<div className="audit-custom-range"><label>Du <input type="date" value={customFrom} max={customTo||undefined} onChange={e=>{setCustomFrom(e.target.value);setPage(1);}}/></label><label>Au <input type="date" value={customTo} min={customFrom||undefined} onChange={e=>{setCustomTo(e.target.value);setPage(1);}}/></label>{customFrom&&customTo&&new Date(customFrom)>new Date(customTo)&&<span>La date de début doit précéder la date de fin.</span>}</div>}
     <section className="audit-kpis">
-      <button type="button" onClick={()=>selectCategory("Toutes")} className={category==="Toutes"?"selected":""}><span className="audit-kpi-icon blue"><FileSearch size={17}/></span><span><small>Événements audités</small><strong>{counts.total}</strong><em>Enregistrements de démonstration</em></span></button>
-      <button type="button" onClick={()=>selectCategory("Données sensibles")} className={category==="Données sensibles"?"selected":""}><span className="audit-kpi-icon violet"><ShieldCheck size={17}/></span><span><small>Modifications sensibles</small><strong>{counts.sensitive}</strong><em>Données, finance et administration</em></span></button>
-      <button type="button" onClick={()=>{selectCategory("Authentification");setResult("Échoué");}} className={category==="Authentification"&&result==="Échoué"?"selected":""}><span className="audit-kpi-icon amber"><AlertCircle size={17}/></span><span><small>Tentatives échouées</small><strong>{counts.failed}</strong><em>Authentification uniquement</em></span></button>
-      <button type="button" onClick={()=>setResult("Refusé")} className={result==="Refusé"?"selected":""}><span className="audit-kpi-icon red"><ShieldAlert size={17}/></span><span><small>Opérations refusées</small><strong>{counts.denied}</strong><em>Résultat enregistré · démo</em></span></button>
-      <button type="button" onClick={()=>{setCategory("Gestion des comptes");setQuery("permission");}} className={category==="Gestion des comptes"&&query==="permission"?"selected":""}><span className="audit-kpi-icon teal"><Clock3 size={17}/></span><span><small>Changements de permissions</small><strong>{counts.permissions}</strong><em>Rôles et autorisations</em></span></button>
+      <button type="button" onClick={()=>selectQuick("all")} className={quickFilter==="all"?"selected":""}><span className="audit-kpi-icon blue"><FileSearch size={17}/></span><span><small>Événements audités</small><strong>{counts.total}</strong><em>Enregistrements de démonstration</em></span></button>
+      <button type="button" onClick={()=>selectQuick("sensitive")} className={quickFilter==="sensitive"?"selected":""}><span className="audit-kpi-icon violet"><ShieldCheck size={17}/></span><span><small>Modifications sensibles</small><strong>{counts.sensitive}</strong><em>Données, finance et administration</em></span></button>
+      <button type="button" onClick={()=>selectQuick("failed")} className={quickFilter==="failed"?"selected":""}><span className="audit-kpi-icon amber"><AlertCircle size={17}/></span><span><small>Tentatives échouées</small><strong>{counts.failed}</strong><em>Authentification uniquement</em></span></button>
+      <button type="button" onClick={()=>selectQuick("denied")} className={quickFilter==="denied"?"selected":""}><span className="audit-kpi-icon red"><ShieldAlert size={17}/></span><span><small>Opérations refusées</small><strong>{counts.denied}</strong><em>Résultat enregistré · démo</em></span></button>
+      <button type="button" onClick={()=>selectQuick("permissions")} className={quickFilter==="permissions"?"selected":""}><span className="audit-kpi-icon teal"><Clock3 size={17}/></span><span><small>Changements de permissions</small><strong>{counts.permissions}</strong><em>Rôles et autorisations</em></span></button>
     </section>
     <section className="audit-panel">
       <header className="audit-panel-heading"><div><h2>Journal des événements</h2><p>{filtered.length} événement(s) correspondant aux critères sélectionnés</p></div><span className="audit-readonly"><ShieldCheck size={13}/> Consultation seule</span></header>
