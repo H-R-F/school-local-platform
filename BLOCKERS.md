@@ -24,7 +24,7 @@
 - **Severity:** Major
 - **Area:** Status bar
 - **Evidence:** `src/config/system-status.ts` explicitly defines server, backup, licence, queued notification and version values as demo values. Only the Internet indicator reads browser state.
-- **Impact:** Real server health, backup state, licence lease and sync queue cannot be verified or styled as real operational states yet.
+- **Impact:** Real server health, backup state, licence lease and sync queue cannot be verified or styled as real operational states yet. API-backed loading, timeout and service-error states also cannot be represented truthfully until those services exist.
 - **Required resolution:** Connect these indicators to their existing/approved backend contracts when that work is in scope. This repair changed only explanatory copy and styling.
 - **Status:** OPEN.
 
