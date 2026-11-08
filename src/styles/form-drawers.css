@@ -24,7 +24,7 @@
   inset-inline-start: 0;
   /* Some page shells constrain the overlay to the content column. Extend it
      by the live navigation width so the panel still reaches the viewport edge. */
-  inset-inline-end: calc(-1 * var(--sidebar-w, var(--ds-sidebar-width)));
+  inset-inline-end: calc(0px - var(--sidebar-w, var(--ds-sidebar-width)));
   z-index: var(--ds-layer-dialog);
   display: flex;
   align-items: stretch;
