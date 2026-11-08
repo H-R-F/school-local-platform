@@ -210,3 +210,11 @@ These additions are also represented in `design-tokens.json`. Viewport breakpoin
 - `--ds-sector-sidebar-min-width` and `--ds-sector-sidebar-max-width`: desktop split-view sidebar bounds.
 - `--ds-sector-panel-mobile-max-height` and `--ds-sector-list-mobile-max-height`: compact responsive sector-list bounds.
 - `--ds-program-table-min-width`: minimum readable width for the horizontally scrollable program table on narrow screens.
+
+
+### Filières et programmes visual treatment
+
+- The page uses the shared raised/sunken surfaces, primary action, semantic success/error colors, text hierarchy, border, radius, spacing, focus, and motion tokens directly from `src/styles/tokens.css`.
+- Page-scoped classes are prefixed with `sp-page--redesign`; this prevents page styles from leaking into other academic modules.
+- New layout tokens: `--ds-sector-workspace-min-height`, `--ds-sector-empty-state-min-height`, `--ds-sector-textarea-min-height`, `--ds-dialog-max-width`, and `--ds-motion-spin`.
+- Responsive behavior retains the shared shell's sidebar offset and padding. The sector list stacks above the programme panel at tablet widths; the programme table scrolls horizontally on narrow screens.
