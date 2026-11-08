@@ -185,7 +185,11 @@
       "sectorSidebarMaxWidth": "19rem",
       "sectorPanelMobileMaxHeight": "28rem",
       "sectorListMobileMaxHeight": "20rem",
-      "programTableMinWidth": "40rem"
+      "programTableMinWidth": "40rem",
+      "sectorWorkspaceMinHeight": "36rem",
+      "sectorEmptyStateMinHeight": "18rem",
+      "sectorTextareaMinHeight": "6rem",
+      "dialogMaxWidth": "42rem"
     }
   },
   "accessibility": {
@@ -197,7 +201,8 @@
   },
   "motion": {
     "fast": "150ms ease",
-    "reduced": ".01ms"
+    "reduced": ".01ms",
+    "spin": "800ms"
   },
   "layers": {
     "control": 2,
