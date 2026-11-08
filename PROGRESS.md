@@ -77,7 +77,7 @@ No external teacher portal route or `teacher` role exists in the current `StaffR
 | Subjects | `/subjects` | `src/components/subjects/SubjectsPage.tsx` | academic | NOT STARTED |
 | Departments | `/departments` | `src/components/departments/DepartmentsPage.tsx` | academic | NOT STARTED |
 | Academic years | `/academic-years` | `src/components/academic-years/AcademicYearsPage.tsx` | academic | NOT STARTED |
-| Sectors and programs | `/sectors-programs` | `src/components/sectors-programs/SectorsProgramsPage.tsx` | academic | IN PROGRESS — content simplified; runtime verification pending |
+| Sectors and programs | `/sectors-programs` | `src/components/sectors-programs/SectorsProgramsPage.tsx` | academic | FIXED — source changes complete; browser/build verification pending |
 | Levels | `/levels` | `src/components/levels/LevelsPage.tsx` | academic | NOT STARTED |
 | Classes and groups | `/classes-groups` | `src/components/classes-groups/ClassesGroupsPage.tsx` | academic | NOT STARTED |
 
