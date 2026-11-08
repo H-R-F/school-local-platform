@@ -48,6 +48,7 @@ export function TopBar({ user, school, onOpenSearch, onNavigate, onSignOut }: Pr
     else if (event.key === "ArrowUp") next = (current - 1 + items.length) % items.length;
     else if (event.key === "Home") next = 0;
     else if (event.key === "End") next = items.length - 1;
+    else if (event.key === "Tab") { setMenuOpen(false); return; }
     else return;
     event.preventDefault();
     items[next]?.focus();
