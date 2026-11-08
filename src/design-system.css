@@ -1,6 +1,3 @@
-@import "./styles/theme.css";
-@import "./styles/tokens.css";
-
 /* School Local Platform — shared design system
    Visual layer only: page logic and domain-specific styles remain in their modules. */
 :root {
