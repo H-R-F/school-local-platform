@@ -975,9 +975,9 @@ button{cursor:pointer;transition:background-color var(--transition-fast,150ms ea
 
 /* Filières et programmes — simplified content hierarchy */
 .sp-page .sp-header{align-items:center;margin-bottom:var(--space-4)}
-.sp-page .sp-header p{max-width:var(--content-reading-width);margin-top:var(--space-1)}
+.sp-page .sp-header p{max-width:var(--ds-content-reading-width);margin-top:var(--space-1)}
 .sp-page .sp-workspace{grid-template-columns:minmax(16rem,19rem) minmax(0,1fr);gap:var(--space-3);min-height:0}
-.sp-page .sp-sector-column{max-height:calc(100vh - var(--shell-content-offset));min-height:0}
+.sp-page .sp-sector-column{max-height:calc(100vh - var(--ds-sector-panel-viewport-offset));min-height:0}
 .sp-page .sp-sector-heading{padding:var(--space-3)}
 .sp-page .sp-sector-heading h2{font-size:var(--text-base)}
 .sp-page .sp-filters{gap:var(--space-2);padding:var(--space-3)}
