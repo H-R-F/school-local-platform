@@ -168,9 +168,10 @@ Dark status backgrounds are also provided by their `*-subtle` tokens. The shell 
 `src/main.tsx` imports global styles in this order:
 
 1. `src/styles/theme.css` — existing application compatibility variables and user preference theme values.
-2. `src/index.css` — legacy baseline and page styles.
-3. `src/design-system.css` — shared page-level design rules and remaining legacy compatibility styles.
-4. `src/components/shell/shell.css` — canonical final owner for shared shell selectors.
+2. `src/styles/tokens.css` — canonical semantic design tokens and light/dark values.
+3. `src/index.css` — legacy baseline and page styles.
+4. `src/design-system.css` — shared page-level design rules and remaining legacy compatibility styles.
+5. `src/components/shell/shell.css` — canonical final owner for shared shell selectors.
 
 Do not add new sidebar/header/statusbar/command-palette rules to `index.css` or `design-system.css`. Modify `shell.css` and token files instead.
 
