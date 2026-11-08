@@ -200,3 +200,11 @@ The shared shell has been repaired at source level. It is **not marked VERIFIED*
 - Corrected the drawer backdrop's right inset calculation. The previous `calc(-1 * var(...))` expression is not valid CSS arithmetic in broadly supported browsers, so the overlay could remain constrained to the content column and leave a strip visible at the right edge.
 - The drawer now extends by the live `--sidebar-w` value, inherited from the shared shell, so its viewport edge remains aligned when navigation is expanded or collapsed.
 - Updated `src/styles/form-drawers.css`; runtime/browser verification is still pending.
+
+
+### Project-wide form drawer rebuild — 2026-11-08
+- Reworked the shared form drawer stylesheet to establish one viewport-anchored right-side layout for supported form overlays across the application. It uses the root-level live sidebar width exposed by `App.tsx`, aligns the drawer to the viewport's right edge, and preserves the header/status area on desktop.
+- Standardized panel sizing, scrolling, stacking, footer/action placement, and responsive full-width behavior. Read-only and confirmation dialogs without forms are intentionally excluded from the generic form selector.
+- Added an explicit rule for the Events editor, which uses a controlled `.ev-form` container rather than a native `<form>` element.
+- `/sectors-programs` create/edit dialogs now render through a React portal to avoid transformed/overflow-clipped page ancestors.
+- Scope note: this is the shared visual/action-layout foundation; individual modules still retain their own submit, cancel, validation, permissions, and save handlers. No claim is made that every page has been migrated to a single reusable React drawer component or browser-tested.
