@@ -98,6 +98,11 @@
   --ds-page-content-max-width:1600px;
   --ds-content-reading-width:42rem;
   --ds-sector-panel-viewport-offset:290px;
+  --ds-sector-sidebar-min-width:16rem;
+  --ds-sector-sidebar-max-width:19rem;
+  --ds-sector-panel-mobile-max-height:28rem;
+  --ds-sector-list-mobile-max-height:20rem;
+  --ds-program-table-min-width:40rem;
   --ds-command-top-offset:12vh;
   --ds-command-max-height:70vh;
   --ds-letter-spacing-label:.06em;
