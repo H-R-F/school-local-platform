@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "name": "School Local Platform Design Tokens",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "color": {
     "light": {
       "surface": {
@@ -190,6 +190,13 @@
       "sectorEmptyStateMinHeight": "18rem",
       "sectorTextareaMinHeight": "6rem",
       "dialogMaxWidth": "42rem"
+    },
+    "formDrawer": {
+      "width": 608,
+      "mobileWidth": "100vw",
+      "headerHeight": 72,
+      "footerHeight": 72,
+      "padding": 24
     }
   },
   "accessibility": {
@@ -214,4 +221,4 @@
     "dialog": 80,
     "skipLink": 100
   }
-}
+}\n
