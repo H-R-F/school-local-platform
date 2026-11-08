@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import {
-  AlertCircle, ArrowDownUp, Check, ChevronLeft, ChevronRight, Clock3, Download,
+  AlertCircle, ArrowDownUp, Check, ChevronLeft, ChevronRight, Download,
   Eye, Info, LockKeyhole, Plus, RefreshCw, Search, ShieldAlert, ShieldCheck,
-  UserRound, Users, X
+  Users, X
 } from "lucide-react";
 import { employeesRepository, type EmployeeRecord, type EmployeesData } from "../../services/employees";
-import { getRoleLabel } from "../../data/demo-accounts";
 import { roleDefaultPermissions } from "../../data/role-permissions";
 import type { AuthenticatedSidebarUser, StaffRole } from "../../types/navigation";
 import "./AccessControlPage.css";
