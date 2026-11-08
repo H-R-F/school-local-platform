@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import {
   Archive, AlertCircle, ArrowDown, ArrowUp, ArrowUpDown, CalendarDays,
   Check, ChevronLeft, ChevronRight, CircleHelp, Clock3, Database,
-  Eye, FileCheck2, Filter, HardDrive, Info, LockKeyhole, RefreshCw,
-  Search, ShieldAlert, ShieldCheck, X
+  Eye, FileCheck2, Filter, Info, LockKeyhole, RefreshCw,
+  Search, ShieldAlert, X
 } from "lucide-react";
 import type { AuthenticatedSidebarUser } from "../../types/navigation";
 import { archiveDemoRepository, type ArchiveRecord } from "../../services/archive-demo";
@@ -13,7 +13,6 @@ import "./ArchivePage.css";
 interface Props { user: AuthenticatedSidebarUser; onNavigate: (route:string)=>void }
 type WizardStep = 1|2|3|4|5;
 type SortKey = "academicYearName"|"createdAt"|"status";
-type CheckState = "Validé"|"Avertissement"|"Bloquant"|"Non vérifié"|"Simulation";
 const formatDate=(value:string)=>new Intl.DateTimeFormat("fr-FR",{day:"2-digit",month:"long",year:"numeric"}).format(new Date(value));
 const formatDateTime=(value:string)=>new Intl.DateTimeFormat("fr-FR",{dateStyle:"medium",timeStyle:"short"}).format(new Date(value));
 const moduleDescriptions:Record<string,string>={
@@ -85,7 +84,6 @@ export function ArchivePage({user,onNavigate}:Props) {
  const safePage=Math.min(page,pages);
  const visible=filtered.slice((safePage-1)*pageSize,safePage*pageSize);
  useEffect(()=>setPage(1),[query,yearFilter,statusFilter,pageSize]);
- const eligibleYears=years.filter(y=>y.status==="Terminée"&&!records.some(r=>r.academicYearId===y.id));
  const latest=records[0]??null;
  const yearNames=[...new Set(records.map(r=>r.academicYearName))];
  async function openWizard(){
