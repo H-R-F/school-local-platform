@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import type { KeyboardEvent as ReactKeyboardEvent } from "react";
 import { Bell, CalendarDays, ChevronDown, LogOut, Search, Settings } from "lucide-react";
 import { getRoleLabel } from "../../data/demo-accounts";
 import type { AuthenticatedSidebarUser, SchoolBranding } from "../../types/navigation";
@@ -39,7 +40,7 @@ export function TopBar({ user, school, onOpenSearch, onNavigate, onSignOut }: Pr
     };
   }, [menuOpen]);
 
-  const handleMenuKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+  const handleMenuKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
     const items = Array.from(menuRef.current?.querySelectorAll<HTMLButtonElement>('[role="menuitem"]:not(:disabled)') ?? []);
     const current = items.indexOf(document.activeElement as HTMLButtonElement);
     let next = current;
