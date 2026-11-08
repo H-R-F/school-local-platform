@@ -55,3 +55,6 @@ No browser rendering, build, TypeScript compilation, screen-reader test, keyboar
 - Shortened page helper copy, headings, search placeholder, and action labels.
 - Removed the now-unused `CyclePill` helper and `cycleShort` formatter after removing the redundant cycle badge from the sector list.
 - Business data, local repository operations, validation, permissions, CRUD actions and status rules were not changed.
+
+- Removed unused page CSS for the deleted summary cards, cycle pills, sector-list descriptions/footer, and redundant program-description column; removed their stale mobile rules as well.
+- Kept the cycle and status filters, local data source, forms, detail views, confirmation flows, and permission checks intact.
