@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type CSSProperties, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import {
   AlertCircle, BookOpen, Check, ChevronDown, CircleHelp,
   Eye, Filter, GraduationCap, Layers3, MoreHorizontal, Pencil, Plus, Search,
@@ -10,7 +10,6 @@ import {
   type ProgramInput, type Sector, type SectorInput, type SectorProgramData,
 } from "../../services/sectors-programs";
 import type { AuthenticatedSidebarUser } from "../../types/navigation";
-import { schoolBranding } from "../../config/school";
 
 interface Props { user: AuthenticatedSidebarUser; onNavigate: (route:string)=>void; }
 type CycleFilter = "Tous les cycles" | EducationalCycle;
@@ -115,10 +114,10 @@ export function SectorsProgramsPage({user,onNavigate}:Props) {
   function saveProgram(value:ProgramInput){if(!canUpdate)return;const editing=modal?.type==="program-edit"?modal.program:undefined;void mutate(()=>editing?sectorsProgramsRepository.updateProgram(editing.id,value):sectorsProgramsRepository.createProgram(value),editing?"Le programme a été mis à jour.":"Le programme a été ajouté.");}
   function confirmStatus(){const change=pending;if(!change||!canUpdate)return;void mutate(()=>change.entity==="sector"?sectorsProgramsRepository.setSectorStatus(change.id,change.next):sectorsProgramsRepository.setProgramStatus(change.id,change.next),change.next==="Actif"?"Le statut a été activé.":"Le statut a été désactivé.");}
 
-  if(!canRead)return <main className="sp-page"><div className="sp-access-denied"><ShieldCheck size={26}/><h1>Accès non autorisé</h1><p>Votre compte ne dispose pas de l’autorisation nécessaire pour consulter les filières et programmes.</p><button className="sp-button sp-button--secondary" onClick={()=>onNavigate("/overview")}>Retour au tableau de bord</button></div></main>;
+  if(!canRead)return <main className="sp-page sp-page--redesign"><div className="sp-access-denied"><ShieldCheck size={26}/><h1>Accès non autorisé</h1><p>Votre compte ne dispose pas de l’autorisation nécessaire pour consulter les filières et programmes.</p><button className="sp-button sp-button--secondary" onClick={()=>onNavigate("/overview")}>Retour au tableau de bord</button></div></main>;
 
   const emptySearch=search.trim().length>0&&filteredSectors.length===0;
-  return <main className="sp-page" style={{"--school-primary":schoolBranding.primaryColor} as CSSProperties}>
+  return <main className="sp-page sp-page--redesign">
     <header className="sp-header"><div><div className="sp-breadcrumb"><span>Gestion académique</span><i>/</i><strong>Structure pédagogique</strong></div><h1>Filières et programmes</h1><p>Consultez les filières de l’établissement et leurs programmes associés.</p></div>{canCreate&&<button className="sp-button sp-button--primary" onClick={()=>{setFormError("");setModal({type:"sector-create"});}}><Plus size={16}/> Nouvelle filière</button>}</header>
     {notice&&<div className="sp-notice"><Check size={15}/><span>{notice}</span><button onClick={()=>setNotice("")} aria-label="Fermer"><X size={14}/></button></div>}
     {loadError&&<div className="sp-error-banner"><AlertCircle size={15}/><span>{loadError}</span><button onClick={()=>void load()}>Réessayer</button></div>}
