@@ -206,3 +206,7 @@ These additions are also represented in `design-tokens.json`. Viewport breakpoin
 
 - `--ds-content-reading-width`: maximum line width for short page descriptions.
 - `--ds-sector-panel-viewport-offset`: viewport space reserved above/below the sector list panel.
+
+- `--ds-sector-sidebar-min-width` and `--ds-sector-sidebar-max-width`: desktop split-view sidebar bounds.
+- `--ds-sector-panel-mobile-max-height` and `--ds-sector-list-mobile-max-height`: compact responsive sector-list bounds.
+- `--ds-program-table-min-width`: minimum readable width for the horizontally scrollable program table on narrow screens.
