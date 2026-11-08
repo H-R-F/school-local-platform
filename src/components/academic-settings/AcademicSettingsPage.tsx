@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   AlertCircle, BookOpenCheck, Calculator, CalendarDays, Check, ChevronRight,
-  CircleHelp, ClipboardCheck, FileText, GraduationCap, Info, LockKeyhole,
+  ClipboardCheck, FileText, GraduationCap, Info, LockKeyhole,
   Save, ShieldAlert, ShieldCheck, SlidersHorizontal, X
 } from "lucide-react";
 import { academicYearRepository, type AcademicYear } from "../../services/academic-years";
 import { subjectsRepository, type SubjectsData } from "../../services/subjects";
 import {
-  defaultAcademicPolicyDemo, readAcademicPolicyDemo, saveAcademicPolicyDemo,
+  readAcademicPolicyDemo, saveAcademicPolicyDemo,
   validateAcademicPolicyDemo, type AcademicPolicyDemo
 } from "../../services/academic-policy-demo";
 import type { AuthenticatedSidebarUser } from "../../types/navigation";
