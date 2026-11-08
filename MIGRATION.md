@@ -58,3 +58,13 @@ No browser rendering, build, TypeScript compilation, screen-reader test, keyboar
 
 - Removed unused page CSS for the deleted summary cards, cycle pills, sector-list descriptions/footer, and redundant program-description column; removed their stale mobile rules as well.
 - Kept the cycle and status filters, local data source, forms, detail views, confirmation flows, and permission checks intact.
+
+
+## 2026-11-08 — Filières et programmes visual redesign
+
+- Replaced the previous page-specific stylesheet with a new token-driven visual system: clearer academic header, split filière/programme workspace, quieter filters, selectable sector rows, simplified programme table, refined menus, form dialogs, confirmation dialogs, and empty/loading/error states.
+- Added a dedicated `sp-page--redesign` scope so the new page styling is isolated from other modules.
+- Removed the page's dependency on the school-branding inline color style; action colors now follow the canonical action tokens and remain consistent in light and dark themes.
+- Removed this page from the shared generic page normalization selectors so the redesigned typography, spacing, and background are not overridden by broad `!important` rules.
+- Kept the application shell responsible for sidebar offset and page padding.
+- No repository calls, permission checks, data structures, validation rules, or CRUD/status workflows were changed.
