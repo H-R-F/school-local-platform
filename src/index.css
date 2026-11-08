@@ -862,7 +862,7 @@ button{cursor:pointer;transition:background-color var(--transition-fast,150ms ea
 @media(max-width:1250px){.sp-page{padding:var(--space-5) var(--space-5)}.sp-workspace{grid-template-columns:minmax(270px,320px) minmax(0,1fr)}.sp-program-header{padding:var(--space-4)}.sp-program-content{padding:var(--space-3)}}
 @media(max-width:1050px){.sp-workspace{grid-template-columns:1fr}.sp-sector-column{max-height:450px;min-height:350px}.sp-sector-list{max-height:290px}.sp-program-column{min-height:420px}.sp-program-table{min-width:760px}}
 @media(max-width:900px){.sp-page{margin-left:var(--space-8);padding:var(--space-4) var(--space-3)}.sp-header{align-items:flex-start;flex-direction:column}.sp-page-footer{align-items:flex-start;flex-direction:column}}
-@media(max-width:560px){.sp-page{margin-left:0;padding:var(--space-4) var(--space-2)}.sp-summary{grid-template-columns:1fr}.sp-summary-card{min-height:70px}.sp-program-header{flex-direction:column}.sp-program-actions{width:100%;justify-content:flex-end}.sp-program-meta{flex-wrap:wrap}.sp-program-content-heading{align-items:flex-start;flex-direction:column}.sp-detail-meta{grid-template-columns:1fr}.sp-modal{padding:var(--space-4) var(--space-3)}.sp-modal-actions{flex-wrap:wrap}.sp-modal-actions .sp-button{flex:1}}
+@media(max-width:560px){.sp-page{margin-left:0;padding:var(--space-4) var(--space-2)}.sp-program-header{flex-direction:column}.sp-program-actions{width:100%;justify-content:flex-end}.sp-program-meta{flex-wrap:wrap}.sp-program-content-heading{align-items:flex-start;flex-direction:column}.sp-detail-meta{grid-template-columns:1fr}.sp-modal{padding:var(--space-4) var(--space-3)}.sp-modal-actions{flex-wrap:wrap}.sp-modal-actions .sp-button{flex:1}}
 
 
 /* Niveaux scolaires */
