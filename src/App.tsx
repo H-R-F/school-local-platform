@@ -26,6 +26,7 @@ import { AccessControlPage } from "./components/access-control/AccessControlPage
 import { AuditActivityPage } from "./components/audit-activity/AuditActivityPage";
 import { SchoolProfilePage } from "./components/school-profile/SchoolProfilePage";
 import { ArchivePage } from "./components/archive/ArchivePage";
+import { SchoolSettingsPage } from "./components/school-settings/SchoolSettingsPage";
 import { readSchoolProfile, toSchoolBranding, SCHOOL_PROFILE_UPDATED_EVENT, type SchoolProfile } from "./services/school-profile";
 import { RolesPermissionsPage } from "./components/roles-permissions/RolesPermissionsPage";
 import { GradesValidationPage } from "./components/grades-validation/GradesValidationPage";
@@ -183,6 +184,7 @@ export default function App() {
   const isAuditActivityPage = currentPath === "/audit-activity";
   const isSchoolProfilePage = currentPath === "/school-profile";
   const isArchivePage = currentPath === "/archive";
+  const isSchoolSettingsPage = currentPath === "/settings/school";
   const isGradesValidationPage = currentPath === "/grades-validation";
   const isExaminationsPage = currentPath === "/examinations";
   const isCoursesExercisesPage = currentPath === "/courses-exercises";
@@ -262,6 +264,8 @@ export default function App() {
         <SchoolProfilePage user={user} />
       ) : isArchivePage ? (
         <ArchivePage user={user} onNavigate={navigate} />
+      ) : isSchoolSettingsPage ? (
+        <SchoolSettingsPage user={user} />
       ) : isGradesValidationPage ? (
         <GradesValidationPage user={user} onNavigate={navigate} />
       ) : isExaminationsPage ? (
