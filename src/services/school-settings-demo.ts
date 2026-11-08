@@ -60,9 +60,12 @@ export function readSchoolSettingsDemo(defaultAcademicYearId = ""): SchoolSettin
       !["DD/MM/YYYY", "YYYY-MM-DD"].includes(row.dateFormat ?? "") ||
       !["24h", "12h"].includes(row.timeFormat ?? "") ||
       !["fr-FR", "en-US"].includes(row.numberFormat ?? "") ||
-      !Number.isInteger(row.firstDayOfWeek) || !Array.isArray(row.workingDays) ||
-      typeof row.openingTime !== "string" || typeof row.closingTime !== "string" ||
+      !Number.isInteger(row.firstDayOfWeek) || (row.firstDayOfWeek as number) < 0 || (row.firstDayOfWeek as number) > 6 ||
+      !isValidTimeZone(row.timeZone) || !Array.isArray(row.workingDays) ||
+      row.workingDays.some(day => !Number.isInteger(day) || day < 0 || day > 6) ||
+      typeof row.openingTime !== "string" || !isTime(row.openingTime) || typeof row.closingTime !== "string" || !isTime(row.closingTime) ||
       typeof row.updatedAt !== "string" || typeof row.updatedBy !== "string") throw new Error();
+    if (new Set(row.workingDays).size !== row.workingDays.length || row.workingDays.length === 0 || Boolean(row.openingTime) !== Boolean(row.closingTime) || (row.openingTime && row.closingTime && row.closingTime <= row.openingTime)) throw new Error();
     return row as SchoolSettingsDemo;
   } catch {
     throw new Error("Les paramètres locaux sont illisibles ou incomplets. Aucune valeur par défaut n’a été appliquée automatiquement.");
