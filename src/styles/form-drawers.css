@@ -110,3 +110,38 @@
     transition: none;
   }
 }
+
+
+/* Portaled drawers are attached to document.body, so they cannot inherit the
+   sidebar width from .sidebar-demo. The app publishes the live width on :root. */
+.sp-drawer-overlay:has(form) {
+  position: fixed !important;
+  inset-block: var(--ds-header-height) var(--ds-statusbar-height) !important;
+  inset-inline: var(--app-sidebar-width, var(--ds-sidebar-width)) 0 !important;
+  z-index: var(--ds-layer-dialog);
+  display: flex !important;
+  align-items: stretch !important;
+  justify-content: flex-end !important;
+  padding: 0 !important;
+}
+.sp-drawer-overlay:has(form) > .sp-drawer {
+  position: relative !important;
+  display: flex !important;
+  flex: 0 0 min(var(--ds-form-drawer-width), 100%) !important;
+  width: min(var(--ds-form-drawer-width), 100%) !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  margin: 0 0 0 auto !important;
+  overflow: auto !important;
+  border-radius: 0 !important;
+}
+@media (max-width: 1100px) {
+  .sp-drawer-overlay:has(form) { inset-inline-start: 0 !important; }
+}
+@media (max-width: 640px) {
+  .sp-drawer-overlay:has(form) { inset-block: 0 !important; }
+  .sp-drawer-overlay:has(form) > .sp-drawer {
+    flex-basis: 100% !important;
+    width: 100% !important;
+  }
+}
