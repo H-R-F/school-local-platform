@@ -39,7 +39,7 @@ button{cursor:pointer;transition:background-color var(--transition-fast,150ms ea
 .nav-item--active svg{color:var(--school-primary)}
 .nav-item:focus-visible,.nav-group-heading:focus-visible,.sidebar-collapse-button:focus-visible{outline:2px solid var(--school-primary);outline-offset:2px}
 .nav-empty{padding:var(--space-3) var(--space-2);color:var(--color-sidebar-muted);font-size:var(--text-sm)}
-.sidebar-footer{display:flex;align-items:center;gap:var(--space-2);min-height:64px;padding:var(--space-2) var(--space-4);border-top:1px solid var(--color-border)}
+.sidebar-footer{display:flex;align-items:center;gap:var(--space-2);min-height:64px;padding:var(--space-2) var(--space-4);border-top:var(--ds-border-width) solid var(--color-border)}
 .sidebar-user-avatar{display:grid;place-items:center;width:34px;height:34px;flex:0 0 34px;color:var(--color-sidebar-border);font-size:var(--text-sm);font-weight:var(--weight-semibold);background:var(--color-primary-soft);border-radius:50%}
 .sidebar-user-copy{display:flex;flex-direction:column;min-width:0;gap:var(--space-1)}
 .sidebar-user-copy strong{overflow:hidden;color:var(--color-sidebar-border);font-size:var(--text-sm);font-weight:var(--weight-semibold);text-overflow:ellipsis;white-space:nowrap}
@@ -969,7 +969,7 @@ button{cursor:pointer;transition:background-color var(--transition-fast,150ms ea
 /* Filières et programmes — simplified content hierarchy */
 .sp-page .sp-header{align-items:center;margin-bottom:var(--space-4)}
 .sp-page .sp-header p{max-width:var(--ds-content-reading-width);margin-top:var(--space-1)}
-.sp-page .sp-workspace{grid-template-columns:minmax(16rem,19rem) minmax(0,1fr);gap:var(--space-3);min-height:0}
+.sp-page .sp-workspace{grid-template-columns:minmax(var(--ds-sector-sidebar-min-width),var(--ds-sector-sidebar-max-width)) minmax(0,1fr);gap:var(--space-3);min-height:0}
 .sp-page .sp-sector-column{max-height:calc(100vh - var(--ds-sector-panel-viewport-offset));min-height:0}
 .sp-page .sp-sector-heading{padding:var(--space-3)}
 .sp-page .sp-sector-heading h2{font-size:var(--text-base)}
@@ -1008,14 +1008,14 @@ button{cursor:pointer;transition:background-color var(--transition-fast,150ms ea
 .sp-page .sp-modal-actions .sp-button{min-height:var(--ds-control-height)}
 @media(max-width:1050px){
   .sp-page .sp-workspace{grid-template-columns:minmax(0,1fr)}
-  .sp-page .sp-sector-column{max-height:28rem;min-height:0}
-  .sp-page .sp-sector-list{max-height:20rem}
+  .sp-page .sp-sector-column{max-height:var(--ds-sector-panel-mobile-max-height);min-height:0}
+  .sp-page .sp-sector-list{max-height:var(--ds-sector-list-mobile-max-height)}
 }
 @media(max-width:560px){
   .sp-page .sp-workspace{gap:var(--space-2)}
   .sp-page .sp-program-header{align-items:stretch}
   .sp-page .sp-program-actions{justify-content:flex-start}
   .sp-page .sp-program-content{padding:var(--space-3)}
-  .sp-page .sp-program-table{min-width:40rem}
+  .sp-page .sp-program-table{min-width:var(--ds-program-table-min-width)}
   .sp-page .sp-page-footer{align-items:flex-start}
 }
