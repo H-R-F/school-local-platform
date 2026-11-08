@@ -68,3 +68,12 @@ No browser rendering, build, TypeScript compilation, screen-reader test, keyboar
 - Removed this page from the shared generic page normalization selectors so the redesigned typography, spacing, and background are not overridden by broad `!important` rules.
 - Kept the application shell responsible for sidebar offset and page padding.
 - No repository calls, permission checks, data structures, validation rules, or CRUD/status workflows were changed.
+
+
+## 2026-11-08 — Sector/programme forms moved to a right-side drawer
+
+- Create and edit flows for both filières and programmes now open in the same right-side drawer pattern instead of a centered modal.
+- The drawer has a sticky heading/close control and sticky bottom action row; content scrolls inside the drawer.
+- At narrow mobile widths, the drawer becomes a full-width sheet.
+- Read-only detail views and status confirmation prompts remain centered dialogs because they are not data-entry forms.
+- Form submit handlers, validation, permissions, and repository calls remain unchanged.
