@@ -16,7 +16,7 @@ export const ACADEMIC_POLICY_DEMO_KEY = "school-academic-policy-demo-v1";
 export const defaultAcademicPolicyDemo = (): AcademicPolicyDemo => ({
   gradingScale: 20, decimals: 2, rounding: "math", passingGrade: 10,
   missingGrade: "exclude", unassessed: "exclude", averageMode: "weighted",
-  missingAverage: "exclude", calculationDecimals: 4, periodModel: "semesters",
+  missingAverage: "exclude", calculationDecimals: 4,
   updatedAt: "", updatedBy: ""
 });
 export function validateAcademicPolicyDemo(value: AcademicPolicyDemo): string[] {
