@@ -39,7 +39,7 @@ The 49 route entries are from `src/data/navigation.ts`. Page components are sele
 | Top bar | `src/components/shell/TopBar.tsx` | FIXED | Account menu now supports focus entry, Escape, ArrowUp/ArrowDown, Home/End and existing actions. Runtime keyboard check pending. |
 | Status bar | `src/components/shell/StatusBar.tsx` | FIXED | Disclosure semantics and Escape focus return added; copy now distinguishes browser connectivity from simulated infrastructure values. Runtime/offline checks pending. |
 | Command palette | `src/components/shell/CommandPalette.tsx` | FIXED | Dialog labelling, combobox/listbox semantics, focus entry/containment/return, arrow selection, Enter and empty results reviewed in source. Runtime screen-reader/keyboard check pending. |
-| Shared shell styles | `src/components/shell/shell.css`, `src/design-system.css`, `src/styles/tokens.css` | FIXED | Duplicate sidebar override blocks removed; canonical shell stylesheet imported last and uses semantic tokens. Rendered contrast/responsive checks pending. |
+| Shared shell styles | `src/components/shell/shell.css`, `src/design-system.css`, `src/styles/tokens.css` | FIXED | Duplicate sidebar override blocks removed; canonical shell stylesheet imported last and uses semantic tokens. Source scan found no literal hex/RGB/HSL colors or component dimensions in shell CSS; viewport breakpoints remain. Rendered contrast/responsive checks pending. |
 
 ### 2. Authentication
 
