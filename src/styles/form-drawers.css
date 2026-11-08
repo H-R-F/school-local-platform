@@ -17,12 +17,14 @@
 /* Actual application overlays use *-modal-backdrop / *-modal-overlay /
    *-dialog-backdrop naming. Match the real naming convention rather than
    relying on the unrelated word "overlay" in every class. */
-:is([class*="modal-backdrop"], [class*="modal-overlay"], [class*="dialog-backdrop"]):has(form) {
+:is([class*="overlay"], [class*="modal-backdrop"], [class*="dialog-backdrop"]):has(form) {
   position: fixed;
   inset-block-start: var(--ds-header-height);
   inset-block-end: var(--ds-statusbar-height);
-  inset-inline-start: var(--sidebar-w, var(--ds-sidebar-width));
-  inset-inline-end: 0;
+  inset-inline-start: 0;
+  /* Some page shells constrain the overlay to the content column. Extend it
+     by the live navigation width so the panel still reaches the viewport edge. */
+  inset-inline-end: calc(-1 * var(--sidebar-w, var(--ds-sidebar-width)));
   z-index: var(--ds-layer-dialog);
   display: flex;
   align-items: stretch;
@@ -30,10 +32,10 @@
   padding: 0;
   background: var(--ds-form-drawer-backdrop);
   backdrop-filter: blur(2px);
-  transition: inset-inline-start var(--ds-motion-fast);
+  transition: inset-inline-start var(--ds-motion-fast), inset-inline-end var(--ds-motion-fast);
 }
-:is([class*="modal-backdrop"], [class*="modal-overlay"], [class*="dialog-backdrop"]):has(form) > :is(section, form, [role="dialog"]):has(form),
-:is([class*="modal-backdrop"], [class*="modal-overlay"], [class*="dialog-backdrop"]):has(> form) > form {
+:is([class*="overlay"], [class*="modal-backdrop"], [class*="dialog-backdrop"]):has(form) > :is(section, form, [role="dialog"]):has(form),
+:is([class*="overlay"], [class*="modal-backdrop"], [class*="dialog-backdrop"]):has(> form) > form {
   position: relative;
   display: flex;
   flex: 0 0 min(var(--ds-form-drawer-width), 100%);
@@ -53,14 +55,14 @@
   box-shadow: var(--ds-form-drawer-shadow);
   animation: ds-form-drawer-enter var(--ds-motion-fast) both;
 }
-:is([class*="modal-backdrop"], [class*="modal-overlay"], [class*="dialog-backdrop"]):has(form) > :is(section, [role="dialog"]):has(form) > form {
+:is([class*="overlay"], [class*="modal-backdrop"], [class*="dialog-backdrop"]):has(form) > :is(section, [role="dialog"]):has(form) > form {
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
   min-height: 0;
   overflow: auto;
 }
-:is([class*="modal-backdrop"], [class*="modal-overlay"], [class*="dialog-backdrop"]):has(form) form > :is([class*="actions"], [class*="foot"], [class*="footer"]) {
+:is([class*="overlay"], [class*="modal-backdrop"], [class*="dialog-backdrop"]):has(form) form > :is([class*="actions"], [class*="foot"], [class*="footer"]) {
   position: sticky;
   bottom: 0;
   z-index: 1;
@@ -69,12 +71,12 @@
   background: var(--ds-color-surface-raised);
   border-top: var(--ds-border-width) solid var(--ds-color-border-default);
 }
-:is([class*="modal-backdrop"], [class*="modal-overlay"], [class*="dialog-backdrop"]):has(form) :is(input, select, textarea) { max-width: 100%; }
-:is([class*="modal-backdrop"], [class*="modal-overlay"], [class*="dialog-backdrop"]):has(form) :is(button, input, select, textarea, a):focus-visible {
+:is([class*="overlay"], [class*="modal-backdrop"], [class*="dialog-backdrop"]):has(form) :is(input, select, textarea) { max-width: 100%; }
+:is([class*="overlay"], [class*="modal-backdrop"], [class*="dialog-backdrop"]):has(form) :is(button, input, select, textarea, a):focus-visible {
   outline: var(--ds-focus-width) solid var(--ds-focus-ring-color, var(--ds-color-action-primary));
   outline-offset: var(--ds-focus-offset);
 }
-:is([class*="modal-backdrop"], [class*="modal-overlay"], [class*="dialog-backdrop"]):has(form) :is(button, input, select) {
+:is([class*="overlay"], [class*="modal-backdrop"], [class*="dialog-backdrop"]):has(form) :is(button, input, select) {
   min-height: var(--ds-control-height);
 }
 @keyframes ds-form-drawer-enter {
@@ -85,24 +87,25 @@
 /* At narrow widths the navigation rail becomes an overlay/collapsed control;
    let the form use the complete available viewport below the app header. */
 @media (max-width: 1100px) {
-  :is([class*="modal-backdrop"], [class*="modal-overlay"], [class*="dialog-backdrop"]):has(form) {
+  :is([class*="overlay"], [class*="modal-backdrop"], [class*="dialog-backdrop"]):has(form) {
     inset-inline-start: 0;
+    inset-inline-end: 0;
   }
 }
 @media (max-width: 640px) {
-  :is([class*="modal-backdrop"], [class*="modal-overlay"], [class*="dialog-backdrop"]):has(form) {
+  :is([class*="overlay"], [class*="modal-backdrop"], [class*="dialog-backdrop"]):has(form) {
     inset-block-start: 0;
     inset-block-end: 0;
   }
-  :is([class*="modal-backdrop"], [class*="modal-overlay"], [class*="dialog-backdrop"]):has(form) > :is(section, form, [role="dialog"]):has(form),
-  :is([class*="modal-backdrop"], [class*="modal-overlay"], [class*="dialog-backdrop"]):has(> form) > form {
+  :is([class*="overlay"], [class*="modal-backdrop"], [class*="dialog-backdrop"]):has(form) > :is(section, form, [role="dialog"]):has(form),
+  :is([class*="overlay"], [class*="modal-backdrop"], [class*="dialog-backdrop"]):has(> form) > form {
     flex-basis: 100%;
     width: var(--ds-form-drawer-mobile-width);
     border-inline-start: 0;
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  :is([class*="modal-backdrop"], [class*="modal-overlay"], [class*="dialog-backdrop"]):has(form) > :is(section, form, [role="dialog"]) {
+  :is([class*="overlay"], [class*="modal-backdrop"], [class*="dialog-backdrop"]):has(form) > :is(section, form, [role="dialog"]) {
     animation: none;
     transition: none;
   }
