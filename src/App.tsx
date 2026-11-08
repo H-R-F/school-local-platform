@@ -218,7 +218,7 @@ export default function App() {
       ) : isEmployeesPage ? (
         <EmployeesPage user={user} onNavigate={navigate} />
       ) : isEmployeeManagementPage ? (
-        <EmployeeManagementPage user={user} />
+        <EmployeeManagementPage user={user} onNavigate={navigate} />
       ) : isRolesPermissionsPage ? (
         <RolesPermissionsPage user={user} onNavigate={navigate} />
       ) : isGradesValidationPage ? (
