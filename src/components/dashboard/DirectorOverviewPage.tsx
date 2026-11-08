@@ -1,16 +1,11 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
-  Activity, AlertTriangle, ArrowRight, ArrowUpRight, Banknote, BookOpenCheck,
-  CalendarDays, CheckCircle2, Clock3, GraduationCap, LayoutDashboard,
-  ShieldAlert, Users, Wallet, X,
+  AlertCircle, ArrowRight, BookOpen, CalendarDays, CheckCircle2, Clock3,
+  FileCheck2, GraduationCap, LayoutDashboard, RefreshCw, Search, ShieldAlert,
+  Users, Wallet,
 } from "lucide-react";
-import {
-  academicLevels, dashboardRangeOptions,
-  financialSummary, importantAlerts, recentActivities, revenueByRange,
-  studentsAtRisk, type DashboardRange,
-} from "../../data/director-dashboard";
+import { studentsRepository, type StudentRecord, type StudentsData } from "../../services/students";
 import type { AuthenticatedSidebarUser } from "../../types/navigation";
-import { DirectorTaskCenter } from "./DirectorTaskCenter";
 import "./DirectorOverviewPage.css";
 
 interface Props {
@@ -18,25 +13,40 @@ interface Props {
   onNavigate: (route: string) => void;
 }
 
-const number = (value: number) => new Intl.NumberFormat("fr-FR").format(value);
-const todayLabel = () => new Intl.DateTimeFormat("fr-FR", {
-  weekday: "long", day: "numeric", month: "long", year: "numeric",
-}).format(new Date());
+type FollowUp = {
+  id: string;
+  title: string;
+  detail: string;
+  reason: string;
+  route: string;
+  tone: "warning" | "danger" | "info";
+};
 
-function SectionTitle({ eyebrow, title, action }: {
+const formatNumber = (value: number) => new Intl.NumberFormat("fr-FR").format(value);
+const formatDate = (value: string) => {
+  if (!value) return "—";
+  const date = new Date(value);
+  return Number.isNaN(date.getTime())
+    ? "—"
+    : new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short", year: "numeric" }).format(date);
+};
+const initials = (student: StudentRecord) =>
+  (student.firstName.slice(0, 1) + student.lastName.slice(0, 1)).toLocaleUpperCase("fr-FR");
+
+function SectionHeading({ eyebrow, title, action }: {
   eyebrow: string;
   title: string;
-  action?: { label: string; run: () => void };
+  action?: { label: string; onClick: () => void };
 }) {
   return (
-    <div className="director-section-title">
+    <div className="director-section-heading">
       <div><span>{eyebrow}</span><h2>{title}</h2></div>
-      {action && <button type="button" onClick={action.run}>{action.label}<ArrowRight size={15}/></button>}
+      {action && <button type="button" onClick={action.onClick}>{action.label}<ArrowRight size={15}/></button>}
     </div>
   );
 }
 
-function MetricCard({ label, value, detail, icon: Icon, tone, onClick }: {
+function Metric({ label, value, detail, icon: Icon, tone, onClick }: {
   label: string;
   value: string;
   detail: string;
@@ -53,152 +63,222 @@ function MetricCard({ label, value, detail, icon: Icon, tone, onClick }: {
   );
 }
 
-function AttendancePanel({ onNavigate }: { onNavigate: (route: string) => void }) {
-  const total = 1248;
-  const present = 1176;
-  const absent = 49;
-  const late = 23;
-  return (
-    <article className="director-panel">
-      <SectionTitle eyebrow="VIE SCOLAIRE · AUJOURD’HUI" title="Présence des élèves"
-        action={{ label: "Ouvrir les présences", run: () => onNavigate("/student-attendance") }}/>
-      <div className="director-attendance-main">
-        <div><strong>94,2<span>%</span></strong><small>Taux de présence</small></div>
-        <div className="director-attendance-track" role="img" aria-label="94,2 % présents, 3,9 % absents, 1,9 % en retard">
-          <span className="is-present" style={{ width: "94.2%" }}/><span className="is-absent" style={{ width: "3.9%" }}/><span className="is-late" style={{ width: "1.9%" }}/>
-        </div>
-      </div>
-      <div className="director-attendance-breakdown">
-        <div><i className="is-present"/><span>Présents</span><strong>{number(present)}</strong></div>
-        <div><i className="is-absent"/><span>Absents</span><strong>{number(absent)}</strong></div>
-        <div><i className="is-late"/><span>En retard</span><strong>{number(late)}</strong></div>
-      </div>
-      <div className="director-panel-footnote">Sur {number(total)} élèves inscrits · chiffres simulés pour la démonstration</div>
-    </article>
+function buildFollowUps(data: StudentsData): FollowUp[] {
+  const followUps: FollowUp[] = [];
+  const active = data.students.filter(student => student.enrollment?.status === "Actif");
+  const pendingEnrollments = data.students.filter(student => student.enrollment?.status === "En attente");
+  const suspendedEnrollments = data.students.filter(student => student.enrollment?.status === "Suspendu");
+  const incompleteDocuments = active.filter(student =>
+    student.documents.length === 0 || student.documents.some(document => document.status !== "Vérifié")
   );
+  const withoutGuardian = active.filter(student => student.guardiansResolved.length === 0);
+
+  if (pendingEnrollments.length) {
+    followUps.push({
+      id: "pending-enrollments",
+      title: "Inscriptions en attente",
+      detail: `${formatNumber(pendingEnrollments.length)} dossier(s) nécessitent une vérification administrative.`,
+      reason: "Inscription",
+      route: "/students",
+      tone: "warning",
+    });
+  }
+  if (incompleteDocuments.length) {
+    followUps.push({
+      id: "incomplete-documents",
+      title: "Pièces justificatives à vérifier",
+      detail: `${formatNumber(incompleteDocuments.length)} dossier(s) actif(s) contiennent des pièces manquantes ou non vérifiées.`,
+      reason: "Documents",
+      route: "/students",
+      tone: "danger",
+    });
+  }
+  if (withoutGuardian.length) {
+    followUps.push({
+      id: "missing-guardian",
+      title: "Responsable légal non renseigné",
+      detail: `${formatNumber(withoutGuardian.length)} élève(s) actif(s) sans parent ou tuteur associé.`,
+      reason: "Dossier élève",
+      route: "/students",
+      tone: "warning",
+    });
+  }
+  if (suspendedEnrollments.length) {
+    followUps.push({
+      id: "suspended-enrollments",
+      title: "Inscriptions suspendues",
+      detail: `${formatNumber(suspendedEnrollments.length)} dossier(s) ont un statut suspendu.`,
+      reason: "Inscription",
+      route: "/students",
+      tone: "info",
+    });
+  }
+  return followUps;
 }
 
 export function DirectorOverviewPage({ user, onNavigate }: Props) {
-  const [range, setRange] = useState<DashboardRange>("30");
-  const [showDemoNotice, setShowDemoNotice] = useState(true);
-  const firstName = user.displayName.split(" ")[0];
-  const hour = new Date().getHours();
-  const greeting = hour < 12 ? "Bonjour" : hour < 18 ? "Bon après-midi" : "Bonsoir";
-  const activities = useMemo(() => recentActivities.filter(item => item.daysAgo <= Number(range)).slice(0, 5), [range]);
-  const revenue = revenueByRange[range];
-  const maxRevenue = Math.max(...revenue.map(item => item.amount), 1);
-  const average = "14,6";
-  const riskCount = studentsAtRisk.filter(item => item.status !== "Résolu").length;
-  const periodLabel = range === "7" ? "7 derniers jours" : range === "30" ? "30 derniers jours" : "90 derniers jours";
+  const canViewStudents = user.permissions.includes("people.students.view");
+  const [data, setData] = useState<StudentsData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [yearId, setYearId] = useState("");
+  const [query, setQuery] = useState("");
+
+  const load = () => {
+    if (!canViewStudents) {
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    setError("");
+    studentsRepository.list()
+      .then(result => {
+        setData(result);
+        setYearId(current => current || result.academicYears.find(year => year.status === "Active")?.id || result.academicYears[0]?.id || "");
+      })
+      .catch(reason => setError(reason instanceof Error ? reason.message : "Impossible de charger les données de l’établissement."))
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => { load(); }, [canViewStudents]);
+
+  const selectedYear = data?.academicYears.find(year => year.id === yearId) ?? null;
+  const yearStudents = useMemo(
+    () => (data?.students ?? []).filter(student => student.enrollment?.academicYearId === yearId),
+    [data, yearId],
+  );
+  const activeStudents = yearStudents.filter(student => student.enrollment?.status === "Actif");
+  const pendingStudents = yearStudents.filter(student => student.enrollment?.status === "En attente");
+  const suspendedStudents = yearStudents.filter(student => student.enrollment?.status === "Suspendu");
+  const withdrawnStudents = yearStudents.filter(student => student.enrollment?.status === "Retiré");
+  const incompleteDocuments = activeStudents.filter(student =>
+    student.documents.length === 0 || student.documents.some(document => document.status !== "Vérifié")
+  );
+  const activeClasses = (data?.classes ?? []).filter(item => item.academicYearId === yearId && item.status === "Actif");
+  const activeLevels = useMemo(() => {
+    const grouped = new Map<string, { label: string; students: number; classes: Set<string> }>();
+    activeStudents.forEach(student => {
+      const label = student.cycleName || student.levelName || "Niveau non affecté";
+      const current = grouped.get(label) ?? { label, students: 0, classes: new Set<string>() };
+      current.students += 1;
+      if (student.enrollment?.classId) current.classes.add(student.enrollment.classId);
+      grouped.set(label, current);
+    });
+    return [...grouped.values()].map(item => ({ ...item, classes: item.classes.size })).sort((a, b) => a.label.localeCompare(b.label, "fr"));
+  }, [activeStudents]);
+  const followUps = useMemo(() => buildFollowUps({ ...(data as StudentsData), students: yearStudents }), [data, yearStudents]);
+  const recentStudents = useMemo(
+    () => [...yearStudents].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 5),
+    [yearStudents],
+  );
+  const filteredStudents = useMemo(() => {
+    const term = query.trim().toLocaleLowerCase("fr-FR");
+    if (!term) return recentStudents;
+    return yearStudents.filter(student =>
+      [student.firstName, student.lastName, student.code, student.className]
+        .some(value => value.toLocaleLowerCase("fr-FR").includes(term))
+    ).slice(0, 6);
+  }, [query, recentStudents, yearStudents]);
+
+  const greeting = new Date().getHours() < 12 ? "Bonjour" : new Date().getHours() < 18 ? "Bon après-midi" : "Bonsoir";
+  const firstName = user.displayName.trim().split(/\s+/)[0] || "Directeur";
+  const today = new Intl.DateTimeFormat("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(new Date());
+
+  if (!user.permissions.includes("overview.view")) {
+    return <main className="director-dashboard"><div className="director-access"><ShieldAlert size={24}/><h1>Accès non autorisé</h1><p>Votre compte ne dispose pas de l’autorisation nécessaire pour consulter le tableau de bord.</p></div></main>;
+  }
 
   return (
     <main className="director-dashboard">
       <header className="director-welcome">
         <div className="director-welcome-copy">
           <div className="director-breadcrumb"><LayoutDashboard size={14}/> Direction <span>/</span> Tableau de bord</div>
-          <div className="director-title-row"><div><h1>Tableau de bord</h1><p>{greeting} {firstName}, voici les points essentiels de votre établissement.</p></div></div>
-          <div className="director-context"><span><CalendarDays size={14}/> Année scolaire 2026–2027</span><span>{todayLabel()}</span></div>
+          <h1>Tableau de bord</h1>
+          <p>{greeting} {firstName}, voici la situation de votre établissement.</p>
+          <div className="director-context"><span><CalendarDays size={14}/>{selectedYear?.name ?? "Année scolaire non définie"}</span><span>{today}</span></div>
         </div>
-        <label className="director-period"><span>Période d’analyse</span><select value={range} onChange={event => setRange(event.target.value as DashboardRange)}>{dashboardRangeOptions.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
+        <label className="director-period"><span>Année scolaire</span><select value={yearId} onChange={event => setYearId(event.target.value)} disabled={!data?.academicYears.length}>
+          {(data?.academicYears ?? []).map(year => <option key={year.id} value={year.id}>{year.name}</option>)}
+        </select></label>
       </header>
 
-      {showDemoNotice && (
-        <div className="director-demo-notice" role="status">
-          <span><AlertTriangle size={17}/><span><strong>Mode démonstration</strong> — Les indicateurs de cette page sont fictifs. Les données ne sont pas encore consolidées depuis une base centrale.</span></span>
-          <button type="button" onClick={() => setShowDemoNotice(false)} aria-label="Masquer l’avertissement"><X size={16}/></button>
-        </div>
-      )}
+      <div className="director-source-banner">
+        <span><CheckCircle2 size={16}/><strong>Données locales de l’établissement</strong></span>
+        <p>Les indicateurs de scolarité proviennent des dossiers élèves et des inscriptions enregistrés dans ce navigateur. Ils ne sont pas synchronisés avec un serveur central.</p>
+      </div>
 
-      <section className="director-metrics" aria-label="Indicateurs clés de l’établissement">
-        <MetricCard label="Élèves inscrits" value="1 248" detail="1 216 actifs · 32 dossiers à vérifier" icon={GraduationCap} tone="blue" onClick={() => onNavigate("/students")}/>
-        <MetricCard label="Présence aujourd’hui" value="94,2 %" detail="49 absents · 23 retards" icon={Users} tone="green" onClick={() => onNavigate("/student-attendance")}/>
-        <MetricCard label="Suivis prioritaires" value="12" detail={`${riskCount} situations élèves ouvertes · autres alertes`} icon={ShieldAlert} tone="amber" onClick={() => onNavigate("/student-risk")}/>
-        <MetricCard label="Encaissements" value={financialSummary.collected} detail={`${financialSummary.comparison} par rapport à la période précédente`} icon={Wallet} tone="violet" onClick={() => onNavigate("/financial-reports")}/>
+      {error && <div className="director-error" role="alert"><AlertCircle size={17}/><span>{error}</span><button type="button" onClick={load}><RefreshCw size={14}/>Réessayer</button></div>}
+
+      <section className="director-metrics" aria-label="Indicateurs de scolarité">
+        <Metric label="Élèves inscrits actifs" value={loading ? "—" : formatNumber(activeStudents.length)} detail="Inscriptions actives pour l’année sélectionnée" icon={GraduationCap} tone="blue" onClick={() => onNavigate("/students")}/>
+        <Metric label="Classes actives" value={loading ? "—" : formatNumber(activeClasses.length)} detail="Classes ouvertes pour l’année sélectionnée" icon={BookOpen} tone="green" onClick={() => onNavigate("/classes-groups")}/>
+        <Metric label="Dossiers à vérifier" value={loading ? "—" : formatNumber(incompleteDocuments.length)} detail="Pièces manquantes ou non vérifiées" icon={FileCheck2} tone="amber" onClick={() => onNavigate("/students")}/>
+        <Metric label="Inscriptions en attente" value={loading ? "—" : formatNumber(pendingStudents.length)} detail={`${formatNumber(suspendedStudents.length)} suspendue(s) · ${formatNumber(withdrawnStudents.length)} retirée(s)`} icon={Users} tone="violet" onClick={() => onNavigate("/students")}/>
       </section>
 
-      <section className="director-priority-section">
-        <DirectorTaskCenter onNavigate={onNavigate}/>
-      </section>
-
-      <section className="director-content-grid director-content-grid--equal">
-        <AttendancePanel onNavigate={onNavigate}/>
-        <article className="director-panel director-alert-panel">
-          <SectionTitle eyebrow="POINTS DE VIGILANCE" title="Ce qui demande votre attention"
-            action={{ label: "Suivi des élèves", run: () => onNavigate("/student-risk") }}/>
-          <div className="director-alert-list">
-            {importantAlerts.map(alert => (
-              <div className={`director-alert director-alert--${alert.severity}`} key={alert.id}>
-                <span className="director-alert-icon">{alert.severity === "critical" ? <AlertTriangle size={17}/> : alert.severity === "warning" ? <ShieldAlert size={17}/> : <CalendarDays size={17}/>}</span>
-                <div><strong>{alert.title}</strong><p>{alert.description}</p></div>
-                <button type="button" onClick={() => onNavigate(alert.route)}>{alert.action}<ArrowRight size={14}/></button>
-              </div>
-            ))}
-          </div>
-        </article>
-      </section>
-
-      <section className="director-content-grid director-content-grid--wide-left">
-        <article className="director-panel">
-          <SectionTitle eyebrow="RÉSULTATS SCOLAIRES" title="Vue pédagogique"
-            action={{ label: "Rapports pédagogiques", run: () => onNavigate("/pedagogical-reports") }}/>
-          <div className="director-academic-summary"><div><strong>{average}<small>/20</small></strong><span>Moyenne générale simulée</span></div><span className="director-trend"><ArrowUpRight size={15}/> +0,4 pt</span></div>
-          <div className="director-chart-caption">Moyenne par niveau · sur 20</div>
-          <div className="director-level-bars">
-            {academicLevels.map(level => <div className="director-level-row" key={level.label}>
-              <span>{level.label}</span><div><i style={{ width: `${level.value / 20 * 100}%` }}/></div><strong>{level.value.toLocaleString("fr-FR")}</strong>
-            </div>)}
-          </div>
-          <div className="director-class-summary">
-            <div><span>Meilleure classe</span><strong>1re B · 15,8/20</strong></div>
-            <div><span>À accompagner</span><strong>4e A · 13,9/20</strong></div>
-          </div>
-          <div className="director-inline-link"><button type="button" onClick={() => onNavigate("/class-rankings")}>Comparer les classes<ArrowRight size={14}/></button></div>
+      <section className="director-main-grid">
+        <article className="director-panel director-panel--overview">
+          <SectionHeading eyebrow="STRUCTURE SCOLAIRE" title="Effectifs par cycle"/>
+          {loading ? <div className="director-loading">Chargement des effectifs…</div> : activeLevels.length ? (
+            <div className="director-level-list">
+              {activeLevels.map(level => {
+                const share = activeStudents.length ? Math.round(level.students / activeStudents.length * 100) : 0;
+                return <div className="director-level-row" key={level.label}>
+                  <div className="director-level-top"><strong>{level.label}</strong><span>{formatNumber(level.students)} élèves · {level.classes} classe(s)</span></div>
+                  <div className="director-level-track"><i style={{ width: `${share}%` }}/></div>
+                  <small>{share}% des inscriptions actives</small>
+                </div>;
+              })}
+            </div>
+          ) : <div className="director-empty-state">Aucun effectif actif pour cette année scolaire.</div>}
+          <div className="director-panel-footer"><span>{formatNumber(activeStudents.length)} inscription(s) active(s)</span><button type="button" onClick={() => onNavigate("/classes-groups")}>Gérer les classes<ArrowRight size={14}/></button></div>
         </article>
 
         <article className="director-panel">
-          <SectionTitle eyebrow="PILOTAGE FINANCIER" title="Situation financière"
-            action={{ label: "Rapports financiers", run: () => onNavigate("/financial-reports") }}/>
-          <div className="director-finance-list">
-            <div><span className="director-finance-icon is-income"><Banknote size={17}/></span><span><strong>Encaissements</strong><small>Montants reçus</small></span><b>{financialSummary.collected}</b></div>
-            <div><span className="director-finance-icon is-outstanding"><Clock3 size={17}/></span><span><strong>Reste à recouvrer</strong><small>127 dossiers concernés</small></span><b>{financialSummary.outstanding}</b></div>
-            <div><span className="director-finance-icon is-expense"><Activity size={17}/></span><span><strong>Dépenses enregistrées</strong><small>Charges de fonctionnement</small></span><b>{financialSummary.expenses}</b></div>
-          </div>
-          <div className="director-chart-caption">Évolution des recettes · milliers de DH · {periodLabel}</div>
-          <div className="director-revenue-chart" role="img" aria-label={revenue.map(item => `${item.label} : ${item.amount} milliers de dirhams`).join(", ")}>
-            {revenue.map(item => <div key={item.label}><strong>{item.amount}</strong><span><i style={{ height: `${item.amount / maxRevenue * 100}%` }}/></span><small>{item.label}</small></div>)}
+          <SectionHeading eyebrow="SUIVI ADMINISTRATIF" title="Points à examiner" action={{ label: "Ouvrir les élèves", onClick: () => onNavigate("/students") }}/>
+          {loading ? <div className="director-loading">Analyse des dossiers…</div> : followUps.length ? (
+            <div className="director-followups">
+              {followUps.map(item => <button type="button" className="director-followup" key={item.id} onClick={() => onNavigate(item.route)}>
+                <span className={`director-followup-icon director-followup-icon--${item.tone}`}>{item.tone === "danger" ? <AlertCircle size={17}/> : item.tone === "warning" ? <ShieldAlert size={17}/> : <Clock3 size={17}/>}</span>
+                <span className="director-followup-copy"><strong>{item.title}</strong><small>{item.detail}</small></span>
+                <span className="director-followup-count">{item.reason}</span>
+                <ArrowRight size={15}/>
+              </button>)}
+            </div>
+          ) : <div className="director-empty-state">Aucun suivi administratif calculé à partir des dossiers actuels.</div>}
+          <p className="director-panel-footnote">Les alertes sont déduites des statuts et documents présents dans les dossiers élèves. Elles ne remplacent pas un workflow de validation.</p>
+        </article>
+      </section>
+
+      <section className="director-main-grid director-main-grid--lower">
+        <article className="director-panel">
+          <SectionHeading eyebrow="DOSSIERS ÉLÈVES" title="Inscriptions récentes" action={{ label: "Tous les élèves", onClick: () => onNavigate("/students") }}/>
+          <label className="director-search"><Search size={15}/><input value={query} onChange={event => setQuery(event.target.value)} placeholder="Rechercher un élève, une référence ou une classe…"/></label>
+          {loading ? <div className="director-loading">Chargement des dossiers…</div> : filteredStudents.length ? (
+            <div className="director-student-list">
+              {filteredStudents.map(student => <button type="button" className="director-student-row" key={student.id} onClick={() => onNavigate("/students")}>
+                <span className="director-student-avatar">{initials(student)}</span>
+                <span className="director-student-copy"><strong>{student.firstName} {student.lastName}</strong><small>{student.code} · {student.className}</small></span>
+                <span className="director-student-status">{student.enrollment?.status ?? "Sans inscription"}</span>
+                <time>{formatDate(student.createdAt)}</time>
+                <ArrowRight size={14}/>
+              </button>)}
+            </div>
+          ) : <div className="director-empty-state">{query ? "Aucun élève ne correspond à cette recherche." : "Aucune inscription à afficher."}</div>}
+        </article>
+
+        <article className="director-panel director-modules-panel">
+          <SectionHeading eyebrow="PILOTAGE DE L’ÉTABLISSEMENT" title="Accès rapides"/>
+          <div className="director-module-links">
+            <button type="button" onClick={() => onNavigate("/student-attendance")}><span className="director-module-icon"><Users size={17}/></span><span><strong>Présences des élèves</strong><small>Relevé illustratif · saisie non connectée</small></span><ArrowRight size={15}/></button>
+            <button type="button" onClick={() => onNavigate("/pedagogical-reports")}><span className="director-module-icon"><BookOpen size={17}/></span><span><strong>Suivi pédagogique</strong><small>Rapports et résultats à consolider</small></span><ArrowRight size={15}/></button>
+            <button type="button" onClick={() => onNavigate("/financial-reports")}><span className="director-module-icon"><Wallet size={17}/></span><span><strong>Situation financière</strong><small>Consulter les données de démonstration du module</small></span><ArrowRight size={15}/></button>
+            <button type="button" onClick={() => onNavigate("/activity-history")}><span className="director-module-icon"><Clock3 size={17}/></span><span><strong>Historique des opérations</strong><small>Journal central non connecté</small></span><ArrowRight size={15}/></button>
           </div>
         </article>
       </section>
 
-      <section className="director-content-grid director-content-grid--wide-left">
-        <article className="director-panel">
-          <SectionTitle eyebrow="ACCOMPAGNEMENT DES ÉLÈVES" title="Situations à suivre"
-            action={{ label: "Ouvrir le suivi", run: () => onNavigate("/student-risk") }}/>
-          <div className="director-risk-list">
-            {studentsAtRisk.slice(0, 3).map(student => <button type="button" className="director-risk-row" key={student.id} onClick={() => onNavigate(`/student-risk?student=${student.id}`)}>
-              <span className={`director-risk-avatar director-risk-avatar--${student.tone}`}>{student.initials}</span>
-              <span className="director-risk-copy"><strong>{student.name}</strong><small>{student.className} · {student.reason}</small></span>
-              <span className={`director-risk-status director-risk-status--${student.tone}`}>{student.status}</span>
-              <ArrowRight size={15}/>
-            </button>)}
-          </div>
-          <div className="director-panel-footnote">Exemples fictifs · consulter le dossier complet dans le module de suivi</div>
-        </article>
-        <article className="director-panel">
-          <SectionTitle eyebrow="VIE DE L’ÉTABLISSEMENT" title="Activité récente"
-            action={{ label: "Tout l’historique", run: () => onNavigate("/activity-history") }}/>
-          <div className="director-activity-list">
-            {activities.map(item => <div className="director-activity-row" key={item.id}>
-              <span className={`director-activity-icon director-activity-icon--${item.type}`}>{item.type === "payment" ? <Banknote size={15}/> : item.type === "grade" ? <CheckCircle2 size={15}/> : item.type === "attendance" ? <CalendarDays size={15}/> : item.type === "course" ? <BookOpenCheck size={15}/> : <GraduationCap size={15}/>}</span>
-              <span><strong>{item.title}</strong><small>{item.description}</small></span>
-              <time>{item.daysAgo === 0 ? "Aujourd’hui" : item.daysAgo === 1 ? "Hier" : `Il y a ${item.daysAgo} j`} · {item.time}</time>
-            </div>)}
-            {activities.length === 0 && <p className="director-empty">Aucune activité sur cette période.</p>}
-          </div>
-        </article>
-      </section>
-
-      <footer className="director-footer"><span>Direction · Tableau de bord</span><span>Données de démonstration · Période : {periodLabel}</span></footer>
+      <footer className="director-footer"><span>Direction · Tableau de bord</span><span>{data ? `Source : dossiers élèves locaux · ${formatNumber(yearStudents.length)} dossier(s) sur l’année sélectionnée` : "Source des indicateurs indisponible"}</span></footer>
     </main>
   );
 }
