@@ -100,9 +100,12 @@
   --ds-command-max-height:70vh;
   --ds-letter-spacing-label:.06em;
   --ds-letter-spacing-overline:.08em;
+  --ds-letter-spacing-none:0;
   --ds-line-height-tight:1;
   --ds-disabled-opacity:.55;
   --ds-active-filter:brightness(.96);
+  --ds-layer-control:2;
+  --ds-layer-banner:25;
   --ds-layer-topbar:30;
   --ds-layer-sidebar:35;
   --ds-layer-menu:45;
