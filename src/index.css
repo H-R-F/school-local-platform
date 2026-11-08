@@ -807,9 +807,7 @@ button{cursor:pointer;transition:background-color var(--transition-fast,150ms ea
   --sp-positive-soft:var(--ds-color-success-subtle);
   --sp-negative:var(--ds-color-error);
   --sp-negative-soft:var(--ds-color-error-subtle);
-  margin-left:var(--ds-sidebar-width);
   min-height:100vh;
-  padding:var(--ds-space-8);
   color:var(--sp-ink);
   background:var(--sp-canvas);
   font-family:var(--ds-font-sans);
@@ -1265,14 +1263,13 @@ button{cursor:pointer;transition:background-color var(--transition-fast,150ms ea
   .sp-page--redesign .sp-workspace{grid-template-columns:minmax(var(--ds-sector-sidebar-min-width),var(--ds-sector-sidebar-max-width)) minmax(0,1fr);gap:var(--ds-space-3)}
 }
 @media(max-width:62rem){
-  .sp-page--redesign{margin-left:var(--ds-sidebar-collapsed-width)}
   .sp-page--redesign .sp-workspace{grid-template-columns:minmax(0,1fr);min-height:0}
   .sp-page--redesign .sp-sector-column{max-height:var(--ds-sector-panel-mobile-max-height);min-height:0}
   .sp-page--redesign .sp-sector-list{max-height:var(--ds-sector-list-mobile-max-height)}
   .sp-page--redesign .sp-program-column{min-height:0}
 }
 @media(max-width:40rem){
-  .sp-page--redesign{padding:var(--ds-space-4)}
+  .sp-page--redesign{font-size:var(--ds-font-body-mobile)}
   .sp-page--redesign .sp-header{align-items:flex-start;flex-direction:column;margin-bottom:var(--ds-space-5)}
   .sp-page--redesign .sp-header h1{font-size:var(--ds-font-h1);line-height:var(--ds-line-h1)}
   .sp-page--redesign .sp-header>.sp-button{width:100%}
@@ -1280,6 +1277,7 @@ button{cursor:pointer;transition:background-color var(--transition-fast,150ms ea
   .sp-page--redesign .sp-program-actions{width:100%;justify-content:flex-end}
   .sp-page--redesign .sp-program-content{padding:var(--ds-space-4)}
   .sp-page--redesign .sp-program-table{min-width:var(--ds-program-table-min-width)}
+  .sp-page--redesign .sp-form input,.sp-page--redesign .sp-form select,.sp-page--redesign .sp-search input,.sp-page--redesign .sp-filter-select select{font-size:var(--ds-font-body-mobile)}
   .sp-page--redesign .sp-overlay{padding:var(--ds-space-3)}
   .sp-page--redesign .sp-modal{padding:var(--ds-space-4)}
   .sp-page--redesign .sp-modal-actions{flex-wrap:wrap}
