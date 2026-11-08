@@ -1302,12 +1302,12 @@ button{cursor:pointer;transition:background-color var(--transition-fast,150ms ea
   overflow:auto;
   border-radius:var(--ds-radius-xl) 0 0 var(--ds-radius-xl);
   border-inline-end:0;
-  animation:sp-drawer-in var(--ds-motion-normal) var(--ds-ease-out);
+  animation:sp-drawer-in var(--ds-motion-fast);
 }
 .sp-page--redesign .sp-drawer .sp-modal-heading{
   position:sticky;
   top:calc(-1 * var(--ds-space-6));
-  z-index:var(--ds-layer-sticky);
+  z-index:var(--ds-layer-control);
   margin:calc(-1 * var(--ds-space-6)) calc(-1 * var(--ds-space-6)) var(--ds-space-5);
   padding:var(--ds-space-6) var(--ds-space-12) var(--ds-space-5) var(--ds-space-6);
   background:var(--sp-surface);
