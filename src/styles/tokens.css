@@ -103,6 +103,11 @@
   --ds-sector-panel-mobile-max-height:28rem;
   --ds-sector-list-mobile-max-height:20rem;
   --ds-program-table-min-width:40rem;
+  --ds-sector-workspace-min-height:36rem;
+  --ds-sector-empty-state-min-height:18rem;
+  --ds-sector-textarea-min-height:6rem;
+  --ds-dialog-max-width:42rem;
+  --ds-motion-spin:800ms;
   --ds-command-top-offset:12vh;
   --ds-command-max-height:70vh;
   --ds-letter-spacing-label:.06em;
