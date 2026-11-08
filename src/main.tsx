@@ -12,9 +12,10 @@ import "@fontsource/jetbrains-mono/latin-500.css";
 import "./styles/theme.css";
 import "./index.css";
 import "./design-system.css";
+import "./components/shell/shell.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <App />
   </React.StrictMode>,
-);import "./components/shell/shell.css";
+);
