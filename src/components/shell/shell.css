@@ -247,7 +247,7 @@ kbd { display:inline-flex; align-items:center; justify-content:center; min-width
 /* Global command palette. */
 .cmdk-backdrop { position:fixed; inset:0; z-index:var(--ds-layer-dialog); display:flex; align-items:flex-start; justify-content:center; overflow-y:auto; padding:var(--ds-command-top-offset) var(--ds-space-5) var(--ds-space-5); background:var(--ds-shell-overlay); }
 .cmdk { display:flex; flex-direction:column; width:min(var(--ds-command-dialog-max-width),100%); max-height:min(var(--ds-command-max-height),var(--ds-command-dialog-max-height)); overflow:hidden; background:var(--ds-color-surface-raised); border:var(--ds-border-width) solid var(--ds-color-border-default); border-radius:var(--ds-radius-lg); box-shadow:var(--ds-shadow-lg); }
-.cmdk:focus-within { border-color:var(--ds-color-action-primary); }
+.cmdk:focus-within { border-color:var(--ds-color-action-primary); box-shadow:var(--ds-focus-ring); }
 .cmdk-input { display:flex; align-items:center; gap:var(--ds-space-3); min-height:var(--ds-command-input-height); padding-inline:var(--ds-space-4); color:var(--ds-color-text-secondary); border-block-end:var(--ds-border-width) solid var(--ds-color-border-default); }
 .cmdk-input input { flex:1; min-width:0; min-height:var(--ds-control-height); color:var(--ds-color-text-primary); font:var(--ds-weight-regular) var(--ds-font-body-mobile)/var(--ds-line-body-mobile) var(--ds-font-sans); background:transparent; border:0; outline:0; }
 .cmdk-input input:focus-visible { outline:0; box-shadow:var(--ds-shadow-none); }
