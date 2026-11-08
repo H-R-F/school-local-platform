@@ -55,7 +55,6 @@ import { EventsPage } from "./components/events/EventsPage";
 import { MeetingsPage } from "./components/meetings/MeetingsPage";
 import { ActivityHistoryPage } from "./components/activity-history/ActivityHistoryPage";
 import { ReportsAnalyticsPage } from "./components/reports-analytics/ReportsAnalyticsPage";
-import { schoolBranding } from "./config/school";
 import { getDemoStaffById } from "./data/demo-accounts";
 import type { AuthenticatedSidebarUser } from "./types/navigation";
 
