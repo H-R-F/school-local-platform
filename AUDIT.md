@@ -303,8 +303,9 @@ Accordingly, no route is marked `VERIFIED` in `PROGRESS.md`. The next action is 
 - Re-fetched all modified shell files after commits.
 - Confirmed the canonical shell stylesheet is imported once from `src/main.tsx`, after the global styles.
 - Confirmed the old hard-coded dark sidebar gradient and prior literal sidebar color fallback are absent from the updated shell files.
-- Confirmed the canonical shell stylesheet contains no literal hex colors.
-- Confirmed shell CSS includes visible focus, active, disabled, reduced-motion and responsive rules.
+- Confirmed the canonical shell stylesheet contains no literal hex/RGB/HSL colors, component spacing dimensions, font-size/line-height values, radius values or shadow values; viewport-relative layout and breakpoints remain.
+- Confirmed all 92 referenced `--ds-*` tokens used by the shell are defined in `tokens.css`.
+- Confirmed shell CSS includes visible focus, hover, active, disabled, reduced-motion and responsive rules.
 - Confirmed the command palette exposes a modal dialog and listbox/combobox semantics.
 - Confirmed the status bar identifies demo infrastructure data in its details.
 
