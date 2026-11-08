@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   AlertCircle, CalendarDays, Check, ChevronRight, Clock3, Globe2,
-  Info, Languages, MapPin, Monitor, Save, Settings2, ShieldCheck,
+  Info, MapPin, Monitor, Save, Settings2, ShieldCheck,
   SlidersHorizontal, X
 } from "lucide-react";
 import type { AuthenticatedSidebarUser } from "../../types/navigation";
@@ -9,7 +9,7 @@ import { schoolBranding } from "../../config/school";
 import { academicYearRepository, type AcademicYear } from "../../services/academic-years";
 import { readSchoolProfile, type SchoolProfile } from "../../services/school-profile";
 import {
-  defaultSchoolSettingsDemo, readSchoolSettingsDemo, saveSchoolSettingsDemo,
+  readSchoolSettingsDemo, saveSchoolSettingsDemo,
   type SchoolSettingsDemo
 } from "../../services/school-settings-demo";
 import "./SchoolSettingsPage.css";
@@ -26,10 +26,9 @@ const sections:{id:Section;label:string;description:string;icon:typeof Settings2
 ];
 const dayNames=["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"];
 const timeZones=["Africa/Casablanca","Europe/Paris","Europe/London","Europe/Berlin","Asia/Dubai","UTC"];
-const countries=["Maroc","France","Belgique","Allemagne","Espagne","Royaume-Uni","Émirats arabes unis"];
 const dateLabel=(value:string)=>new Intl.DateTimeFormat("fr-FR",{dateStyle:"medium",timeStyle:"short"}).format(new Date(value));
 const same=(a:SchoolSettingsDemo,b:SchoolSettingsDemo)=>JSON.stringify({...a,workingDays:[...a.workingDays].sort()})===JSON.stringify({...b,workingDays:[...b.workingDays].sort()});
-function Field({label,help,children}:{label:string;help?:string;children:React.ReactNode}){
+function Field({label,help,children}:{label:string;help?:string;children:ReactNode}){
  return <label className="ss-field"><span>{label}</span>{children}{help&&<small>{help}</small>}</label>;
 }
 function ReadOnly({value,help}:{value:string;help?:string}){
@@ -67,7 +66,6 @@ export function SchoolSettingsPage({user}:Props){
   return()=>{active=false;};
  },[allowed]);
  const activeYear=years.find(y=>y.status==="Active");
- const selectedYear=years.find(y=>y.id===draft?.defaultAcademicYearId);
  const preview=useMemo(()=>{
   if(!draft)return null;
   const now=new Date();
