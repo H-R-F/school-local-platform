@@ -2,7 +2,6 @@
    Components should consume these variables; legacy aliases are maintained in design-system.css. */
 :root {
   color-scheme: light;
-  color-scheme: light;
   --ds-color-surface-default:#F8FAFC;
   --ds-color-surface-raised:#FFFFFF;
   --ds-color-surface-sunken:#F1F5F9;
@@ -64,10 +63,10 @@
   --ds-sidebar-width:252px;
   --ds-sidebar-collapsed-width:64px;
   --ds-header-height:60px;
-  --ds-focus-ring:0 0 0 2px #4F46E5;
+  --ds-focus-ring:0 0 0 2px var(--ds-color-action-primary);
   --ds-focus-offset:2px;
   --ds-motion-fast:150ms ease;
-  --ds-control-height:40px;
+  --ds-control-height:44px;
 }
 :where(button,input,select,textarea,a,[tabindex]):focus-visible {
   outline:2px solid var(--ds-color-action-primary);
@@ -75,4 +74,57 @@
 }
 @media(prefers-reduced-motion:reduce) {
   *,*::before,*::after {scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+
+
+/* Semantic dark palette: the same component rules serve both themes. */
+:root[data-user-theme="dark"] {
+  color-scheme: dark;
+  --ds-color-surface-default:#111827;
+  --ds-color-surface-raised:#1B2636;
+  --ds-color-surface-sunken:#243247;
+  --ds-color-text-primary:#E7EDF5;
+  --ds-color-text-secondary:#AAB7C8;
+  --ds-color-text-tertiary:#8492A5;
+  --ds-color-border-default:#354357;
+  --ds-color-border-strong:#526176;
+  --ds-color-action-primary:#A5B4FC;
+  --ds-color-action-primary-hover:#C7D2FE;
+  --ds-color-action-primary-pressed:#818CF8;
+  --ds-color-action-subtle:#293653;
+  --ds-color-accent:#5EEAD4;
+  --ds-color-success:#4ADE80;
+  --ds-color-success-subtle:#143D2B;
+  --ds-color-warning:#FBBF24;
+  --ds-color-warning-subtle:#493816;
+  --ds-color-error:#F87171;
+  --ds-color-error-subtle:#4B2228;
+  --ds-color-info:#60A5FA;
+  --ds-color-info-subtle:#1D3556;
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-user-theme="system"] {
+    color-scheme: dark;
+    --ds-color-surface-default:#111827;
+    --ds-color-surface-raised:#1B2636;
+    --ds-color-surface-sunken:#243247;
+    --ds-color-text-primary:#E7EDF5;
+    --ds-color-text-secondary:#AAB7C8;
+    --ds-color-text-tertiary:#8492A5;
+    --ds-color-border-default:#354357;
+    --ds-color-border-strong:#526176;
+    --ds-color-action-primary:#A5B4FC;
+    --ds-color-action-primary-hover:#C7D2FE;
+    --ds-color-action-primary-pressed:#818CF8;
+    --ds-color-action-subtle:#293653;
+    --ds-color-accent:#5EEAD4;
+    --ds-color-success:#4ADE80;
+    --ds-color-success-subtle:#143D2B;
+    --ds-color-warning:#FBBF24;
+    --ds-color-warning-subtle:#493816;
+    --ds-color-error:#F87171;
+    --ds-color-error-subtle:#4B2228;
+    --ds-color-info:#60A5FA;
+    --ds-color-info-subtle:#1D3556;
+  }
 }
