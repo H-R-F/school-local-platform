@@ -118,7 +118,6 @@ export function SectorsProgramsPage({user,onNavigate}:Props) {
   if(!canRead)return <main className="sp-page"><div className="sp-access-denied"><ShieldCheck size={26}/><h1>Accès non autorisé</h1><p>Votre compte ne dispose pas de l’autorisation nécessaire pour consulter les filières et programmes.</p><button className="sp-button sp-button--secondary" onClick={()=>onNavigate("/overview")}>Retour au tableau de bord</button></div></main>;
 
   const emptySearch=search.trim().length>0&&filteredSectors.length===0;
-  const activeSectors=data.sectors.filter(s=>s.status==="Actif").length;
   return <main className="sp-page" style={{"--school-primary":schoolBranding.primaryColor} as CSSProperties}>
     <header className="sp-header"><div><div className="sp-breadcrumb"><span>Gestion académique</span><i>/</i><strong>Structure pédagogique</strong></div><h1>Filières et programmes</h1><p>Consultez les filières de l’établissement et leurs programmes associés.</p></div>{canCreate&&<button className="sp-button sp-button--primary" onClick={()=>{setFormError("");setModal({type:"sector-create"});}}><Plus size={16}/> Nouvelle filière</button>}</header>
     {notice&&<div className="sp-notice"><Check size={15}/><span>{notice}</span><button onClick={()=>setNotice("")} aria-label="Fermer"><X size={14}/></button></div>}
