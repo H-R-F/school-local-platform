@@ -22,7 +22,9 @@ const schools: School[] = [
 
 const nav: { label: PageKey; icon: typeof LayoutDashboard; section: string; count?: number }[] = [
   { label: "Overview", icon: LayoutDashboard, section: "Overview" },
-  { label: "Schools", icon: Building2, section: "Fleet" }, { label: "Installations", icon: Database, section: "Fleet" }, { label: "Endpoints", icon: Cloud, section: "Fleet" },
+  { label: "Schools", icon: Building2, section: "School Registry" },
+  { label: "Register School", icon: Plus, section: "School Registry" },
+  { label: "Installations", icon: Database, section: "Infrastructure" }, { label: "Endpoints", icon: Cloud, section: "Infrastructure" },
   { label: "Subscriptions", icon: CreditCard, section: "Commercial" }, { label: "Licenses", icon: KeyRound, section: "Commercial" },
   { label: "Monitoring", icon: Activity, section: "Operations", count: 3 }, { label: "Releases", icon: Package, section: "Operations" }, { label: "Notifications", icon: Bell, section: "Operations" },
   { label: "Support Access", icon: LifeBuoy, section: "Governance", count: 2 }, { label: "Audit Logs", icon: FileClock, section: "Governance" }, { label: "Settings", icon: Settings, section: "System" },
