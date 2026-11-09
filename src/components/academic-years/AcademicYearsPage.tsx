@@ -55,25 +55,23 @@ function AcademicYearForm({ initial, saving, error, onCancel, onSubmit }: {
     setValidation("");
     onSubmit({ name: name.trim(), startDate, endDate });
   }
-  return <form className="ay-form" onSubmit={submit}>
-    <div className="ay-form-intro"><span className="ay-form-icon"><CalendarDays size={18}/></span><p>{initial ? "Modifiez les informations de cette année scolaire. Son statut actuel sera conservé." : "Créez une nouvelle période scolaire. Elle sera enregistrée en brouillon jusqu’à son activation."}</p></div>
+  return <form className="ay-form" id="ay-year-form" onSubmit={submit}>
+    <div className="ay-form-intro"><span className="ay-form-icon"><CalendarDays size={20}/></span><p>{initial ? "Modifiez les informations de cette année scolaire. Son statut actuel sera conservé." : "Créez une nouvelle période scolaire. Elle sera enregistrée en brouillon jusqu’à son activation."}</p></div>
     <label>Nom de l’année scolaire <em>*</em><input autoFocus value={name} onChange={e=>setName(e.target.value)} placeholder="Ex. : 2027–2028" maxLength={40}/></label>
     <div className="ay-form-dates">
       <label>Date de début <em>*</em><input type="date" value={startDate} onChange={e=>setStartDate(e.target.value)}/></label>
       <label>Date de fin <em>*</em><input type="date" value={endDate} min={startDate || undefined} onChange={e=>setEndDate(e.target.value)}/></label>
     </div>
-    <div className="ay-form-status"><span>Statut initial</span><StatusBadge status={initial?.status ?? "Brouillon"}/><small>Le statut ne peut pas être modifié depuis ce formulaire.</small></div>
+    <div className="ay-form-status"><span>Statut initial</span><StatusBadge status={initial?.status ?? "Brouillon"}/><small>Non modifiable ici.</small></div>
     {(validation || error) && <div className="ay-form-error" role="alert"><AlertCircle size={15}/>{validation || error}</div>}
-    <div className="ay-modal-actions"><button type="button" className="ay-button ay-button--secondary" onClick={onCancel} disabled={saving}>Annuler</button><button type="submit" className="ay-button ay-button--primary" disabled={saving}>{saving ? "Enregistrement…" : initial ? "Enregistrer les modifications" : "Créer l’année scolaire"}</button></div>
   </form>;
 }
 
 function YearDetails({ year, onEdit, canEdit, onClose }: { year: AcademicYear; onEdit: () => void; canEdit: boolean; onClose: () => void }) {
   return <div className="ay-details">
-    <div className="ay-detail-highlight"><span className="ay-detail-icon"><CalendarDays size={20}/></span><div><small>ANNÉE SCOLAIRE</small><h3>{year.name}</h3><StatusBadge status={year.status}/></div></div>
+    <div className="ay-detail-highlight"><div className="ay-current-left"><span className="ay-current-icon"><CalendarDays size={24}/></span><div><small>INFORMATIONS</small><h3>{year.name}</h3><StatusBadge status={year.status}/></div></div></div>
     <div className="ay-detail-grid"><div><span>Date de début</span><strong>{formatLongDate(year.startDate)}</strong></div><div><span>Date de fin</span><strong>{formatLongDate(year.endDate)}</strong></div><div><span>Élèves associés</span><strong>{year.studentCount.toLocaleString("fr-FR")}</strong></div><div><span>Classes associées</span><strong>{year.classCount.toLocaleString("fr-FR")}</strong></div></div>
     <div className="ay-detail-meta"><span>Créée le {formatLongDate(year.createdAt.slice(0,10))}</span><span>Dernière mise à jour : {formatLongDate(year.updatedAt.slice(0,10))}</span></div>
-    <div className="ay-modal-actions"><button type="button" className="ay-button ay-button--secondary" onClick={onClose}>Fermer</button>{canEdit&&year.status!=="Archivée"&&<button type="button" className="ay-button ay-button--primary" onClick={onEdit}><Pencil size={14}/> Modifier</button>}</div>
   </div>;
 }
 
@@ -82,14 +80,21 @@ function ConfirmStatusDialog({ pending, saving, error, onCancel, onConfirm }: {
 }) {
   if (!pending) return null;
   const activating = pending.action === "activate";
-  return <div className="ay-overlay" onMouseDown={e=>{if(e.target===e.currentTarget&&!saving)onCancel();}}><section className="ay-modal ay-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="ay-confirm-title">
-    <button type="button" className="ay-modal-close" onClick={onCancel} disabled={saving} aria-label="Fermer"><X size={17}/></button>
-    <span className="ay-confirm-icon">{activating?<Check size={20}/>:<Clock3 size={20}/>}</span>
-    <h2 id="ay-confirm-title">{activating?"Activer cette année scolaire ?":"Terminer cette année scolaire ?"}</h2>
-    <p>{activating?<>L’année <strong>{pending.year.name}</strong> deviendra l’année scolaire active de l’établissement. Une seule année peut être active à la fois.</>:<>L’année <strong>{pending.year.name}</strong> passera au statut « Terminée ». Cette opération libère le statut actif pour une autre année scolaire.</>}</p>
-    {error&&<div className="ay-form-error" role="alert"><AlertCircle size={15}/>{error}</div>}
-    <div className="ay-modal-actions"><button type="button" className="ay-button ay-button--secondary" onClick={onCancel} disabled={saving}>Annuler</button><button type="button" className="ay-button ay-button--primary" onClick={onConfirm} disabled={saving}>{saving?"Traitement…":activating?"Confirmer l’activation":"Confirmer la clôture"}</button></div>
-  </section></div>;
+  return <div className="ay-overlay" onClick={e => { if (e.target === e.currentTarget && !saving) onCancel(); }}>
+    <section className="ay-panel ay-confirm-panel" role="dialog" aria-modal="true" aria-labelledby="ay-confirm-title" onClick={e => e.stopPropagation()}>
+      <button type="button" className="ay-panel-close" onClick={onCancel} disabled={saving} aria-label="Fermer"><X size={20}/></button>
+      <div className="ay-panel-content">
+        <span className="ay-confirm-icon">{activating?<Check size={32}/>:<Clock3 size={32}/>}</span>
+        <h2 id="ay-confirm-title">{activating?"Activer cette année ?":"Terminer cette année ?"}</h2>
+        <p style={{ marginTop: "1rem", color: "#6b7280" }}>{activating?<>L’année <strong>{pending.year.name}</strong> deviendra l’année scolaire active de l’établissement. Une seule année peut être active à la fois.</>:<>L’année <strong>{pending.year.name}</strong> passera au statut « Terminée ». Cette opération libère le statut actif pour une autre année scolaire.</>}</p>
+        {error&&<div className="ay-form-error" style={{ marginTop: "1rem" }} role="alert"><AlertCircle size={15}/>{error}</div>}
+      </div>
+      <div className="ay-panel-footer">
+        <button type="button" className="ay-button ay-button--secondary" onClick={onCancel} disabled={saving}>Annuler</button>
+        <button type="button" className="ay-button ay-button--primary" onClick={onConfirm} disabled={saving}>{saving?"Traitement…":activating?"Confirmer l’activation":"Confirmer la clôture"}</button>
+      </div>
+    </section>
+  </div>;
 }
 
 export function AcademicYearsPage({ user, onNavigate }: Props) {
@@ -196,7 +201,43 @@ export function AcademicYearsPage({ user, onNavigate }: Props) {
 
     <footer className="ay-page-footer"><span><ShieldCheck size={14}/> Les actions disponibles dépendent des autorisations de votre compte.</span><span>Données de démonstration enregistrées localement dans ce navigateur · Aucun serveur connecté</span></footer>
 
-    {modal&&<div className="ay-overlay" onMouseDown={e=>{if(e.target===e.currentTarget&&!saving){setModal(null);setFormError("");}}}><section className="ay-modal" role="dialog" aria-modal="true" aria-labelledby="ay-modal-title"><button type="button" className="ay-modal-close" onClick={()=>{setModal(null);setFormError("");}} disabled={saving} aria-label="Fermer"><X size={17}/></button><div className="ay-modal-heading"><span>{modal.type==="details"?"DÉTAILS":modal.type==="edit"?"MODIFICATION":"NOUVELLE PÉRIODE"}</span><h2 id="ay-modal-title">{modal.type==="details"?"Détails de l’année scolaire":modal.type==="edit"?"Modifier l’année scolaire":"Créer une année scolaire"}</h2></div>{modal.type==="details"?<YearDetails year={modal.year} canEdit={canUpdate} onClose={()=>setModal(null)} onEdit={()=>{setFormError("");setModal({type:"edit",year:modal.year});}}/>:<AcademicYearForm key={modal.type==="edit"?modal.year.id:"new"} initial={modal.type==="edit"?modal.year:undefined} saving={saving} error={formError} onCancel={()=>{setModal(null);setFormError("");}} onSubmit={saveYear}/>}</section></div>}
+    {modal && (
+      <div className="ay-overlay" onClick={e => { if (e.target === e.currentTarget && !saving) { setModal(null); setFormError(""); } }}>
+        <section className="ay-panel" role="dialog" aria-modal="true" aria-labelledby="ay-modal-title" onClick={e => e.stopPropagation()}>
+          <button type="button" className="ay-panel-close" onClick={() => { setModal(null); setFormError(""); }} disabled={saving} aria-label="Fermer"><X size={20} /></button>
+          
+          <div className="ay-panel-content">
+            <div className="ay-panel-heading">
+              <span>{modal.type === "details" ? "DÉTAILS" : modal.type === "edit" ? "MODIFICATION" : "NOUVELLE PÉRIODE"}</span>
+              <h2 id="ay-modal-title">{modal.type === "details" ? "Détails de l’année scolaire" : modal.type === "edit" ? "Modifier l’année scolaire" : "Créer une année scolaire"}</h2>
+            </div>
+
+            {modal.type === "details" ? (
+              <YearDetails year={modal.year} canEdit={canUpdate} onClose={() => setModal(null)} onEdit={() => { setFormError(""); setModal({ type: "edit", year: modal.year }); }} />
+            ) : (
+              <AcademicYearForm key={modal.type === "edit" ? modal.year.id : "new"} initial={modal.type === "edit" ? modal.year : undefined} saving={saving} error={formError} onCancel={() => { setModal(null); setFormError(""); }} onSubmit={saveYear} />
+            )}
+          </div>
+
+          <div className="ay-panel-footer">
+            <button type="button" className="ay-button ay-button--secondary" onClick={() => { setModal(null); setFormError(""); }} disabled={saving}>
+              {modal.type === "details" ? "Fermer" : "Annuler"}
+            </button>
+            {modal.type === "details" ? (
+              canUpdate && modal.year.status !== "Archivée" && (
+                <button type="button" className="ay-button ay-button--primary" onClick={() => { setFormError(""); setModal({ type: "edit", year: modal.year }); }}>
+                  <Pencil size={16} /> Modifier
+                </button>
+              )
+            ) : (
+              <button type="submit" form="ay-year-form" className="ay-button ay-button--primary" disabled={saving}>
+                {saving ? "Enregistrement…" : modal.type === "edit" ? "Enregistrer les modifications" : "Créer l’année scolaire"}
+              </button>
+            )}
+          </div>
+        </section>
+      </div>
+    )}
     <ConfirmStatusDialog pending={pending} saving={saving} error={actionError} onCancel={()=>{setPending(null);setActionError("");}} onConfirm={()=>void changeStatus()}/>
   </main>;
 }

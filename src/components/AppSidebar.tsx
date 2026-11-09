@@ -42,12 +42,12 @@ export function AppSidebar({user,school,currentPath,onNavigate,onExit,collapsed:
   const toggleGroup=(id:string)=>setExpandedGroups(current=>({...current,[id]:!(current[id]??id===activeGroupId)}));
   const cssVariables={
     "--school-primary":school.primaryColor,
-    "--school-secondary":school.secondaryColor??"#edf3f9"
+    "--school-secondary":school.secondaryColor??"var(--ds-color-action-subtle)"
   } as CSSProperties;
   return <aside className={`sidebar ${collapsed?"sidebar--collapsed":""}`} style={cssVariables}>
     <div className="sidebar-top">
       <SidebarBrand school={school} collapsed={collapsed}/>
-      <button type="button" className="sidebar-collapse-button" onClick={()=>setCollapsed(value=>!value)}
+      <button type="button" className="sidebar-collapse-button" aria-controls="school-primary-navigation" aria-keyshortcuts="Control+B Meta+B" onClick={()=>setCollapsed(value=>!value)}
         aria-label={collapsed?"Développer le menu":"Réduire le menu"} aria-expanded={!collapsed} title={(collapsed?"Développer le menu":"Réduire le menu")+" (Ctrl+B)"}>
         {collapsed?<PanelLeftOpen size={17}/>:<PanelLeftClose size={17}/>}
       </button>
@@ -57,14 +57,14 @@ export function AppSidebar({user,school,currentPath,onNavigate,onExit,collapsed:
       <input type="search" value={search} onChange={event=>setSearch(event.target.value)} placeholder="Rechercher dans le menu" aria-label="Rechercher dans le menu"/>
       {search&&<button type="button" onClick={()=>setSearch("")} aria-label="Effacer la recherche">×</button>}
     </div>}
-    <nav className="nav-scroll" aria-label="Navigation de l’établissement">
+    <nav id="school-primary-navigation" className="nav-scroll" aria-label="Navigation de l’établissement" tabIndex={-1}>
       {visibleGroups.map(group=><SidebarGroup key={group.id} group={group} activePath={path} collapsed={collapsed}
         expanded={search.trim().length>0 || (expandedGroups[group.id]??group.id===activeGroupId)} onToggle={()=>toggleGroup(group.id)} onNavigate={onNavigate}/>)}
       {visibleGroups.length===0&&!collapsed&&<p className="nav-empty">Aucune page ne correspond à votre recherche.</p>}
     </nav>
     <div className="sidebar-footer">
-      <div className="sidebar-user-avatar" title={user.displayName}>{user.initials}</div>
-      {!collapsed&&<div className="sidebar-user-copy"><strong>{user.displayName}</strong><span>{user.role==="finance"?"Responsable financier et logistique":user.role==="administrative"?"Responsable administratif":user.role==="pedagogical"?"Responsable pédagogique":"Directeur"}</span></div>}
+      <div className="sidebar-user-avatar" title={user.displayName} aria-label={`Session active : ${user.displayName}`} role="img">{user.initials}</div>
+      {!collapsed&&<div className="sidebar-user-copy"><span className="sidebar-user-kicker">SESSION ACTIVE</span><strong>{user.displayName}</strong><span>{user.role==="finance"?"Responsable financier et logistique":user.role==="administrative"?"Responsable administratif":user.role==="pedagogical"?"Responsable pédagogique":"Directeur"}</span></div>}
       {onExit && <button type="button" className="sidebar-exit" onClick={onExit} aria-label="Se déconnecter" title="Se déconnecter"><LogOut size={16} aria-hidden="true"/></button>}
     </div>
   </aside>;

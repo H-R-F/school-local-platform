@@ -2,8 +2,10 @@ import type { NavigationItem } from "../../types/navigation";
 interface Props { item: NavigationItem; active: boolean; collapsed: boolean; onNavigate?: (route:string)=>void }
 export function SidebarItem({item,active,collapsed,onNavigate}:Props) {
  const Icon=item.icon;
- return <a className={`nav-item ${active?"nav-item--active":""}`} href={item.route} aria-current={active?"page":undefined} title={collapsed?item.label:undefined}
+ return <a className={`nav-item ${active?"nav-item--active":""}`} href={item.route} aria-current={active?"page":undefined} aria-label={collapsed?item.label:undefined} title={collapsed?item.label:undefined}
  onClick={onNavigate?(event)=>{event.preventDefault();onNavigate(item.route);}:undefined}>
- <Icon size={18} strokeWidth={active?2.2:1.8} aria-hidden="true" />{!collapsed&&<span>{item.label}</span>}
+  <span className="nav-item-icon"><Icon size={17} strokeWidth={active?2.15:1.8} aria-hidden="true"/></span>
+  {!collapsed&&<span className="nav-item-label">{item.label}</span>}
+  {!collapsed&&active&&<span className="nav-item-current" aria-label="Page actuelle"/>}
  </a>;
 }

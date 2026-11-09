@@ -10,8 +10,13 @@ import "@fontsource/ibm-plex-sans-arabic/arabic-700.css";
 import "@fontsource/jetbrains-mono/latin-400.css";
 import "@fontsource/jetbrains-mono/latin-500.css";
 import "./styles/theme.css";
+import "./styles/tokens.css";
 import "./index.css";
 import "./design-system.css";
+import "./components/shell/shell.css";
+import "./styles/form-drawers.css";
+import "./styles/form-system.css";
+import "./styles/action-system.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "name": "School Local Platform Design Tokens",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "color": {
     "light": {
       "surface": {
@@ -22,7 +22,8 @@
         "primary": "#4F46E5",
         "hover": "#4338CA",
         "pressed": "#3730A3",
-        "subtle": "#E0E7FF"
+        "subtle": "#E0E7FF",
+        "onAction": "#FFFFFF"
       },
       "semantic": {
         "success": "#16A34A",
@@ -49,6 +50,23 @@
       "border": {
         "default": "#2D3142",
         "strong": "#41465A"
+      },
+      "action": {
+        "primary": "#A5B4FC",
+        "hover": "#C7D2FE",
+        "pressed": "#818CF8",
+        "subtle": "#293653",
+        "onAction": "#111827"
+      },
+      "semantic": {
+        "success": "#4ADE80",
+        "successSubtle": "#143D2B",
+        "warning": "#FBBF24",
+        "warningSubtle": "#493816",
+        "error": "#F87171",
+        "errorSubtle": "#4B2228",
+        "info": "#60A5FA",
+        "infoSubtle": "#1D3556"
       }
     }
   },
@@ -83,6 +101,11 @@
       "regular": 400,
       "medium": 500,
       "semibold": 600
+    },
+    "letterSpacing": {
+      "label": "0.06em",
+      "overline": "0.08em",
+      "none": "0"
     }
   },
   "spacing": {
@@ -104,7 +127,9 @@
     "sm": 4,
     "md": 6,
     "lg": 8,
-    "xl": 12
+    "xl": 12,
+    "circle": "50%",
+    "activeIndicator": "0 4px 4px 0"
   },
   "shadows": {
     "sm": "0 1px 2px rgba(15,23,42,0.06)",
@@ -113,19 +138,14 @@
   },
   "layout": {
     "desktop": {
-      "sidebarWidth": [
-        240,
-        260
-      ],
-      "sidebarCollapsed": 64,
-      "headerHeight": [
-        56,
-        64
-      ],
+      "sidebarWidth": 264,
+      "sidebarCollapsed": 72,
+      "headerHeight": 60,
       "tableRowHeight": [
         40,
         44
-      ]
+      ],
+      "statusBarHeight": 44
     },
     "mobile": {
       "bottomTabs": [
@@ -133,6 +153,72 @@
         5
       ],
       "minimumTouchTarget": 44
+    },
+    "shell": {
+      "sidebarBrandHeight": 76,
+      "sidebarFooterHeight": 68,
+      "controlHeight": 44,
+      "brandMarkSize": 40,
+      "avatarSize": 40,
+      "navIconSize": 24,
+      "navIndicatorWidth": 4,
+      "indicatorDotSize": 8,
+      "navCountMinWidth": 24,
+      "navCountHeight": 24,
+      "collapsedNavItemSize": 48,
+      "topbarSearchMaxWidth": 440,
+      "userLabelMaxWidth": 200,
+      "statusLabelMaxWidth": 132,
+      "statusPopoverMaxWidth": 320,
+      "commandDialogMaxWidth": 640,
+      "commandDialogMaxHeight": 720,
+      "commandInputHeight": 56,
+      "commandEmptyHeight": 72,
+      "pageContentMaxWidth": 1600,
+      "borderWidth": 1,
+      "focusWidth": 2,
+      "commandTopOffset": "12vh",
+      "commandMaxHeight": "70vh",
+      "contentReadingWidth": "42rem",
+      "sectorPanelViewportOffset": "290px",
+      "sectorSidebarMinWidth": "16rem",
+      "sectorSidebarMaxWidth": "19rem",
+      "sectorPanelMobileMaxHeight": "28rem",
+      "sectorListMobileMaxHeight": "20rem",
+      "programTableMinWidth": "40rem",
+      "sectorWorkspaceMinHeight": "36rem",
+      "sectorEmptyStateMinHeight": "18rem",
+      "sectorTextareaMinHeight": "6rem",
+      "dialogMaxWidth": "42rem"
+    },
+    "formDrawer": {
+      "width": 608,
+      "mobileWidth": "100vw",
+      "headerHeight": 72,
+      "footerHeight": 72,
+      "padding": 24
     }
+  },
+  "accessibility": {
+    "focusRing": "2px solid color.action.primary",
+    "focusOffset": 2,
+    "reducedMotion": "Respect prefers-reduced-motion and user preference",
+    "minimumInteractiveTarget": 44,
+    "focusWidth": "2px"
+  },
+  "motion": {
+    "fast": "150ms ease",
+    "reduced": ".01ms",
+    "spin": "800ms"
+  },
+  "layers": {
+    "control": 2,
+    "banner": 25,
+    "topbar": 30,
+    "sidebar": 35,
+    "menu": 45,
+    "popover": 50,
+    "dialog": 80,
+    "skipLink": 100
   }
-}
+}\n

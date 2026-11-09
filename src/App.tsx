@@ -3,7 +3,6 @@ import { AppSidebar } from "./components/AppSidebar";
 import { CommandPalette } from "./components/shell/CommandPalette";
 import { StatusBar } from "./components/shell/StatusBar";
 import { TopBar } from "./components/shell/TopBar";
-import "./components/shell/shell.css";
 import { navigation } from "./data/navigation";
 import { systemStatus } from "./config/system-status";
 import { StaffSignIn } from "./components/auth/StaffSignIn";
@@ -21,6 +20,16 @@ import { StudentsPage } from "./components/students/StudentsPage";
 import { ParentsPage } from "./components/parents/ParentsPage";
 import { TeachersPage } from "./components/teachers/TeachersPage";
 import { EmployeesPage } from "./components/employees/EmployeesPage";
+import { EmployeeManagementPage } from "./components/employee-management/EmployeeManagementPage";
+import { AccessControlPage } from "./components/access-control/AccessControlPage";
+import { AuditActivityPage } from "./components/audit-activity/AuditActivityPage";
+import { SchoolProfilePage } from "./components/school-profile/SchoolProfilePage";
+import { ArchivePage } from "./components/archive/ArchivePage";
+import { SchoolSettingsPage } from "./components/school-settings/SchoolSettingsPage";
+import { AcademicSettingsPage } from "./components/academic-settings/AcademicSettingsPage";
+import { SystemSettingsPage } from "./components/system-settings/SystemSettingsPage";
+import { UserSettingsPage } from "./components/user-settings/UserSettingsPage";
+import { readSchoolProfile, toSchoolBranding, SCHOOL_PROFILE_UPDATED_EVENT, type SchoolProfile } from "./services/school-profile";
 import { RolesPermissionsPage } from "./components/roles-permissions/RolesPermissionsPage";
 import { GradesValidationPage } from "./components/grades-validation/GradesValidationPage";
 import { ExaminationsPage } from "./components/examinations/ExaminationsPage";
@@ -50,7 +59,6 @@ import { EventsPage } from "./components/events/EventsPage";
 import { MeetingsPage } from "./components/meetings/MeetingsPage";
 import { ActivityHistoryPage } from "./components/activity-history/ActivityHistoryPage";
 import { ReportsAnalyticsPage } from "./components/reports-analytics/ReportsAnalyticsPage";
-import { schoolBranding } from "./config/school";
 import { getDemoStaffById } from "./data/demo-accounts";
 import type { AuthenticatedSidebarUser } from "./types/navigation";
 
@@ -65,6 +73,7 @@ function readSavedUser(): AuthenticatedSidebarUser | null {
 
 export default function App() {
   const [user, setUser] = useState<AuthenticatedSidebarUser | null>(readSavedUser);
+  const [schoolProfile, setSchoolProfile] = useState<SchoolProfile>(readSchoolProfile);
   const [currentPath, setCurrentPath] = useState(() => window.location.pathname || "/overview");
   const [collapsed, setCollapsed] = useState(() => {
     try { return window.localStorage.getItem("school-sidebar-collapsed") === "1"; } catch { return false; }
@@ -78,6 +87,62 @@ export default function App() {
     return () => query.removeEventListener("change", onChange);
   }, []);
   const sidebarCollapsed = collapsed || narrow;
+  useEffect(() => {
+    document.documentElement.style.setProperty("--app-sidebar-width", sidebarCollapsed ? "var(--ds-sidebar-collapsed-width)" : "var(--ds-sidebar-width)");
+    return () => {
+      document.documentElement.style.removeProperty("--app-sidebar-width");
+    };
+  }, [sidebarCollapsed]);
+  const currentSchool = toSchoolBranding(schoolProfile);
+  useEffect(() => {
+    const syncProfile = (event: Event) => {
+      const detail = (event as CustomEvent<SchoolProfile>).detail;
+      setSchoolProfile(detail ?? readSchoolProfile());
+    };
+    const syncStorage = (event: StorageEvent) => {
+      if (event.key === "school-profile-demo-v1") setSchoolProfile(readSchoolProfile());
+    };
+    window.addEventListener(SCHOOL_PROFILE_UPDATED_EVENT, syncProfile);
+    window.addEventListener("storage", syncStorage);
+    return () => { window.removeEventListener(SCHOOL_PROFILE_UPDATED_EVENT, syncProfile); window.removeEventListener("storage", syncStorage); };
+  }, []);
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty("--color-primary", schoolProfile.primaryColor);
+    root.style.setProperty("--color-primary-soft", schoolProfile.secondaryColor);
+    root.style.setProperty("--app-primary", schoolProfile.primaryColor);
+    root.style.setProperty("--app-primary-soft", schoolProfile.secondaryColor);
+    return () => {
+      root.style.removeProperty("--color-primary"); root.style.removeProperty("--color-primary-soft");
+      root.style.removeProperty("--app-primary"); root.style.removeProperty("--app-primary-soft");
+    };
+  }, [schoolProfile.primaryColor, schoolProfile.secondaryColor]);
+
+  useEffect(() => {
+    if (!user) return;
+    const apply = () => {
+      try {
+        const raw = window.localStorage.getItem("school-user-settings-demo-v1:" + user.id);
+        const prefs = raw ? JSON.parse(raw) as {theme?:string;density?:string;reducedMotion?:boolean;largerText?:boolean;sidebar?:string} : {};
+        const root = document.documentElement;
+        root.dataset.userTheme = prefs.theme ?? "light";
+        root.dataset.userDensity = prefs.density ?? "comfortable";
+        root.dataset.userMotion = prefs.reducedMotion ? "reduced" : "normal";
+        root.dataset.userText = prefs.largerText ? "large" : "normal";
+        if (prefs.sidebar) {
+          setCollapsed(prefs.sidebar === "collapsed");
+          try { window.localStorage.setItem("school-sidebar-collapsed", prefs.sidebar === "collapsed" ? "1" : "0"); } catch { /* unavailable */ }
+        }
+      } catch { /* keep defaults if local storage is unavailable */ }
+    };
+    const onUpdated = (event: Event) => {
+      const detail = (event as CustomEvent<{userId:string}>).detail;
+      if (!detail || detail.userId === user.id) apply();
+    };
+    apply();
+    window.addEventListener("school-user-preferences-updated", onUpdated);
+    return () => window.removeEventListener("school-user-preferences-updated", onUpdated);
+  }, [user?.id]);
 
   const updateCollapsed = useCallback((next: boolean) => {
     setCollapsed(next);
@@ -99,12 +164,12 @@ export default function App() {
 
   // Per-page document title, skip-link target and scroll reset on navigation.
   useEffect(() => {
-    if (!user) { document.title = `Connexion · ${schoolBranding.name}`; return; }
+    if (!user) { document.title = `Connexion · ${currentSchool.name}`; return; }
     const item = navigation.flatMap((group) => group.items).find((entry) => entry.route === currentPath);
-    document.title = `${item?.label ?? "Espace du personnel"} · ${schoolBranding.name}`;
+    document.title = `${item?.label ?? "Espace du personnel"} · ${currentSchool.name}`;
     window.scrollTo(0, 0);
     document.querySelector(".sidebar-demo > main")?.setAttribute("id", "main-content");
-  }, [user, currentPath]);
+  }, [user, currentPath, currentSchool.name]);
 
   useEffect(() => {
     const syncPath = () => setCurrentPath(window.location.pathname || "/overview");
@@ -147,7 +212,16 @@ export default function App() {
   const isParentsPage = currentPath === "/parents";
   const isTeachersPage = currentPath === "/teachers";
   const isEmployeesPage = currentPath === "/employees";
+  const isEmployeeManagementPage = currentPath === "/employee-management";
   const isRolesPermissionsPage = currentPath === "/roles-permissions";
+  const isAccessControlPage = currentPath === "/access-control";
+  const isAuditActivityPage = currentPath === "/audit-activity";
+  const isSchoolProfilePage = currentPath === "/school-profile";
+  const isArchivePage = currentPath === "/archive";
+  const isSchoolSettingsPage = currentPath === "/settings/school";
+  const isAcademicSettingsPage = currentPath === "/settings/academic";
+  const isSystemSettingsPage = currentPath === "/settings/system";
+  const isUserSettingsPage = currentPath === "/settings/user";
   const isGradesValidationPage = currentPath === "/grades-validation";
   const isExaminationsPage = currentPath === "/examinations";
   const isCoursesExercisesPage = currentPath === "/courses-exercises";
@@ -180,8 +254,8 @@ export default function App() {
   return (
     <div className={`sidebar-demo${sidebarCollapsed ? " is-collapsed" : ""}`}>
       <a className="skip-link" href="#main-content">Aller au contenu principal</a>
-      <AppSidebar user={user} school={schoolBranding} currentPath={currentPath} onNavigate={navigate} onExit={handleSignOut} collapsed={sidebarCollapsed} onCollapsedChange={updateCollapsed} />
-      <TopBar user={user} school={schoolBranding} onOpenSearch={() => setSearchOpen(true)} onNavigate={navigate} onSignOut={handleSignOut} />
+      <AppSidebar user={user} school={currentSchool} currentPath={currentPath} onNavigate={navigate} onExit={handleSignOut} collapsed={sidebarCollapsed} onCollapsedChange={updateCollapsed} />
+      <TopBar user={user} school={currentSchool} onOpenSearch={() => setSearchOpen(true)} onNavigate={navigate} onSignOut={handleSignOut} />
       {systemStatus.license.mode === "restricted" && (
         <div className="license-banner" role="alert">
           <strong>Mode restreint :</strong> la création et la modification sont désactivées. Les données existantes restent disponibles. Renouvelez la licence pour rétablir l’accès complet.
@@ -215,8 +289,26 @@ export default function App() {
         <TeachersPage user={user} onNavigate={navigate} />
       ) : isEmployeesPage ? (
         <EmployeesPage user={user} onNavigate={navigate} />
+      ) : isEmployeeManagementPage ? (
+        <EmployeeManagementPage user={user} onNavigate={navigate} />
       ) : isRolesPermissionsPage ? (
         <RolesPermissionsPage user={user} onNavigate={navigate} />
+      ) : isAccessControlPage ? (
+        <AccessControlPage user={user} onNavigate={navigate} />
+      ) : isAuditActivityPage ? (
+        <AuditActivityPage user={user} />
+      ) : isSchoolProfilePage ? (
+        <SchoolProfilePage user={user} />
+      ) : isArchivePage ? (
+        <ArchivePage user={user} onNavigate={navigate} />
+      ) : isSchoolSettingsPage ? (
+        <SchoolSettingsPage user={user} />
+      ) : isAcademicSettingsPage ? (
+        <AcademicSettingsPage user={user} />
+      ) : isSystemSettingsPage ? (
+        <SystemSettingsPage user={user} />
+      ) : isUserSettingsPage ? (
+        <UserSettingsPage user={user} />
       ) : isGradesValidationPage ? (
         <GradesValidationPage user={user} onNavigate={navigate} />
       ) : isExaminationsPage ? (
