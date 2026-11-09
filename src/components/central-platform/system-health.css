@@ -414,7 +414,7 @@
 .sh-card-head p { margin: 0; color: var(--sh-faint); font-size: 10px; }
 .sh-chart-current { color: var(--sh-text); font-size: var(--ds-font-h2); line-height: var(--ds-line-h2); font-weight: var(--ds-weight-semibold); font-variant-numeric: tabular-nums; }
 .sh-chart { position: relative; height: 9rem; margin-top: var(--ds-space-4); }
-.sh-chart-grid { position: absolute; inset: 0 0 var(--ds-space-6); display: flex; flex-direction: column; justify-content: space-between; }
+.sh-chart .sh-chart-grid { position: absolute; inset: 0 0 var(--ds-space-6); display: flex; flex-direction: column; justify-content: space-between; }
 .sh-chart-grid i { border-top: var(--ds-border-width) dashed var(--sh-border); }
 .sh-chart svg { position: absolute; inset: 0 0 var(--ds-space-6); width: 100%; height: calc(100% - var(--ds-space-6)); overflow: visible; }
 .sh-chart-labels { position: absolute; right: 0; bottom: 0; left: 0; display: flex; justify-content: space-between; color: var(--sh-faint); font-family: var(--ds-font-mono); font-size: 10px; }
