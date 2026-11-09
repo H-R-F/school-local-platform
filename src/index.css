@@ -1512,3 +1512,10 @@ button{cursor:pointer;transition:background-color var(--transition-fast,150ms ea
   .sp-page .sp-program-table{min-width:var(--ds-program-table-min-width)}
   .sp-page .sp-page-footer{align-items:flex-start}
 }
+
+/* Cross-workspace switcher — school shell */
+.workspace-switch-link{display:flex;align-items:center;gap:10px;min-height:38px;margin:8px 12px 10px;padding:0 11px;color:var(--color-text-secondary);font-size:var(--text-sm);font-weight:var(--weight-semibold);text-decoration:none;background:var(--color-background);border:1px solid var(--color-border);border-radius:var(--radius-md);transition:background var(--duration) var(--ease),color var(--duration) var(--ease),border-color var(--duration) var(--ease)}
+.workspace-switch-link svg{flex:0 0 auto;color:var(--color-primary)}
+.workspace-switch-link:hover{color:var(--color-text-primary);background:var(--color-primary-soft);border-color:var(--color-primary)}
+.sidebar--collapsed .workspace-switch-link{justify-content:center;margin-inline:10px;padding-inline:0}
+.sidebar--collapsed .workspace-switch-link span{display:none}
