@@ -85,6 +85,7 @@ export function SubscriptionsPage() {
   const [renewalTo,setRenewalTo] = useState("");
   const [panel,setPanel] = useState<Panel>(null);
   const [form,setForm] = useState<FormState>(initialForm);
+  const [schoolSearch,setSchoolSearch] = useState("");
   const [formErrors,setFormErrors] = useState<Record<string,string>>({});
   const [menuId,setMenuId] = useState<string|null>(null);
   const [cancelTarget,setCancelTarget] = useState<Subscription|null>(null);
@@ -117,8 +118,8 @@ export function SubscriptionsPage() {
   const filtered=!!(query||statusFilter!=="All"||planFilter!=="All"||cycleFilter!=="All"||renewalFrom||renewalTo);
   const notify=(message:string)=>{setToast(message);window.setTimeout(()=>setToast(""),3500);};
   const resetFilters=()=>{setQuery("");setStatusFilter("All");setPlanFilter("All");setCycleFilter("All");setRenewalFrom("");setRenewalTo("");setPage(1);};
-  const openCreate=()=>{setForm({...initialForm});setFormErrors({});setFormDirty(false);setPanel({mode:"create"});};
-  const openEdit=(r:Subscription)=>{setForm({schoolCode:r.code,planId:r.planId,cycle:r.cycle,amount:r.amount===null?"":String(r.amount),currency:r.currency,start:r.start,renewal:r.renewal,trial:r.status==="Trial",trialEnd:r.trialEnd||"",status:r.status==="Draft"?"Draft":r.status==="Trial"?"Trial":"Active"});setFormErrors({});setFormDirty(false);setPanel({mode:"edit",id:r.id});};
+  const openCreate=()=>{setForm({...initialForm});setSchoolSearch("");setFormErrors({});setFormDirty(false);setPanel({mode:"create"});};
+  const openEdit=(r:Subscription)=>{setForm({schoolCode:r.code,planId:r.planId,cycle:r.cycle,amount:r.amount===null?"":String(r.amount),currency:r.currency,start:r.start,renewal:r.renewal,trial:r.status==="Trial",trialEnd:r.trialEnd||"",status:r.status==="Draft"?"Draft":r.status==="Trial"?"Trial":"Active"});setSchoolSearch(r.school+" · "+r.code);setFormErrors({});setFormDirty(false);setPanel({mode:"edit",id:r.id});};
   const closePanel=()=>{if((panel?.mode==="create"||panel?.mode==="edit")&&formDirty){setDiscardConfirm(true);return;}setPanel(null);};
   const setField=<K extends keyof FormState,>(key:K,value:FormState[K])=>{setForm(current=>({...current,[key]:value}));setFormDirty(true);};
   const validate=(draftOnly:boolean)=>{
@@ -256,7 +257,7 @@ export function SubscriptionsPage() {
         <div className="subs-local-alert"><Info size={15}/>Local demonstration workflow. No payment is charged and no license is activated.</div>
         <div className="subs-drawer-body">
           <section className="subs-form-section"><div className="subs-form-title"><b>01</b><div><h3>School</h3><p>Select an existing registered school.</p></div></div>
-            <label className="subs-field">Registered school <em>*</em><select value={form.schoolCode} onChange={e=>setField("schoolCode",e.target.value)}><option value="">Select school</option>{schools.map(s=><option key={s.code} value={s.code}>{s.name} · {s.code}</option>)}</select>{formErrors.schoolCode&&<small>{formErrors.schoolCode}</small>}</label>
+            <label className="subs-field">Find registered school<input type="search" value={schoolSearch} onChange={e=>{setSchoolSearch(e.target.value);const match=schools.find(s=>(s.name+" · "+s.code).toLowerCase()===e.target.value.toLowerCase());if(match)setField("schoolCode",match.code);}} placeholder="Search school name or code..."/></label><label className="subs-field">Registered school <em>*</em><select value={form.schoolCode} onChange={e=>{setField("schoolCode",e.target.value);const match=schools.find(s=>s.code===e.target.value);setSchoolSearch(match?match.name+" · "+match.code:"");}}><option value="">Select school</option>{schools.filter(s=>!schoolSearch||(s.name+" "+s.code).toLowerCase().includes(schoolSearch.toLowerCase())||s.code===form.schoolCode).map(s=><option key={s.code} value={s.code}>{s.name} · {s.code}</option>)}</select>{formErrors.schoolCode&&<small>{formErrors.schoolCode}</small>}</label>
           </section>
           <section className="subs-form-section"><div className="subs-form-title"><b>02</b><div><h3>Plan</h3><p>New subscriptions can use Active plans only.</p></div></div>
             <label className="subs-field">Subscription plan <em>*</em><select value={form.planId} onChange={e=>{setField("planId",e.target.value);const p=plans.find(x=>x.id===e.target.value);if(p&&!p.billing.includes(form.cycle))setField("cycle",p.billing[0]);}}><option value="">Select active plan</option>{activePlans.map(p=><option key={p.id} value={p.id}>{p.name} — {p.description}</option>)}{panel.mode==="edit"&&form.planId&&!activePlans.some(p=>p.id===form.planId)&&<option value={form.planId}>{slugPlan(form.planId)} · archived (existing assignment)</option>}</select>{formErrors.planId&&<small>{formErrors.planId}</small>}{form.planId&&<span className="subs-field-hint">{planFor(form.planId)?.billing.join(" / ")} billing available · plan features and limits are defined separately.</span>}</label>
