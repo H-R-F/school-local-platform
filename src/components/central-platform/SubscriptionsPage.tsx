@@ -89,6 +89,7 @@ export function SubscriptionsPage() {
   const [menuId,setMenuId] = useState<string|null>(null);
   const [cancelTarget,setCancelTarget] = useState<Subscription|null>(null);
   const [changePlan,setChangePlan] = useState("");
+  const [changeEffectiveDate,setChangeEffectiveDate] = useState(today);
   const [renewDate,setRenewDate] = useState("");
   const [toast,setToast] = useState("");
   const [page,setPage] = useState(1);
@@ -147,7 +148,7 @@ export function SubscriptionsPage() {
       id,school:school.name,code:school.code,planId:form.planId,cycle:form.cycle,status,
       start:form.start,renewal:form.renewal,amount:form.amount===""?null:Number(form.amount),currency:form.currency,
       billingContact:current?.billingContact||"—",created:current?.created||today,
-      trialEnd:current?current.trialEnd:form.trial?form.trialEnd:undefined,cancelledAt:current?.cancelledAt,
+      trialEnd:form.trial?form.trialEnd:undefined,cancelledAt:current?.cancelledAt,
       history:[...(current?.history||[]),event("local-"+Date.now(),current?"Subscription configuration updated":"Subscription created",today+" 12:00",current?"Plan: "+slugPlan(current.planId)+" → "+slugPlan(form.planId)+"; billing cycle: "+current.cycle+" → "+form.cycle+"; amount: "+money(current.amount,current.currency)+" → "+money(form.amount===""?null:Number(form.amount),form.currency)+". Updated in local demo state; previous payment records are unchanged.":"Subscription created in local demo state.",id)]
     };
     setRecords(current?records.map(r=>r.id===id?next:r):[next,...records]);
@@ -171,7 +172,7 @@ export function SubscriptionsPage() {
   const doChangePlan=()=>{
     if(!selected||!changePlan||changePlan===selected.planId)return;
     const old=slugPlan(selected.planId),next=slugPlan(changePlan);
-    updateRecord(selected.id,{planId:changePlan},event("plan-"+Date.now(),"Plan changed",today+" 12:00","Plan changed from "+old+" to "+next+" in local demo state. Prior history and payments remain unchanged.",selected.id));
+    updateRecord(selected.id,{planId:changePlan},event("plan-"+Date.now(),"Plan changed",today+" 12:00","Plan changed from "+old+" to "+next+" effective "+changeEffectiveDate+" in local demo state. Prior history and payments remain unchanged.",selected.id));
     setPanel(null);notify("Plan change recorded locally; no payment or license state was changed.");
   };
   const doRenew=()=>{
@@ -183,7 +184,7 @@ export function SubscriptionsPage() {
     setMenuId(null);
     if(action==="View Details")setPanel({mode:"details",id:r.id});
     if(action==="Edit Subscription")openEdit(r);
-    if(action==="Change Plan"){setChangePlan(r.planId);setPanel({mode:"change",id:r.id});}
+    if(action==="Change Plan"){setChangePlan(r.planId);setChangeEffectiveDate(today);setPanel({mode:"change",id:r.id});}
     if(action==="View Payment History")setPanel({mode:"payments",id:r.id});
     if(action==="Renew Subscription"){setRenewDate(r.renewal);setPanel({mode:"renew",id:r.id});}
     if(action==="Cancel Subscription")setCancelTarget(r);
@@ -287,7 +288,7 @@ export function SubscriptionsPage() {
           <div className="subs-domain-note in-drawer"><Info size={14}/><span>License authorization and school connectivity are not represented by this subscription status.</span></div>
         </div>}
         {selected&&panel.mode==="payments"&&<div className="subs-drawer-body"><div className="subs-payment-context"><Receipt/><div><b>{selected.school}</b><span>{selected.id} · {slugPlan(selected.planId)}</span></div></div><div className="subs-empty payment-empty"><CreditCard size={24}/><b>No payment transactions connected</b><span>This demonstration workspace has no payment gateway or transaction records. Subscription amounts are not payment receipts.</span></div></div>}
-        {selected&&panel.mode==="change"&&<div className="subs-drawer-body"><div className="subs-local-alert"><Info size={15}/>Local demo only. No proration, invoice, payment, or license action is performed.</div><section className="subs-detail-section"><h3>Current subscription</h3><dl><div><dt>Current plan</dt><dd>{slugPlan(selected.planId)}</dd></div><div><dt>Billing cycle</dt><dd>{selected.cycle}</dd></div><div><dt>Current amount</dt><dd>{money(selected.amount,selected.currency)}</dd></div><div><dt>Status</dt><dd><span className={"subs-status "+selected.status.toLowerCase().replace(" ","-")}>{selected.status}</span></dd></div></dl></section><label className="subs-field">Proposed plan<select value={changePlan} onChange={e=>setChangePlan(e.target.value)}>{plans.map(p=><option key={p.id} value={p.id} disabled={p.status!=="Active"&&p.id!==selected.planId}>{p.name}{p.status==="Archived"?" · Archived":""}</option>)}</select></label><div className="subs-change-warning"><b>Effective-date and billing review required</b><p>This demo records the plan assignment and history only. Confirm the effective date, price, and any billing adjustments through the real subscription workflow before production use. Historical payment records remain unchanged.</p></div><button className="subs-button primary full" disabled={!changePlan||changePlan===selected.planId} onClick={doChangePlan}>Record plan change</button></div>}
+        {selected&&panel.mode==="change"&&<div className="subs-drawer-body"><div className="subs-local-alert"><Info size={15}/>Local demo only. No proration, invoice, payment, or license action is performed.</div><section className="subs-detail-section"><h3>Current subscription</h3><dl><div><dt>Current plan</dt><dd>{slugPlan(selected.planId)}</dd></div><div><dt>Billing cycle</dt><dd>{selected.cycle}</dd></div><div><dt>Current amount</dt><dd>{money(selected.amount,selected.currency)}</dd></div><div><dt>Status</dt><dd><span className={"subs-status "+selected.status.toLowerCase().replace(" ","-")}>{selected.status}</span></dd></div></dl></section><label className="subs-field">Proposed plan<select value={changePlan} onChange={e=>setChangePlan(e.target.value)}>{plans.map(p=><option key={p.id} value={p.id} disabled={p.status!=="Active"&&p.id!==selected.planId}>{p.name}{p.status==="Archived"?" · Archived":""}</option>)}</select></label><label className="subs-field">Effective date<input type="date" value={changeEffectiveDate} onChange={e=>setChangeEffectiveDate(e.target.value)}/></label><div className="subs-change-warning"><b>Effective-date and billing review required</b><p>This demo records the plan assignment and history only. Confirm the effective date, price, and any billing adjustments through the real subscription workflow before production use. Historical payment records remain unchanged.</p></div><button className="subs-button primary full" disabled={!changePlan||changePlan===selected.planId} onClick={doChangePlan}>Record plan change</button></div>}
         {selected&&panel.mode==="renew"&&<div className="subs-drawer-body"><div className="subs-local-alert"><Info size={15}/>Demo renewal record only. No payment is collected or transaction fabricated.</div><section className="subs-detail-section"><h3>Current period</h3><dl><div><dt>Plan</dt><dd>{slugPlan(selected.planId)}</dd></div><div><dt>Billing cycle</dt><dd>{selected.cycle}</dd></div><div><dt>Current renewal date</dt><dd>{dateLabel(selected.renewal)}</dd></div><div><dt>Amount</dt><dd>{money(selected.amount,selected.currency)}</dd></div></dl></section><label className="subs-field">Proposed next renewal date<input type="date" min={selected.renewal} value={renewDate} onChange={e=>setRenewDate(e.target.value)}/></label><div className="subs-change-warning"><b>Renewal confirmation</b><p>Recording this action updates the subscription period in local demo state. It does not create a payment transaction or activate a license.</p></div><button className="subs-button primary full" disabled={!renewDate||renewDate<=selected.renewal} onClick={doRenew}>Confirm demo renewal</button></div>}
         <div className="subs-drawer-footer"><button className="subs-button secondary" onClick={closePanel}>Close</button></div>
       </aside>}
