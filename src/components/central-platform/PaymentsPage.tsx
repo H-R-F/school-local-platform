@@ -80,7 +80,8 @@ export function PaymentsPage() {
       : range === "year"
         ? [{label:"Jan",amount:16400,count:3},{label:"Feb",amount:18200,count:4},{label:"Mar",amount:20100,count:5},{label:"Apr",amount:16800,count:3},{label:"May",amount:22600,count:5},{label:"Jun",amount:19400,count:4},{label:"Jul",amount:17200,count:3},{label:"Aug",amount:24100,count:5},{label:"Sep",amount:21300,count:4},{label:"Oct",amount:25800,count:5},{label:"Nov",amount:12000,count:2},{label:"Dec",amount:0,count:0}]
         : [{label:"12 Oct",amount:12000,count:1},{label:"15 Oct",amount:4800,count:1},{label:"18 Oct",amount:0,count:0},{label:"21 Oct",amount:24600,count:2},{label:"24 Oct",amount:9200,count:1},{label:"27 Oct",amount:0,count:0},{label:"30 Oct",amount:16800,count:2},{label:"02 Nov",amount:0,count:0},{label:"05 Nov",amount:800,count:1},{label:"06 Nov",amount:12000,count:1}];
-  const chartMax = Math.max(10000,Math.ceil(Math.max(...periods.map(p=>p.amount),1)/10000)*10000);\n  const chartTicks = [chartMax,Math.round(chartMax*2/3),Math.round(chartMax/3),0];
+  const chartMax = Math.max(10000,Math.ceil(Math.max(...periods.map(p=>p.amount),1)/10000)*10000);
+  const chartTicks = [chartMax,Math.round(chartMax*2/3),Math.round(chartMax/3),0];
   const selectedRevenue = periods.reduce((sum,p)=>sum+p.amount,0);
   const selectedCount = periods.reduce((sum,p)=>sum+p.count,0);
   const pendingAmount = payments.filter(p=>p.status==="Pending").reduce((sum,p)=>sum+p.amount,0);
