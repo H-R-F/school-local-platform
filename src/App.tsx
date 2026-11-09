@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { CloudflareTunnelsPage } from "./components/CloudflareTunnelsPage";
 import { ConnectivityPage } from "./components/ConnectivityPage";
+import { Dashboard } from "./components/central-platform/CentralPlatformApp";
 import "./components/connectivity-page.css";
 import "./components/cloudflare-tunnels.css";
 import {
