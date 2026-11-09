@@ -17,6 +17,7 @@ import "./components/shell/shell.css";
 import "./styles/form-drawers.css";
 import "./styles/form-system.css";
 import "./styles/action-system.css";
+import "./styles/central-platform.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

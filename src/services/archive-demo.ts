@@ -75,7 +75,7 @@ export const archiveDemoRepository = {
   async eligibleYears(): Promise<AcademicYear[]> {
     return (await academicYearRepository.list()).filter(year => year.status === "Terminée");
   },
-  async createSimulation(yearId: string, createdBy: string): Promise<ArchiveRecord[]> {
+  async createSimulation(yearId: string, createdBy: string): Promise<ArchiveRecord> {
     const years = await academicYearRepository.list();
     const year = years.find(item => item.id === yearId);
     if (!year) throw new Error("Cette année scolaire n’existe plus. Actualisez la liste.");
@@ -98,7 +98,8 @@ export const archiveDemoRepository = {
       isDemo: true,
       note: "Métadonnées fictives uniquement. Aucun fichier n’a été créé, aucune donnée n’a été extraite et l’intégrité n’a pas été vérifiée."
     };
-    return writeStore([record, ...rows]);
+    writeStore([record, ...rows]);
+    return record;
   },
   demoModules
 };

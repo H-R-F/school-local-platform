@@ -34,7 +34,7 @@ const initialStates = {
   central: "down" as HealthState, backup: "warning" as HealthState,
 };
 
-function StatePill({ state, children }: { state: HealthState; children: ReactNode }) {
+function StatePill({ state, children }: { state: HealthState; children?: ReactNode }) {
   const label = state === "healthy" ? "Opérationnel" : state === "warning" ? "Attention" : state === "down" ? "Indisponible" : "Non vérifié";
   return <span className={`sys-pill ${state}`}><i />{children || label}</span>;
 }
