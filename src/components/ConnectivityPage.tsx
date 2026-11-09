@@ -1,8 +1,7 @@
 import { useMemo, useState } from "react";
 import {
-  Activity, AlertTriangle, CheckCircle2, ChevronDown, ChevronRight, CircleHelp,
-  Clock3, ExternalLink, Filter, History, MoreHorizontal, Network, RefreshCw,
-  Search, Server, ShieldCheck, X, Zap,
+  Activity, AlertTriangle, ChevronRight, Clock3, Filter, History, MoreHorizontal,
+  Network, RefreshCw, Search, Server, ShieldCheck, X,
 } from "lucide-react";
 
 type State = "Online" | "Offline" | "Degraded" | "Unknown";
@@ -51,7 +50,6 @@ export function ConnectivityPage({ notify }: { notify:(message:string)=>void }) 
     (apiFilter==="All"||r.api===apiFilter) &&
     `${r.school} ${r.code} ${r.hostname}`.toLowerCase().includes(search.toLowerCase())
   ),[records,stateFilter,tunnelFilter,apiFilter,search]);
-  const counts={online:records.filter(r=>r.state==="Online").length,offline:records.filter(r=>r.state==="Offline").length,degraded:records.filter(r=>r.state==="Degraded").length,unknown:records.filter(r=>r.state==="Unknown").length};
   const refresh=()=>{setRefreshing(true);window.setTimeout(()=>{setRefreshing(false);notify("Demo connectivity records refreshed. No live telemetry was requested.");},650);};
   const clear=()=>{setSearch("");setStateFilter("All");setTunnelFilter("All");setApiFilter("All");};
   return <div className="con-page">
