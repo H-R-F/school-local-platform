@@ -35,7 +35,7 @@ function Metric({ label, value, tone }: { label:string; value:string; tone?:stri
   return <div className="con-metric"><span>{label}</span><strong className={tone||""}>{value}</strong></div>;
 }
 export function ConnectivityPage({ notify }: { notify:(message:string)=>void }) {
-  const [records,setRecords]=useState(initialRecords);
+  const [records]=useState(initialRecords);
   const [search,setSearch]=useState("");
   const [stateFilter,setStateFilter]=useState("All");
   const [tunnelFilter,setTunnelFilter]=useState("All");
