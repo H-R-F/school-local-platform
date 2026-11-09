@@ -1,8 +1,7 @@
 import { useMemo, useState } from "react";
 import {
-  AlertTriangle, ArrowDownToLine, CalendarDays, Check, ChevronDown, Clock3,
-  Copy, Edit3, FileClock, Filter, KeyRound, MoreHorizontal, Plus, RefreshCw,
-  Search, Server, Shield, ShieldCheck, X
+  AlertTriangle, ArrowDownToLine, Check, Copy, Filter, MoreHorizontal, Plus,
+  RefreshCw, Search, Server, ShieldCheck, X
 } from "lucide-react";
 import "./licenses-page.css";
 
@@ -55,7 +54,7 @@ export function LicensesPage() {
   const [reason,setReason] = useState("");
   const [draft,setDraft] = useState({school:"",server:"",type:"Standard",plan:"Professional",issued:"2026-11-09",expires:"2027-11-08",grace:"30",features:["Core Platform"] as string[],notes:""});
   const [searchSchool,setSearchSchool] = useState("");
-  const [dirty,setDirty] = useState(false);
+  const [,setDirty] = useState(false);
   const [savedDrafts,setSavedDrafts] = useState<Array<typeof draft>>([]);
   const pageSize = 5;
   const notify = (message:string) => { setToast(message); window.setTimeout(()=>setToast(""),3200); };
@@ -69,10 +68,6 @@ export function LicensesPage() {
   }).sort((a,b)=>sort==="issued"?b.issued.localeCompare(a.issued):sort==="expires"?a.expires.localeCompare(b.expires):validationAge(a.lastValidation)-validationAge(b.lastValidation)),[licenses,query,status,expiration,schoolFilter,sort]);
   const pageCount=Math.max(1,Math.ceil(filtered.length/pageSize));
   const rows=filtered.slice((page-1)*pageSize,page*pageSize);
-  const active=licenses.filter(l=>l.status==="Active").length;
-  const pending=licenses.filter(l=>l.status==="Pending").length;
-  const suspended=licenses.filter(l=>l.status==="Suspended").length;
-  const expired=licenses.filter(l=>l.status==="Expired").length;
   const activeLicense=panel&&"id" in panel?licenses.find(l=>l.id===panel.id):undefined;
   const clearFilters=()=>{setQuery("");setStatus("All");setExpiration("All");setSchoolFilter("All");setPage(1);};
   const filterMetric=(value:string)=>{setStatus(value);setExpiration("All");setPage(1);};
