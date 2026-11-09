@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { ConnectivityPage } from "../ConnectivityPage";
 import { CloudflareTunnelsPage } from "../CloudflareTunnelsPage";
+import { SystemHealthPage } from "./SystemHealthPage";
 import "../connectivity-page.css";
 import "../cloudflare-tunnels.css";
 
@@ -70,7 +71,7 @@ export default function CentralPlatformApp() {
     </aside>
     <main className="main"><header className="topbar"><div className="breadcrumbs"><span>Control Plane</span><ChevronRight size={14}/><b>{page}</b></div><div className="command-search" onClick={() => notify("Command search is ready") }><Search size={15}/><span>Search schools, pages...</span><kbd><Command size={11}/>K</kbd></div><div className="top-actions"><span className="demo-pill"><span />DEMO MODE</span><button className="icon-btn" onClick={() => notify("No new notifications")} aria-label="Notifications"><Bell size={18}/><i className="notification-dot" /></button><div className="top-avatar">AO</div></div></header>
       <div className="content">{banner && <div className="demo-banner"><div><ShieldCheck size={17}/><span><b>You are viewing a demo with mocked data.</b> No backend is connected. Actions are simulated.</span></div><button className="icon-btn" onClick={() => setBanner(false)} aria-label="Dismiss banner"><X size={16}/></button></div>}
-        {page === "Overview" ? <Dashboard setPage={setPage} notify={notify} setSearch={setSearch}/> : (page === "Schools" || page === "All Schools") ? <AllSchoolsPage setPage={setPage} setSearch={setSearch} notify={notify}/> : page === "Register School" ? <RegisterSchoolPage setPage={setPage} notify={notify}/> : page === "Installations" ? <InstallationsPage notify={notify}/> : page === "Servers" ? <ServersPage notify={notify}/> : page === "Connectivity" ? <ConnectivityPage notify={notify}/> : page === "Cloudflare Tunnels" ? <CloudflareTunnelsPage notify={notify}/> : <DataPage page={page} schools={filtered} search={search} setSearch={setSearch} filter={filter} setFilter={setFilter} notify={notify} onCreate={() => setModal(page)}/>}</div>
+        {page === "Overview" ? <Dashboard setPage={setPage} notify={notify} setSearch={setSearch}/> : (page === "Schools" || page === "All Schools") ? <AllSchoolsPage setPage={setPage} setSearch={setSearch} notify={notify}/> : page === "Register School" ? <RegisterSchoolPage setPage={setPage} notify={notify}/> : page === "Installations" ? <InstallationsPage notify={notify}/> : page === "Servers" ? <ServersPage notify={notify}/> : page === "Connectivity" ? <ConnectivityPage notify={notify}/> : page === "Cloudflare Tunnels" ? <CloudflareTunnelsPage notify={notify}/> : page === "System Health" ? <SystemHealthPage/> : <DataPage page={page} schools={filtered} search={search} setSearch={setSearch} filter={filter} setFilter={setFilter} notify={notify} onCreate={() => setModal(page)}/>}</div>
     </main>{modal && <CreateModal page={modal} onClose={() => setModal(null)} onSave={() => { setModal(null); notify(`${modal} created in demo mode`) }} />}{toast && <div className="toast"><Check size={16}/>{toast}</div>}
   </div></div>;
 }
