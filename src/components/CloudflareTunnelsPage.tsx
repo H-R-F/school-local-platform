@@ -75,7 +75,15 @@ export function CloudflareTunnelsPage({ notify }: { notify: (message: string) =>
   };
   const saveTunnel = () => {
     const hostname = form.hostname.trim().toLowerCase();
-    if (!form.name.trim() || !form.school || !hostname) { setFormError("Complete the required fields before saving."); return; }
+    if (!form.name.trim() || !form.school || !form.server || !hostname) { setFormError("Complete the required fields, including an assigned server."); return; }
+    const schoolServer: Record<string, string> = {
+      "Atlas International School":"Atlas Production · SRV-ATS-001",
+      "Al Amal School":"Amal Production · SRV-AAS-002",
+      "Future Academy":"Future Production · SRV-FAC-003",
+      "Ibn Sina School":"Ibn Sina Production · SRV-ISS-004",
+      "Horizon School":"Horizon Production · SRV-HZS-005",
+    };
+    if (schoolServer[form.school] !== form.server) { setFormError("Select a server assigned to the chosen school."); return; }
     if (!/^(?=.{1,253}$)([a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$/i.test(hostname)) { setFormError("Enter a valid public hostname."); return; }
     if (tunnels.some(t => t.hostname.toLowerCase() === hostname && t.id !== selected?.id)) { setFormError("This public hostname is already registered."); return; }
     if (drawer === "edit" && selected) {
@@ -151,7 +159,7 @@ export function CloudflareTunnelsPage({ notify }: { notify: (message: string) =>
           <div className="cft-form-note"><Shield size={16}/><span>This creates or updates central tunnel metadata only. It does not provision or activate a Cloudflare Tunnel.</span></div>
           <label className="cft-field">Tunnel Name <b>*</b><input value={form.name} onChange={e=>setForm({...form,name:e.target.value})} placeholder="e.g. Atlas API Tunnel"/></label>
           <label className="cft-field">Assigned School <b>*</b><select value={form.school} onChange={e=>setForm({...form,school:e.target.value})}><option value="">Select a registered school</option>{["Atlas International School","Al Amal School","Future Academy","Ibn Sina School","Horizon School"].map(s=><option key={s}>{s}</option>)}</select></label>
-          <label className="cft-field">Assigned Server <span>Optional</span><select value={form.server} onChange={e=>setForm({...form,server:e.target.value})}><option value="">Select a server (if available)</option>{["Atlas Production · SRV-ATS-001","Amal Production · SRV-AAS-002","Future Production · SRV-FAC-003","Ibn Sina Production · SRV-ISS-004","Horizon Production · SRV-HZS-005"].map(s=><option key={s}>{s}</option>)}</select></label>
+          <label className="cft-field">Assigned Server <b>*</b><select value={form.server} onChange={e=>setForm({...form,server:e.target.value})}><option value="">Select the server assigned to this school</option>{["Atlas Production · SRV-ATS-001","Amal Production · SRV-AAS-002","Future Production · SRV-FAC-003","Ibn Sina Production · SRV-ISS-004","Horizon Production · SRV-HZS-005"].map(s=><option key={s}>{s}</option>)}</select></label>
           <label className="cft-field">Public Hostname <b>*</b><input value={form.hostname} onChange={e=>setForm({...form,hostname:e.target.value.toLowerCase()})} placeholder="api.school-domain.ma"/><small>Enter the public hostname routed through this tunnel.</small></label>
           <label className="cft-field">Administrative Description <span>Optional</span><textarea rows={3} value={form.description} onChange={e=>setForm({...form,description:e.target.value})} placeholder="Add internal context for platform administrators…"/></label>
           {formError && <p className="cft-form-error" role="alert">{formError}</p>}
