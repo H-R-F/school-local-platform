@@ -27,6 +27,10 @@ export function FormDrawer({
   const titleId = useId();
   const panelRef = useRef<HTMLElement>(null);
   const previousFocus = useRef<HTMLElement | null>(null);
+  const onCloseRef = useRef(onClose);
+  const loadingRef = useRef(loading);
+  onCloseRef.current = onClose;
+  loadingRef.current = loading;
 
   useEffect(() => {
     if (!open) return;
@@ -37,7 +41,7 @@ export function FormDrawer({
     const focusable = panel?.querySelector<HTMLElement>('button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),a[href],[tabindex]:not([tabindex="-1"])');
     requestAnimationFrame(() => (focusable ?? panel)?.focus());
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && !loading) { event.preventDefault(); onClose(); }
+      if (event.key === "Escape" && !loadingRef.current) { event.preventDefault(); onCloseRef.current(); }
       if (event.key !== "Tab" || !panel) return;
       const items = [...panel.querySelectorAll<HTMLElement>('button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),a[href],[tabindex]:not([tabindex="-1"])')];
       if (!items.length) { event.preventDefault(); panel.focus(); return; }
@@ -51,11 +55,11 @@ export function FormDrawer({
       document.body.style.overflow = previousOverflow;
       previousFocus.current?.focus();
     };
-  }, [open, loading, onClose]);
+  }, [open]);
 
   if (!open || typeof document === "undefined") return null;
   const content = (
-    <div className="app-form-drawer-backdrop" onMouseDown={event => { if (event.target === event.currentTarget && !loading) onClose(); }}>
+    <div className="app-form-drawer-backdrop" onMouseDown={event => { if (event.target === event.currentTarget && !loading) onCloseRef.current(); }}>
       <section ref={panelRef} className={`app-form-drawer app-form-drawer--${width}`} role="dialog" aria-modal="true" aria-labelledby={labelledBy || titleId} aria-describedby={description ? `${titleId}-description` : undefined} tabIndex={-1}>
         <header className="app-form-drawer__header">
           <div className="app-form-drawer__heading">
