@@ -1,9 +1,8 @@
 import { useMemo, useState } from "react";
 import {
-  Activity, AlertTriangle, ArrowDown, ArrowUp, Check, ChevronDown, ChevronLeft,
-  ChevronRight, CircleHelp, Clock3, Cloud, Copy, ExternalLink, Eye, FileClock,
-  Filter, History, MoreHorizontal, Plus, RefreshCw, Search, Server, Shield,
-  Signal, X, XCircle, Zap,
+  Activity, AlertTriangle, Check, ChevronLeft, ChevronRight, CircleHelp, Cloud,
+  Eye, FileClock, Filter, History, MoreHorizontal, Plus, RefreshCw, Search,
+  Server, Shield, X, XCircle,
 } from "lucide-react";
 
 type TunnelState = "Connected" | "Disconnected" | "Degraded" | "Unknown";
@@ -31,9 +30,6 @@ const events = [
   { title:"Configuration updated", time:"08 Nov 2026 · 11:20:00 UTC", kind:"info", detail:"Administrative tunnel metadata was updated." },
 ];
 
-function stateTone(state: TunnelState) {
-  return state === "Connected" ? "success" : state === "Disconnected" ? "danger" : state === "Degraded" ? "warning" : "neutral";
-}
 function TunnelBadge({ state }: { state: TunnelState }) {
   const Icon = state === "Connected" ? Check : state === "Disconnected" ? XCircle : state === "Degraded" ? AlertTriangle : CircleHelp;
   return <span className={`cft-badge cft-${state.toLowerCase()}`}><Icon size={12}/>{state}</span>;
