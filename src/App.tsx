@@ -172,7 +172,7 @@ export default function App() {
   }, [user, currentPath, currentSchool.name]);
 
   useEffect(() => {
-    const syncPath = () => setCurrentPath(window.location.pathname || "/overview");
+    const syncPath = () => setCurrentPath(window.location.pathname || "/login");
     window.addEventListener("popstate", syncPath);
     return () => window.removeEventListener("popstate", syncPath);
   }, []);
@@ -192,9 +192,21 @@ export default function App() {
   function handleSignOut() {
     setUser(null);
     try { window.localStorage.removeItem("school-demo-user"); } catch { /* storage may be unavailable */ }
-    window.history.replaceState({}, "", "/");
-    setCurrentPath("/");
+    window.history.replaceState({}, "", "/login");
+    setCurrentPath("/login");
   }
+
+  // Authentication routes are explicit: unauthenticated visitors always land on /login,
+  // while an existing session is sent away from the login screen to the staff workspace.
+  useEffect(() => {
+    if (!user && currentPath !== "/login") {
+      window.history.replaceState({}, "", "/login");
+      setCurrentPath("/login");
+    } else if (user && currentPath === "/login") {
+      window.history.replaceState({}, "", "/overview");
+      setCurrentPath("/overview");
+    }
+  }, [user, currentPath]);
 
   if (!user) return <StaffSignIn onSignIn={handleSignIn} />;
 
