@@ -145,7 +145,7 @@ export function SubscriptionsPage() {
       start:form.start,renewal:form.renewal,amount:form.amount===""?null:Number(form.amount),currency:form.currency,
       billingContact:current?.billingContact||"—",created:current?.created||today,
       trialEnd:current?current.trialEnd:form.trial?form.trialEnd:undefined,cancelledAt:current?.cancelledAt,
-      history:[...(current?.history||[]),event("local-"+Date.now(),current?"Subscription updated":"Subscription created",today+" 12:00",current?"Subscription configuration updated in local demo state.":"Subscription created in local demo state.",id)]
+      history:[...(current?.history||[]),event("local-"+Date.now(),current?"Subscription configuration updated":"Subscription created",today+" 12:00",current?"Plan: "+slugPlan(current.planId)+" → "+slugPlan(form.planId)+"; billing cycle: "+current.cycle+" → "+form.cycle+"; amount: "+money(current.amount,current.currency)+" → "+money(form.amount===""?null:Number(form.amount),form.currency)+". Updated in local demo state; previous payment records are unchanged.":"Subscription created in local demo state.",id)]
     };
     setRecords(current?records.map(r=>r.id===id?next:r):[next,...records]);
     setBusy(false);setPanel(null);notify(current?"Demo subscription changes saved locally.":"Demo subscription created locally.");
@@ -173,8 +173,8 @@ export function SubscriptionsPage() {
   };
   const doRenew=()=>{
     if(!selected||!renewDate||renewDate<=selected.renewal)return;
-    updateRecord(selected.id,{status:"Active",renewal:renewDate},event("renew-"+Date.now(),"Renewal recorded",today+" 12:00","Renewal period recorded in local demo state. No payment transaction was created.",selected.id));
-    setPanel(null);notify("Renewal recorded in local demo state. No payment transaction was created.");
+    updateRecord(selected.id,{renewal:renewDate},event("renew-"+Date.now(),"Renewal period updated (demo)",today+" 12:00","Proposed renewal date updated in local demo state only. No renewal processing, payment confirmation, or license action occurred.",selected.id));
+    setPanel(null);notify("Renewal date updated in local demo state only; payment and status were not changed.");
   };
   const openMenuAction=(action:string,r:Subscription)=>{
     setMenuId(null);
