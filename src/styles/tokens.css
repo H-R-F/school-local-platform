@@ -2,7 +2,6 @@
    Components should consume these variables; legacy aliases are maintained in design-system.css. */
 :root {
   color-scheme: light;
-  color-scheme: light;
   --ds-color-surface-default:#F8FAFC;
   --ds-color-surface-raised:#FFFFFF;
   --ds-color-surface-sunken:#F1F5F9;
@@ -15,6 +14,7 @@
   --ds-color-action-primary-hover:#4338CA;
   --ds-color-action-primary-pressed:#3730A3;
   --ds-color-action-subtle:#E0E7FF;
+  --ds-color-on-action:#FFFFFF;
   --ds-color-accent:#0F766E;
   --ds-color-success:#16A34A;
   --ds-color-success-subtle:#DCFCE7;
@@ -58,21 +58,140 @@
   --ds-radius-lg:8px;
   --ds-radius-xl:12px;
   --ds-radius-full:9999px;
+  --ds-radius-circle:50%;
+  --ds-radius-active-indicator:0 var(--ds-radius-sm) var(--ds-radius-sm) 0;
+  --ds-shadow-none:none;
   --ds-shadow-sm:0 1px 2px rgba(15,23,42,.06);
   --ds-shadow-md:0 2px 4px rgba(15,23,42,.08);
   --ds-shadow-lg:0 4px 8px rgba(15,23,42,.10);
-  --ds-sidebar-width:252px;
-  --ds-sidebar-collapsed-width:64px;
+  --ds-sidebar-width:264px;
+  --ds-sidebar-collapsed-width:72px;
   --ds-header-height:60px;
-  --ds-focus-ring:0 0 0 2px #4F46E5;
+  --ds-statusbar-height:44px;
+  --ds-sidebar-brand-height:76px;
+  --ds-sidebar-footer-height:68px;
+  --ds-sidebar-control-radius:8px;
+  --ds-shell-overlay:rgb(15 23 42 / 48%);
+  --ds-focus-ring:0 0 0 2px var(--ds-color-action-primary);
   --ds-focus-offset:2px;
   --ds-motion-fast:150ms ease;
-  --ds-control-height:40px;
+  --ds-control-height:44px;
+  --ds-border-width:1px;
+  --ds-focus-width:2px;
+  --ds-brand-mark-size:40px;
+  --ds-avatar-size:40px;
+  --ds-nav-icon-size:24px;
+  --ds-nav-indicator-width:4px;
+  --ds-indicator-dot-size:8px;
+  --ds-nav-count-min-width:24px;
+  --ds-nav-count-height:24px;
+  --ds-collapsed-nav-item-size:48px;
+  --ds-menu-min-width:240px;
+  --ds-topbar-search-max-width:440px;
+  --ds-user-label-max-width:200px;
+  --ds-status-label-max-width:132px;
+  --ds-status-popover-max-width:320px;
+  --ds-command-dialog-max-width:640px;
+  --ds-command-dialog-max-height:720px;
+  --ds-command-input-height:56px;
+  --ds-command-empty-height:72px;
+  --ds-page-content-max-width:1600px;
+  --ds-content-reading-width:42rem;
+  --ds-sector-panel-viewport-offset:290px;
+  --ds-sector-sidebar-min-width:16rem;
+  --ds-sector-sidebar-max-width:19rem;
+  --ds-sector-panel-mobile-max-height:28rem;
+  --ds-sector-list-mobile-max-height:20rem;
+  --ds-program-table-min-width:40rem;
+  --ds-sector-workspace-min-height:36rem;
+  --ds-sector-empty-state-min-height:18rem;
+  --ds-sector-textarea-min-height:6rem;
+  --ds-dialog-max-width:42rem;
+  --ds-form-drawer-width:38rem;
+  --ds-form-drawer-mobile-width:100vw;
+  --ds-form-drawer-header-height:4.5rem;
+  --ds-form-drawer-footer-height:4.5rem;
+  --ds-form-drawer-padding:var(--ds-space-6);
+  --ds-motion-spin:800ms;
+  --ds-command-top-offset:12vh;
+  --ds-command-max-height:70vh;
+  --ds-letter-spacing-label:.06em;
+  --ds-letter-spacing-overline:.08em;
+  --ds-letter-spacing-none:0;
+  --ds-line-height-tight:1;
+  --ds-disabled-opacity:.55;
+  --ds-active-filter:brightness(.96);
+  --ds-layer-control:2;
+  --ds-layer-banner:25;
+  --ds-layer-topbar:30;
+  --ds-layer-sidebar:35;
+  --ds-layer-menu:45;
+  --ds-layer-popover:50;
+  --ds-layer-dialog:80;
+  --ds-layer-skip-link:100;
+  --ds-motion-reduced-duration:.01ms;
+
 }
 :where(button,input,select,textarea,a,[tabindex]):focus-visible {
   outline:2px solid var(--ds-color-action-primary);
   outline-offset:var(--ds-focus-offset);
 }
 @media(prefers-reduced-motion:reduce) {
-  *,*::before,*::after {scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  *,*::before,*::after {scroll-behavior:auto!important;animation-duration:var(--ds-motion-reduced-duration)!important;animation-iteration-count:1!important;transition-duration:var(--ds-motion-reduced-duration)!important}
+}
+
+
+/* Semantic dark palette: the same component rules serve both themes. */
+:root[data-user-theme="dark"] {
+  color-scheme: dark;
+  --ds-color-surface-default:#111827;
+  --ds-color-surface-raised:#1B2636;
+  --ds-color-surface-sunken:#243247;
+  --ds-color-text-primary:#E7EDF5;
+  --ds-color-text-secondary:#AAB7C8;
+  --ds-color-text-tertiary:#8492A5;
+  --ds-color-border-default:#354357;
+  --ds-color-border-strong:#526176;
+  --ds-color-action-primary:#A5B4FC;
+  --ds-color-action-primary-hover:#C7D2FE;
+  --ds-color-action-primary-pressed:#818CF8;
+  --ds-color-action-subtle:#293653;
+  --ds-color-on-action:#111827;
+  --ds-color-accent:#5EEAD4;
+  --ds-color-success:#4ADE80;
+  --ds-color-success-subtle:#143D2B;
+  --ds-color-warning:#FBBF24;
+  --ds-color-warning-subtle:#493816;
+  --ds-color-error:#F87171;
+  --ds-color-error-subtle:#4B2228;
+  --ds-color-info:#60A5FA;
+  --ds-color-info-subtle:#1D3556;
+  --ds-color-text-muted:#AAB7C8;
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-user-theme="system"] {
+    color-scheme: dark;
+    --ds-color-surface-default:#111827;
+    --ds-color-surface-raised:#1B2636;
+    --ds-color-surface-sunken:#243247;
+    --ds-color-text-primary:#E7EDF5;
+    --ds-color-text-secondary:#AAB7C8;
+    --ds-color-text-tertiary:#8492A5;
+    --ds-color-border-default:#354357;
+    --ds-color-border-strong:#526176;
+    --ds-color-action-primary:#A5B4FC;
+    --ds-color-action-primary-hover:#C7D2FE;
+    --ds-color-action-primary-pressed:#818CF8;
+    --ds-color-action-subtle:#293653;
+    --ds-color-on-action:#111827;
+    --ds-color-accent:#5EEAD4;
+    --ds-color-success:#4ADE80;
+    --ds-color-success-subtle:#143D2B;
+    --ds-color-warning:#FBBF24;
+    --ds-color-warning-subtle:#493816;
+    --ds-color-error:#F87171;
+    --ds-color-error-subtle:#4B2228;
+    --ds-color-info:#60A5FA;
+    --ds-color-info-subtle:#1D3556;
+  }
 }

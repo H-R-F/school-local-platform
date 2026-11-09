@@ -1,204 +1,178 @@
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  Activity, AlertTriangle, ArrowRight, ArrowUpRight, Banknote, BookOpenCheck,
-  CalendarDays, CheckCircle2, Clock3, GraduationCap, LayoutDashboard,
-  ShieldAlert, Users, Wallet, X,
+  Activity, AlertCircle, ArrowRight, ArrowUpRight, BookOpen, CalendarDays,
+  FileCheck2, GraduationCap, RefreshCw, ShieldAlert, Users, Wallet,
+  UserRoundCheck, ClipboardList, CalendarCheck, Bus, Package, TrendingUp,
 } from "lucide-react";
-import {
-  academicLevels, dashboardRangeOptions,
-  financialSummary, importantAlerts, recentActivities, revenueByRange,
-  studentsAtRisk, type DashboardRange,
-} from "../../data/director-dashboard";
+import { studentsRepository, type StudentsData } from "../../services/students";
+import { teachersRepository, type TeachersData } from "../../services/teachers";
+import { employeesRepository, type EmployeesData } from "../../services/employees";
+import { schoolBranding } from "../../config/school";
 import type { AuthenticatedSidebarUser } from "../../types/navigation";
-import { DirectorTaskCenter } from "./DirectorTaskCenter";
 import "./DirectorOverviewPage.css";
 
-interface Props {
-  user: AuthenticatedSidebarUser;
-  onNavigate: (route: string) => void;
+interface Props { user: AuthenticatedSidebarUser; onNavigate: (route: string) => void }
+type LoadState<T> = { status: "loading" } | { status: "ready"; data: T } | { status: "error"; message: string };
+type DemoRow = { id: string; title: string; detail: string; date: string; route: string; tag?: string; tone?: "warning" | "danger" | "success" | "info" };
+const fmt = (n: number) => new Intl.NumberFormat("fr-FR").format(n);
+const dh = (n: number) => `${fmt(n)} DH`;
+const dateLabel = new Intl.DateTimeFormat("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(new Date());
+const timeLabel = (value: string) => new Intl.DateTimeFormat("fr-FR", { hour: "2-digit", minute: "2-digit" }).format(new Date(value));
+const DEMO = {
+  attendance: { present: 1126, absent: 74, late: 18, expected: 1200, completed: true },
+  academic: { average: 13.4, previous: 12.9, eligible: 864, validated: 864, levels: [{name:"Primaire",average:14.1,count:402},{name:"Collège",average:13.2,count:286},{name:"Lycée",average:12.6,count:176}], terms:[{name:"T1",value:12.9},{name:"T2",value:13.4}] },
+  finance: { collected: 1842500, outstanding: 326400, debtors: 118, expenses: 742300, net: 1100200, expensesRecent: [{name:"Fournitures pédagogiques",category:"Pédagogie",date:"2026-11-06",amount:8450,status:"Payée"},{name:"Maintenance informatique",category:"Maintenance",date:"2026-11-04",amount:6200,status:"À régler"},{name:"Consommables sanitaires",category:"Entretien",date:"2026-11-02",amount:3150,status:"Payée"}] },
+  risk: [
+    {id:"ELV-0241",className:"3ème collège B",category:"Absences répétées",reason:"Plusieurs absences enregistrées",status:"À examiner",tone:"danger"},
+    {id:"ELV-0187",className:"1ère Bac Sciences A",category:"Baisse des résultats",reason:"Résultats en baisse sur la période",status:"Suivi en cours",tone:"warning"},
+    {id:"ELV-0316",className:"6ème primaire C",category:"Retards fréquents",reason:"Retards récurrents signalés",status:"En observation",tone:"info"},
+  ],
+  approvals: [
+    {id:"grades",title:"Notes à valider",count:8,age:"Depuis hier",route:"/grades-validation",permission:"pedagogy.grades.view"},
+    {id:"reports",title:"Rapports pédagogiques",count:3,age:"Depuis 2 jours",route:"/pedagogical-reports",permission:"pedagogy.reports.view"},
+    {id:"content",title:"Ressources pédagogiques",count:5,age:"Depuis 3 jours",route:"/courses-exercises",permission:"pedagogy.content.view"},
+  ],
+  events: [
+    {id:"exam-1",title:"Évaluation de mathématiques",detail:"3ème collège · Mathématiques",date:"2026-11-10T09:00:00",route:"/examinations",tag:"Examen"},
+    {id:"event-1",title:"Réunion des parents",detail:"Salle polyvalente · 16:00",date:"2026-11-12T16:00:00",route:"/events",tag:"Événement"},
+    {id:"exam-2",title:"Contrôle de français",detail:"2ème Bac · Français",date:"2026-11-14T10:00:00",route:"/examinations",tag:"Examen"},
+  ],
+  activities: [
+    {id:"a1",title:"Les notes de 2ème année Bac ont été validées.",who:"Responsable pédagogique",when:"2026-11-08T10:35:00",route:"/grades-validation"},
+    {id:"a2",title:"Un dossier d'inscription a été créé.",who:"Service administratif",when:"2026-11-08T09:50:00",route:"/students"},
+    {id:"a3",title:"Un paiement a été confirmé.",who:"Service financier",when:"2026-11-07T16:20:00",route:"/payments"},
+    {id:"a4",title:"Un rapport pédagogique a été soumis.",who:"Enseignant",when:"2026-11-07T14:05:00",route:"/pedagogical-reports"},
+  ],
+};
+function Heading({eyebrow,title,action,onClick}:{eyebrow:string;title:string;action?:string;onClick?:()=>void}) {
+  return <div className="director-section-heading"><div><span>{eyebrow}</span><h2>{title}</h2></div>{action&&onClick&&<button type="button" onClick={onClick}>{action}<ArrowRight size={14}/></button>}</div>;
+}
+function Metric({label,value,detail,icon:Icon,tone,onClick}:{label:string;value:string;detail:string;icon:typeof Users;tone:string;onClick:()=>void}) {
+  return <button type="button" className="director-metric" onClick={onClick}><span className={`director-metric-icon director-tone--${tone}`}><Icon size={18}/></span><span className="director-metric-copy"><span>{label}</span><strong>{value}</strong><small>{detail}</small></span><ArrowRight size={14} className="director-metric-arrow"/></button>;
+}
+function Empty({children}:{children:string}) { return <div className="director-empty-state">{children}</div>; }
+function InfoCard({label,value,detail,tone="neutral"}:{label:string;value:string;detail:string;tone?:string}) {
+  return <div className="director-info-card"><span className={`director-info-indicator director-info-indicator--${tone}`}/><div><span>{label}</span><strong>{value}</strong><small>{detail}</small></div></div>;
+}
+function Insight({title,description,action,tone="info",onClick}:{title:string;description:string;action:string;tone?:string;onClick:()=>void}) {
+  return <div className={`director-insight director-insight--${tone}`}><div><strong>{title}</strong><p>{description}</p></div><button type="button" onClick={onClick}>{action}<ArrowRight size={13}/></button></div>;
 }
 
-const number = (value: number) => new Intl.NumberFormat("fr-FR").format(value);
-const todayLabel = () => new Intl.DateTimeFormat("fr-FR", {
-  weekday: "long", day: "numeric", month: "long", year: "numeric",
-}).format(new Date());
-
-function SectionTitle({ eyebrow, title, action }: {
-  eyebrow: string;
-  title: string;
-  action?: { label: string; run: () => void };
-}) {
-  return (
-    <div className="director-section-title">
-      <div><span>{eyebrow}</span><h2>{title}</h2></div>
-      {action && <button type="button" onClick={action.run}>{action.label}<ArrowRight size={15}/></button>}
-    </div>
-  );
+function Bar({label,value,max,caption}:{label:string;value:number;max:number;caption:string}) {
+  return <div className="director-bar-row"><div><strong>{label}</strong><span>{caption}</span></div><div className="director-bar-track"><i style={{width:`${max ? value/max*100 : 0}%`}}/></div></div>;
 }
+export function DirectorOverviewPage({user,onNavigate}:Props) {
+  const allowed = (permission:string) => user.permissions.includes(permission as never);
+  const [students,setStudents] = useState<LoadState<StudentsData>>({status:"loading"});
+  const [teachers,setTeachers] = useState<LoadState<TeachersData>>({status:"loading"});
+  const [employees,setEmployees] = useState<LoadState<EmployeesData>>({status:"loading"});
+  const [refreshKey,setRefreshKey] = useState(0);
+  const [yearId,setYearId] = useState("");
+  const [showAllActivities,setShowAllActivities] = useState(false);
+  const [activeTab,setActiveTab] = useState<"overview"|"academic"|"students"|"operations"|"finance"|"activity">("overview");
+  const refresh = useCallback(() => setRefreshKey(v=>v+1),[]);
+  useEffect(() => {
+    let alive = true;
+    if (allowed("people.students.view")) studentsRepository.list().then(data=>{if(alive){setStudents({status:"ready",data});setYearId(current=>current||data.academicYears.find(y=>y.status==="Active")?.id||"");}}).catch(e=>{if(alive)setStudents({status:"error",message:e instanceof Error?e.message:"Chargement impossible."});});
+    else setStudents({status:"error",message:"Accès aux dossiers élèves non autorisé."});
+    if (allowed("people.teachers.view")) teachersRepository.list().then(data=>{if(alive)setTeachers({status:"ready",data});}).catch(e=>{if(alive)setTeachers({status:"error",message:e instanceof Error?e.message:"Chargement impossible."});});
+    else setTeachers({status:"error",message:"Accès aux dossiers enseignants non autorisé."});
+    if (allowed("people.employees.view")) employeesRepository.list().then(data=>{if(alive)setEmployees({status:"ready",data});}).catch(e=>{if(alive)setEmployees({status:"error",message:e instanceof Error?e.message:"Chargement impossible."});});
+    else setEmployees({status:"error",message:"Accès aux dossiers du personnel non autorisé."});
+    return ()=>{alive=false;};
+  },[refreshKey,user.permissions]);
+  const studentData = students.status==="ready" ? students.data : null;
+  const year = studentData?.academicYears.find(y=>y.id===yearId) ?? null;
+  const yearRows = useMemo(()=>studentData?.students.filter(s=>s.enrollment?.academicYearId===yearId)??[],[studentData,yearId]);
+  const activeStudents = yearRows.filter(s=>s.enrollment?.status==="Actif");
+  const teacherCount = teachers.status==="ready" ? teachers.data.teachers.filter(t=>t.employmentStatus==="Actif").length : null;
+  const employeeCount = employees.status==="ready" ? employees.data.employees.filter(e=>e.employmentStatus==="Actif").length : null;
+  const cycles = useMemo(()=>{const map=new Map<string,number>();activeStudents.forEach(s=>{const k=s.cycleName||s.levelName||"Niveau non renseigné";map.set(k,(map.get(k)||0)+1);});return [...map].map(([name,count])=>({name,count}));},[activeStudents]);
+  const gender = useMemo(()=>({boys:activeStudents.filter(s=>s.gender==="Masculin").length,girls:activeStudents.filter(s=>s.gender==="Féminin").length,unknown:activeStudents.filter(s=>s.gender==="Non renseigné").length}),[activeStudents]);
+  const isDirector = user.role==="director" && allowed("overview.view");
+  const canFinance = allowed("finance.reports.view") && allowed("finance.balances.view");
+  const greeting = new Date().getHours()<12?"Bonjour":new Date().getHours()<18?"Bon après-midi":"Bonsoir";
+  const firstName = user.displayName.trim().split(/\s+/)[0]||"Directeur";
+  const approvalRows = DEMO.approvals.filter(a=>allowed(a.permission));
+  const upcoming = DEMO.events.slice().sort((a,b)=>a.date.localeCompare(b.date));
+  const displayedActivities = (showAllActivities?DEMO.activities:DEMO.activities.slice(0,3));
+  const totalStudents = activeStudents.length;
+  const enrollmentStats = {
+    active: yearRows.filter(s=>s.enrollment?.status==="Actif").length,
+    pending: yearRows.filter(s=>s.enrollment?.status==="En attente").length,
+    suspended: yearRows.filter(s=>s.enrollment?.status==="Suspendu").length,
+    withdrawn: yearRows.filter(s=>s.enrollment?.status==="Retiré").length,
+  };
+  const studentDocumentStats = activeStudents.flatMap(s=>s.documents).reduce((a,d)=>{a.total++;if(d.status==="À fournir"||d.status==="En attente de vérification"||d.status==="Refusé")a.toReview++;if(d.status==="Vérifié")a.verified++;return a;},{total:0,toReview:0,verified:0});
+  const guardianCoverage = activeStudents.filter(s=>s.guardiansResolved.length>0).length;
+  const teacherRows = teachers.status==="ready"?teachers.data.teachers:[];
+  const employeeRows = employees.status==="ready"?employees.data.employees:[];
+  const staffDocsToReview = [...teacherRows.flatMap(t=>t.documents),...employeeRows.flatMap(e=>e.documents)].filter(d=>d.status==="À vérifier").length;
+  const assignedTeachers = teacherRows.filter(t=>t.employmentStatus==="Actif"&&t.assignmentsResolved.length>0).length;
+  const weeklyTeachingHours = teacherRows.flatMap(t=>t.assignmentsResolved).reduce((sum,a)=>sum+a.weeklyHours,0);
+  const staffStatusCounts = {active:teacherRows.filter(t=>t.employmentStatus==="Actif").length+employeeRows.filter(e=>e.employmentStatus==="Actif").length,onLeave:teacherRows.filter(t=>t.employmentStatus==="En congé").length+employeeRows.filter(e=>e.employmentStatus==="En congé").length,inactive:teacherRows.filter(t=>t.employmentStatus==="Inactif").length+employeeRows.filter(e=>e.employmentStatus==="Inactif").length};
 
-function MetricCard({ label, value, detail, icon: Icon, tone, onClick }: {
-  label: string;
-  value: string;
-  detail: string;
-  icon: typeof Users;
-  tone: "blue" | "green" | "amber" | "violet";
-  onClick: () => void;
-}) {
-  return (
-    <button type="button" className="director-metric" onClick={onClick}>
-      <span className={`director-metric-icon director-tone--${tone}`}><Icon size={19}/></span>
-      <span className="director-metric-copy"><span>{label}</span><strong>{value}</strong><small>{detail}</small></span>
-      <ArrowRight className="director-metric-arrow" size={16}/>
-    </button>
-  );
-}
-
-function AttendancePanel({ onNavigate }: { onNavigate: (route: string) => void }) {
-  const total = 1248;
-  const present = 1176;
-  const absent = 49;
-  const late = 23;
-  return (
-    <article className="director-panel">
-      <SectionTitle eyebrow="VIE SCOLAIRE · AUJOURD’HUI" title="Présence des élèves"
-        action={{ label: "Ouvrir les présences", run: () => onNavigate("/student-attendance") }}/>
-      <div className="director-attendance-main">
-        <div><strong>94,2<span>%</span></strong><small>Taux de présence</small></div>
-        <div className="director-attendance-track" role="img" aria-label="94,2 % présents, 3,9 % absents, 1,9 % en retard">
-          <span className="is-present" style={{ width: "94.2%" }}/><span className="is-absent" style={{ width: "3.9%" }}/><span className="is-late" style={{ width: "1.9%" }}/>
-        </div>
+  const attendanceRate = DEMO.attendance.expected ? Math.round(DEMO.attendance.present/DEMO.attendance.expected*100) : 0;
+  const yearWarning = studentData && !year;
+  if(!isDirector) return <main className="director-dashboard"><div className="director-access"><ShieldAlert size={24}/><h1>Accès réservé à la direction</h1><p>Ce tableau de bord est accessible uniquement au compte Directeur autorisé.</p></div></main>;
+  return <main className="director-dashboard">
+    <header className="director-welcome">
+      <div className="director-welcome-copy">
+        <div className="director-breadcrumb"><GraduationCap size={15}/> Direction <span>/</span> Vue d’ensemble</div>
+        <h1>{greeting}, {firstName}</h1>
+        <p>Voici un aperçu de votre établissement.</p>
+        <div className="director-context"><span><CalendarDays size={14}/>{year?.name??"Année scolaire non définie"}</span><span>{dateLabel}</span><span className="director-school-name">{schoolBranding.name}</span></div>
       </div>
-      <div className="director-attendance-breakdown">
-        <div><i className="is-present"/><span>Présents</span><strong>{number(present)}</strong></div>
-        <div><i className="is-absent"/><span>Absents</span><strong>{number(absent)}</strong></div>
-        <div><i className="is-late"/><span>En retard</span><strong>{number(late)}</strong></div>
+      <div className="director-welcome-actions">
+        <label className="director-period"><span>Année scolaire active</span><select value={yearId} onChange={e=>setYearId(e.target.value)} disabled={!studentData?.academicYears.length}><option value="">Aucune année active</option>{studentData?.academicYears.map(y=><option key={y.id} value={y.id}>{y.name} · {y.status}</option>)}</select></label>
+        <button className="director-refresh" type="button" onClick={refresh}><RefreshCw size={15}/> Actualiser</button>
       </div>
-      <div className="director-panel-footnote">Sur {number(total)} élèves inscrits · chiffres simulés pour la démonstration</div>
-    </article>
-  );
-}
-
-export function DirectorOverviewPage({ user, onNavigate }: Props) {
-  const [range, setRange] = useState<DashboardRange>("30");
-  const [showDemoNotice, setShowDemoNotice] = useState(true);
-  const firstName = user.displayName.split(" ")[0];
-  const hour = new Date().getHours();
-  const greeting = hour < 12 ? "Bonjour" : hour < 18 ? "Bon après-midi" : "Bonsoir";
-  const activities = useMemo(() => recentActivities.filter(item => item.daysAgo <= Number(range)).slice(0, 5), [range]);
-  const revenue = revenueByRange[range];
-  const maxRevenue = Math.max(...revenue.map(item => item.amount), 1);
-  const average = "14,6";
-  const riskCount = studentsAtRisk.filter(item => item.status !== "Résolu").length;
-  const periodLabel = range === "7" ? "7 derniers jours" : range === "30" ? "30 derniers jours" : "90 derniers jours";
-
-  return (
-    <main className="director-dashboard">
-      <header className="director-welcome">
-        <div className="director-welcome-copy">
-          <div className="director-breadcrumb"><LayoutDashboard size={14}/> Direction <span>/</span> Tableau de bord</div>
-          <div className="director-title-row"><div><h1>Tableau de bord</h1><p>{greeting} {firstName}, voici les points essentiels de votre établissement.</p></div></div>
-          <div className="director-context"><span><CalendarDays size={14}/> Année scolaire 2026–2027</span><span>{todayLabel()}</span></div>
-        </div>
-        <label className="director-period"><span>Période d’analyse</span><select value={range} onChange={event => setRange(event.target.value as DashboardRange)}>{dashboardRangeOptions.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
-      </header>
-
-      {showDemoNotice && (
-        <div className="director-demo-notice" role="status">
-          <span><AlertTriangle size={17}/><span><strong>Mode démonstration</strong> — Les indicateurs de cette page sont fictifs. Les données ne sont pas encore consolidées depuis une base centrale.</span></span>
-          <button type="button" onClick={() => setShowDemoNotice(false)} aria-label="Masquer l’avertissement"><X size={16}/></button>
-        </div>
-      )}
-
-      <section className="director-metrics" aria-label="Indicateurs clés de l’établissement">
-        <MetricCard label="Élèves inscrits" value="1 248" detail="1 216 actifs · 32 dossiers à vérifier" icon={GraduationCap} tone="blue" onClick={() => onNavigate("/students")}/>
-        <MetricCard label="Présence aujourd’hui" value="94,2 %" detail="49 absents · 23 retards" icon={Users} tone="green" onClick={() => onNavigate("/student-attendance")}/>
-        <MetricCard label="Suivis prioritaires" value="12" detail={`${riskCount} situations élèves ouvertes · autres alertes`} icon={ShieldAlert} tone="amber" onClick={() => onNavigate("/student-risk")}/>
-        <MetricCard label="Encaissements" value={financialSummary.collected} detail={`${financialSummary.comparison} par rapport à la période précédente`} icon={Wallet} tone="violet" onClick={() => onNavigate("/financial-reports")}/>
+    </header>
+    <div className="director-demo-banner"><span><AlertCircle size={16}/><strong>Mode démonstration</strong></span><p>Les données affichées sont fictives ou issues des dépôts locaux du navigateur. Elles ne représentent pas des statistiques réelles et ne sont pas synchronisées avec un serveur central.</p></div>
+    {yearWarning&&<div className="director-error"><AlertCircle size={16}/>Aucune année scolaire active n’est configurée. Les indicateurs d’effectifs ne peuvent pas être calculés.</div>}
+    <nav className="director-tabs" aria-label="Catégories du tableau de bord">
+      {([["overview","Vue générale"],["academic","Académique"],["students","Élèves"],["operations","Personnel & opérations"],["finance","Finances"],["activity","Validations & activité"]] as const).map(([id,label])=><button key={id} type="button" className={activeTab===id?"is-active":""} aria-current={activeTab===id?"page":undefined} onClick={()=>setActiveTab(id)}>{label}</button>)}
+    </nav>
+    {activeTab==="overview"&&<div className="director-tab-content">
+      <section className="director-metrics" aria-label="Indicateurs clés">
+        <Metric label="Effectif total" value={students.status==="ready"?fmt(totalStudents):"—"} detail={students.status==="ready"?"Inscriptions actives · année sélectionnée":"Données élèves indisponibles"} icon={GraduationCap} tone="blue" onClick={()=>onNavigate("/students")}/>
+        <Metric label="Enseignants actifs" value={teacherCount===null?"—":fmt(teacherCount)} detail="Personnel enseignant uniquement" icon={BookOpen} tone="green" onClick={()=>onNavigate("/teachers")}/>
+        <Metric label="Personnel administratif" value={employeeCount===null?"—":fmt(employeeCount)} detail="Employés non enseignants actifs" icon={Users} tone="violet" onClick={()=>onNavigate("/employees")}/>
+        <Metric label="Présence aujourd’hui" value={fmt(attendanceRate)+" %"} detail={`${fmt(DEMO.attendance.present)} présents · ${fmt(DEMO.attendance.expected-DEMO.attendance.present)} absents · démo`} icon={UserRoundCheck} tone="green" onClick={()=>onNavigate("/student-attendance")}/>
+        <Metric label="Performance académique" value={DEMO.academic.average.toFixed(1).replace(".",",")+"/20"} detail={`+${(DEMO.academic.average-DEMO.academic.previous).toFixed(1).replace(".",",")} pt · démo`} icon={TrendingUp} tone="blue" onClick={()=>onNavigate("/pedagogical-reports")}/>
+        <Metric label="Impayés" value={canFinance?dh(DEMO.finance.outstanding):"Masqué"} detail={canFinance?`${fmt(DEMO.finance.debtors)} élèves concernés · démo`:"Accès financier restreint"} icon={Wallet} tone="amber" onClick={()=>canFinance&&onNavigate("/student-balances")}/>
       </section>
-
-      <section className="director-priority-section">
-        <DirectorTaskCenter onNavigate={onNavigate}/>
+      <section className="director-grid director-grid--two">
+        <article className="director-panel"><Heading eyebrow="RÉSULTATS SCOLAIRES · DÉMONSTRATION" title="Performance académique" action="Voir les rapports" onClick={()=>onNavigate("/pedagogical-reports")}/><div className="director-academic-summary"><div><span>Moyenne générale</span><strong>{DEMO.academic.average.toFixed(1).replace(".",",")}<small>/20</small></strong></div><div className="director-trend"><ArrowUpRight size={16}/><strong>+0,5 pt</strong><span>vs période précédente</span></div><div className="director-meta">Trimestre 2 · {DEMO.academic.validated} résultats validés sur {DEMO.academic.eligible}</div></div><div className="director-bars">{DEMO.academic.levels.map(l=><Bar key={l.name} label={l.name} value={l.average} max={20} caption={l.average.toFixed(1).replace(".",",")+"/20 · "+l.count+" résultats"}/>)}</div></article>
+        <article className="director-panel"><Heading eyebrow="STRUCTURE SCOLAIRE · DONNÉES LOCALES" title="Aperçu des élèves" action="Voir les élèves" onClick={()=>onNavigate("/students")}/>{students.status==="loading"?<div className="director-loading">Chargement des effectifs…</div>:students.status==="error"?<div className="director-error-inline">{students.message}</div>:<><div className="director-student-total"><strong>{fmt(totalStudents)}</strong><span>élèves inscrits actifs</span></div><div className="director-bars">{cycles.map(c=><Bar key={c.name} label={c.name} value={c.count} max={Math.max(...cycles.map(x=>x.count),1)} caption={fmt(c.count)+" élèves"}/>)}</div><div className="director-gender"><span>Garçons <strong>{gender.boys}</strong></span><span>Filles <strong>{gender.girls}</strong></span><span>Non renseigné <strong>{gender.unknown}</strong></span></div></>}<div className="director-risk-count"><ShieldAlert size={16}/><span><strong>{DEMO.risk.length}</strong> suivis fictifs</span><button type="button" onClick={()=>onNavigate("/student-risk")}>Consulter<ArrowRight size={13}/></button></div></article>
       </section>
-
-      <section className="director-content-grid director-content-grid--equal">
-        <AttendancePanel onNavigate={onNavigate}/>
-        <article className="director-panel director-alert-panel">
-          <SectionTitle eyebrow="POINTS DE VIGILANCE" title="Ce qui demande votre attention"
-            action={{ label: "Suivi des élèves", run: () => onNavigate("/student-risk") }}/>
-          <div className="director-alert-list">
-            {importantAlerts.map(alert => (
-              <div className={`director-alert director-alert--${alert.severity}`} key={alert.id}>
-                <span className="director-alert-icon">{alert.severity === "critical" ? <AlertTriangle size={17}/> : alert.severity === "warning" ? <ShieldAlert size={17}/> : <CalendarDays size={17}/>}</span>
-                <div><strong>{alert.title}</strong><p>{alert.description}</p></div>
-                <button type="button" onClick={() => onNavigate(alert.route)}>{alert.action}<ArrowRight size={14}/></button>
-              </div>
-            ))}
-          </div>
-        </article>
+      <section className="director-panel"><Heading eyebrow="LECTURE RAPIDE" title="Points à surveiller"/><div className="director-insight-grid"><Insight title="Présence des élèves" description={`${DEMO.attendance.absent} absences et ${DEMO.attendance.late} retards illustrés dans les données de démonstration.`} action="Suivre les présences" tone="warning" onClick={()=>onNavigate("/student-attendance")}/><Insight title="Suivi pédagogique" description={`${DEMO.risk.length} dossiers fictifs sont signalés pour examen humain.`} action="Consulter les suivis" tone="danger" onClick={()=>onNavigate("/student-risk")}/><Insight title="Recouvrement" description={canFinance?`${dh(DEMO.finance.outstanding)} restent à recouvrer dans le scénario financier.`:"Les chiffres financiers sont masqués selon vos autorisations."} action={canFinance?"Voir les soldes":"Accès restreint"} onClick={()=>canFinance&&onNavigate("/student-balances")}/></div></section>
+    </div>}
+    {activeTab==="academic"&&<div className="director-tab-content">
+      <section className="director-grid director-grid--two">
+        <article className="director-panel"><Heading eyebrow="RÉSULTATS · DÉMONSTRATION" title="Performance par cycle"/><div className="director-academic-summary"><div><span>Moyenne générale</span><strong>{DEMO.academic.average.toFixed(1).replace(".",",")}<small>/20</small></strong></div><div className="director-trend"><ArrowUpRight size={16}/><strong>+0,5 pt</strong><span>vs période précédente</span></div></div><div className="director-bars">{DEMO.academic.levels.map(l=><Bar key={l.name} label={l.name} value={l.average} max={20} caption={l.average.toFixed(1).replace(".",",")+"/20 · "+l.count+" résultats"}/>)}</div><div className="director-term-row">{DEMO.academic.terms.map(t=><span key={t.name}>{t.name} <strong>{t.value.toFixed(1).replace(".",",")}/20</strong></span>)}</div></article>
+        <article className="director-panel"><Heading eyebrow="RÉSULTATS · DÉMONSTRATION" title="Répartition des résultats"/><div className="director-info-grid director-info-grid--two"><InfoCard label="Résultats validés" value={fmt(DEMO.academic.validated)} detail={`${Math.round(DEMO.academic.validated/DEMO.academic.eligible*100)} % des résultats attendus`} tone="success"/><InfoCard label="Résultats en attente" value={fmt(DEMO.academic.eligible-DEMO.academic.validated)} detail="À contrôler avant clôture" tone="warning"/><InfoCard label="Moyenne la plus élevée" value="14,1/20" detail="Primaire · fictif" tone="success"/><InfoCard label="Niveau à accompagner" value="12,6/20" detail="Lycée · fictif" tone="warning"/></div><div className="director-bars">{[{label:"Très bons résultats · 16 à 20",value:28},{label:"Résultats satisfaisants · 12 à 15,9",value:46},{label:"Résultats fragiles · 10 à 11,9",value:18},{label:"Résultats insuffisants · moins de 10",value:8}].map(x=><Bar key={x.label} label={x.label} value={x.value} max={100} caption={x.value+" % · fictif"}/>)}</div></article>
       </section>
-
-      <section className="director-content-grid director-content-grid--wide-left">
-        <article className="director-panel">
-          <SectionTitle eyebrow="RÉSULTATS SCOLAIRES" title="Vue pédagogique"
-            action={{ label: "Rapports pédagogiques", run: () => onNavigate("/pedagogical-reports") }}/>
-          <div className="director-academic-summary"><div><strong>{average}<small>/20</small></strong><span>Moyenne générale simulée</span></div><span className="director-trend"><ArrowUpRight size={15}/> +0,4 pt</span></div>
-          <div className="director-chart-caption">Moyenne par niveau · sur 20</div>
-          <div className="director-level-bars">
-            {academicLevels.map(level => <div className="director-level-row" key={level.label}>
-              <span>{level.label}</span><div><i style={{ width: `${level.value / 20 * 100}%` }}/></div><strong>{level.value.toLocaleString("fr-FR")}</strong>
-            </div>)}
-          </div>
-          <div className="director-class-summary">
-            <div><span>Meilleure classe</span><strong>1re B · 15,8/20</strong></div>
-            <div><span>À accompagner</span><strong>4e A · 13,9/20</strong></div>
-          </div>
-          <div className="director-inline-link"><button type="button" onClick={() => onNavigate("/class-rankings")}>Comparer les classes<ArrowRight size={14}/></button></div>
-        </article>
-
-        <article className="director-panel">
-          <SectionTitle eyebrow="PILOTAGE FINANCIER" title="Situation financière"
-            action={{ label: "Rapports financiers", run: () => onNavigate("/financial-reports") }}/>
-          <div className="director-finance-list">
-            <div><span className="director-finance-icon is-income"><Banknote size={17}/></span><span><strong>Encaissements</strong><small>Montants reçus</small></span><b>{financialSummary.collected}</b></div>
-            <div><span className="director-finance-icon is-outstanding"><Clock3 size={17}/></span><span><strong>Reste à recouvrer</strong><small>127 dossiers concernés</small></span><b>{financialSummary.outstanding}</b></div>
-            <div><span className="director-finance-icon is-expense"><Activity size={17}/></span><span><strong>Dépenses enregistrées</strong><small>Charges de fonctionnement</small></span><b>{financialSummary.expenses}</b></div>
-          </div>
-          <div className="director-chart-caption">Évolution des recettes · milliers de DH · {periodLabel}</div>
-          <div className="director-revenue-chart" role="img" aria-label={revenue.map(item => `${item.label} : ${item.amount} milliers de dirhams`).join(", ")}>
-            {revenue.map(item => <div key={item.label}><strong>{item.amount}</strong><span><i style={{ height: `${item.amount / maxRevenue * 100}%` }}/></span><small>{item.label}</small></div>)}
-          </div>
-        </article>
-      </section>
-
-      <section className="director-content-grid director-content-grid--wide-left">
-        <article className="director-panel">
-          <SectionTitle eyebrow="ACCOMPAGNEMENT DES ÉLÈVES" title="Situations à suivre"
-            action={{ label: "Ouvrir le suivi", run: () => onNavigate("/student-risk") }}/>
-          <div className="director-risk-list">
-            {studentsAtRisk.slice(0, 3).map(student => <button type="button" className="director-risk-row" key={student.id} onClick={() => onNavigate(`/student-risk?student=${student.id}`)}>
-              <span className={`director-risk-avatar director-risk-avatar--${student.tone}`}>{student.initials}</span>
-              <span className="director-risk-copy"><strong>{student.name}</strong><small>{student.className} · {student.reason}</small></span>
-              <span className={`director-risk-status director-risk-status--${student.tone}`}>{student.status}</span>
-              <ArrowRight size={15}/>
-            </button>)}
-          </div>
-          <div className="director-panel-footnote">Exemples fictifs · consulter le dossier complet dans le module de suivi</div>
-        </article>
-        <article className="director-panel">
-          <SectionTitle eyebrow="VIE DE L’ÉTABLISSEMENT" title="Activité récente"
-            action={{ label: "Tout l’historique", run: () => onNavigate("/activity-history") }}/>
-          <div className="director-activity-list">
-            {activities.map(item => <div className="director-activity-row" key={item.id}>
-              <span className={`director-activity-icon director-activity-icon--${item.type}`}>{item.type === "payment" ? <Banknote size={15}/> : item.type === "grade" ? <CheckCircle2 size={15}/> : item.type === "attendance" ? <CalendarDays size={15}/> : item.type === "course" ? <BookOpenCheck size={15}/> : <GraduationCap size={15}/>}</span>
-              <span><strong>{item.title}</strong><small>{item.description}</small></span>
-              <time>{item.daysAgo === 0 ? "Aujourd’hui" : item.daysAgo === 1 ? "Hier" : `Il y a ${item.daysAgo} j`} · {item.time}</time>
-            </div>)}
-            {activities.length === 0 && <p className="director-empty">Aucune activité sur cette période.</p>}
-          </div>
-        </article>
-      </section>
-
-      <footer className="director-footer"><span>Direction · Tableau de bord</span><span>Données de démonstration · Période : {periodLabel}</span></footer>
-    </main>
-  );
+      <section className="director-panel"><Heading eyebrow="ORGANISATION PÉDAGOGIQUE · DÉMONSTRATION" title="Examens et couverture des cours"/><div className="director-info-grid director-info-grid--two"><InfoCard label="Examens planifiés" value="12" detail="Sur les 14 prochains jours" tone="info"/><InfoCard label="Examens à corriger" value="86" detail="Copies en attente de correction" tone="warning"/><InfoCard label="Cours planifiés" value="94 %" detail="Séances prévues dans les emplois du temps" tone="success"/><InfoCard label="Cours à reprogrammer" value="6" detail="Conflits ou séances non planifiées" tone="warning"/></div><div className="director-quick-actions">{allowed("pedagogy.exams.view")&&<button type="button" onClick={()=>onNavigate("/examinations")}><CalendarDays size={16}/>Calendrier des examens<ArrowRight size={13}/></button>}{allowed("pedagogy.schedule.view")&&<button type="button" onClick={()=>onNavigate("/timetables")}><CalendarCheck size={16}/>Emplois du temps<ArrowRight size={13}/></button>}{allowed("pedagogy.grades.view")&&<button type="button" onClick={()=>onNavigate("/grades-validation")}><FileCheck2 size={16}/>Validation des notes<ArrowRight size={13}/></button>}</div></section>
+      <section className="director-panel"><Heading eyebrow="DÉCISIONS DE LA DIRECTION" title="Points d’attention"/><div className="director-insight-grid"><Insight title="Identifier les niveaux fragiles" description="Comparer les moyennes par cycle et demander un plan d’accompagnement aux responsables concernés." action="Ouvrir les rapports" onClick={()=>onNavigate("/pedagogical-reports")}/><Insight title="Sécuriser la clôture des notes" description="Suivre les résultats non validés et les retards de correction." action="Voir les validations" tone="warning" onClick={()=>onNavigate("/grades-validation")}/><Insight title="Prévenir les conflits" description="Contrôler les séances déplacées, les salles et les examens à venir." action="Voir les emplois du temps" onClick={()=>onNavigate("/timetables")}/></div></section>
+    </div>}
+    {activeTab==="students"&&<div className="director-tab-content">
+      <section className="director-panel"><Heading eyebrow="INSCRIPTIONS · DONNÉES LOCALES" title="État des effectifs et des dossiers"/>{students.status==="ready"?<><div className="director-info-grid"><InfoCard label="Inscriptions actives" value={fmt(enrollmentStats.active)} detail="Effectif de l’année sélectionnée" tone="success"/><InfoCard label="En attente" value={fmt(enrollmentStats.pending)} detail="Dossiers à finaliser" tone="warning"/><InfoCard label="Suspendues" value={fmt(enrollmentStats.suspended)} detail="À vérifier avec l’administration" tone="warning"/><InfoCard label="Retirées" value={fmt(enrollmentStats.withdrawn)} detail="Non comptées dans l’effectif actif"/></div><div className="director-info-grid director-info-grid--three"><InfoCard label="Documents à revoir" value={fmt(studentDocumentStats.toReview)} detail={`${fmt(studentDocumentStats.verified)} documents vérifiés sur ${fmt(studentDocumentStats.total)}`} tone={studentDocumentStats.toReview?"warning":"success"}/><InfoCard label="Parents liés" value={fmt(guardianCoverage)} detail={`${totalStudents?Math.round(guardianCoverage/totalStudents*100):0} % des élèves actifs`} tone="info"/><InfoCard label="Comptes non actifs" value={fmt(activeStudents.filter(s=>s.accountStatus!=="Actif").length)} detail="À vérifier avec l’administration" tone="warning"/></div></>:<div className="director-error-inline">{students.status==="loading"?"Chargement des dossiers élèves…":students.message}</div>}<div className="director-quick-actions">{allowed("people.students.view")&&<button type="button" onClick={()=>onNavigate("/students")}><GraduationCap size={16}/>Dossiers et inscriptions<ArrowRight size={13}/></button>}{allowed("people.parents.view")&&<button type="button" onClick={()=>onNavigate("/parents")}><Users size={16}/>Dossiers des parents<ArrowRight size={13}/></button>}{allowed("documents.view")&&<button type="button" onClick={()=>onNavigate("/documents")}><FileCheck2 size={16}/>Documents administratifs<ArrowRight size={13}/></button>}</div></section>
+      <section className="director-grid director-grid--two"><article className="director-panel"><Heading eyebrow="RÉPARTITION · DONNÉES LOCALES" title="Élèves par cycle"/><div className="director-student-total"><strong>{fmt(totalStudents)}</strong><span>élèves actifs</span></div><div className="director-bars">{cycles.map(c=><Bar key={c.name} label={c.name} value={c.count} max={Math.max(...cycles.map(x=>x.count),1)} caption={fmt(c.count)+" élèves"}/>)}</div><div className="director-gender"><span>Garçons <strong>{gender.boys}</strong></span><span>Filles <strong>{gender.girls}</strong></span><span>Non renseigné <strong>{gender.unknown}</strong></span></div></article><article className="director-panel"><Heading eyebrow="SUIVI INDIVIDUEL · DÉMONSTRATION" title="Élèves nécessitant un suivi" action="Voir tous les suivis" onClick={()=>onNavigate("/student-risk")}/><div className="director-table-wrap"><table className="director-table"><thead><tr><th>Référence</th><th>Classe</th><th>Motif</th><th>Suivi</th></tr></thead><tbody>{DEMO.risk.map(r=><tr key={r.id}><td><strong>{r.id}</strong></td><td>{r.className}</td><td>{r.category}</td><td><span className={`director-status director-status--${r.tone}`}>{r.status}</span></td></tr>)}</tbody></table></div><p className="director-footnote">Identifiants fictifs. Toute situation doit être vérifiée par une personne habilitée.</p></article></section>
+    </div>}
+    {activeTab==="operations"&&<div className="director-tab-content">
+      <section className="director-panel"><Heading eyebrow="RESSOURCES HUMAINES · DONNÉES LOCALES" title="Disponibilité et suivi du personnel"/>{teachers.status==="ready"&&employees.status==="ready"?<><div className="director-info-grid"><InfoCard label="Personnel actif" value={fmt(staffStatusCounts.active)} detail="Enseignants et employés actifs" tone="success"/><InfoCard label="En congé" value={fmt(staffStatusCounts.onLeave)} detail="À prendre en compte dans la planification" tone="warning"/><InfoCard label="Inactif" value={fmt(staffStatusCounts.inactive)} detail="Dossiers non actifs"/></div><div className="director-info-grid director-info-grid--three"><InfoCard label="Enseignants avec affectation" value={fmt(assignedTeachers)} detail={`${teacherCount??0} enseignants actifs au total`} tone="info"/><InfoCard label="Heures hebdomadaires affectées" value={fmt(weeklyTeachingHours)+" h"} detail="Somme des affectations locales"/><InfoCard label="Documents à vérifier" value={fmt(staffDocsToReview)} detail="Diplômes, contrats et justificatifs" tone={staffDocsToReview?"warning":"success"}/></div></>:<div className="director-loading">Chargement des dossiers du personnel ou accès non autorisé.</div>}<div className="director-quick-actions">{allowed("people.teachers.view")&&<button type="button" onClick={()=>onNavigate("/teachers")}><BookOpen size={16}/>Dossiers enseignants<ArrowRight size={13}/></button>}{allowed("people.employees.view")&&<button type="button" onClick={()=>onNavigate("/employees")}><Users size={16}/>Dossiers employés<ArrowRight size={13}/></button>}{allowed("staff.attendance.view")&&<button type="button" onClick={()=>onNavigate("/staff-attendance")}><CalendarCheck size={16}/>Présences du personnel<ArrowRight size={13}/></button>}</div></section>
+      <section className="director-grid director-grid--two"><article className="director-panel"><Heading eyebrow="VIE SCOLAIRE · DÉMONSTRATION" title="Opérations de l’établissement"/><div className="director-ops-grid"><button type="button" onClick={()=>onNavigate("/student-attendance")}><CalendarCheck size={17}/><span><strong>{attendanceRate}%</strong><small>Présence élèves · démo</small></span></button><button type="button" onClick={()=>onNavigate("/staff-attendance")}><Users size={17}/><span><strong>2 absences</strong><small>Personnel · démo</small></span></button><button type="button" onClick={()=>onNavigate("/transport")}><Bus size={17}/><span><strong>1 alerte</strong><small>Transport · démo</small></span></button><button type="button" onClick={()=>onNavigate("/inventory")}><Package size={17}/><span><strong>2 seuils</strong><small>Stocks · démo</small></span></button></div><div className="director-upcoming">{upcoming.map(item=><button key={item.id} type="button" onClick={()=>onNavigate(item.route)}><span className="director-upcoming-date">{new Intl.DateTimeFormat("fr-FR",{day:"2-digit",month:"short"}).format(new Date(item.date))}</span><span><strong>{item.title}</strong><small>{item.detail}</small></span><em>{item.tag}</em><ArrowRight size={13}/></button>)}</div><p className="director-footnote">Présences et alertes opérationnelles illustratives.</p></article><article className="director-panel"><Heading eyebrow="CONTRÔLE DES MOYENS" title="Points de vigilance"/><div className="director-insight-grid"><Insight title="Transport scolaire" description="Contrôler les circuits, les véhicules, les capacités et les incidents signalés." action="Ouvrir le transport" onClick={()=>onNavigate("/transport")}/><Insight title="Locaux et inventaire" description="Vérifier les stocks sous seuil, les équipements indisponibles et les besoins de maintenance." action="Consulter l’inventaire" onClick={()=>onNavigate("/inventory")}/><Insight title="Incidents et sécurité" description="Centraliser les incidents, mesures correctives, responsables et échéances." action="Voir les incidents" tone="warning" onClick={()=>onNavigate("/accidents-incidents")}/></div></article></section>
+    </div>}
+    {activeTab==="finance"&&<div className="director-tab-content">
+      {canFinance?<><section className="director-grid director-grid--two"><article className="director-panel"><Heading eyebrow="FINANCES · DÉMONSTRATION" title="Situation financière" action="Voir les rapports" onClick={()=>onNavigate("/financial-reports")}/><div className="director-finance-primary"><span>Encaissements sur la période</span><strong>{dh(DEMO.finance.collected)}</strong></div><div className="director-finance-pairs"><div><span>Reste à recouvrer</span><strong>{dh(DEMO.finance.outstanding)}</strong></div><div><span>Dépenses enregistrées</span><strong>{dh(DEMO.finance.expenses)}</strong></div><div><span>Solde indicatif</span><strong>{dh(DEMO.finance.net)}</strong></div></div><div className="director-expenses">{DEMO.finance.expensesRecent.map(e=><div key={e.name}><span><strong>{e.name}</strong><small>{e.category} · {e.date}</small></span><span><b>{dh(e.amount)}</b><small>{e.status}</small></span></div>)}</div><p className="director-footnote">Montants fictifs en DH. Le solde indicatif n’est pas une trésorerie comptable.</p></article><article className="director-panel"><Heading eyebrow="RECOUVREMENT · DÉMONSTRATION" title="Recettes attendues et retards"/><div className="director-info-grid director-info-grid--two"><InfoCard label="Taux de recouvrement" value="84,9 %" detail="Encaissements / montant facturé · fictif" tone="success"/><InfoCard label="Retards de paiement" value="118 dossiers" detail="Scénario de démonstration" tone="warning"/><InfoCard label="Échéances dans 7 jours" value="42 800 DH" detail="Montant à relancer" tone="info"/><InfoCard label="Avoirs et remboursements" value="8 400 DH" detail="À contrôler avant clôture"/></div><div className="director-bars">{[{label:"Frais de scolarité",value:72},{label:"Inscription et réinscription",value:18},{label:"Transport et services",value:10}].map(x=><Bar key={x.label} label={x.label} value={x.value} max={100} caption={x.value+" % des recettes · fictif"}/>)}</div></article></section><section className="director-panel"><Heading eyebrow="PILOTAGE FINANCIER" title="Contrôles avant décision"/><div className="director-insight-grid"><Insight title="Trésorerie disponible" description="Rapprocher les encaissements, les comptes bancaires et les dépenses déjà engagées." action="Voir les rapports" onClick={()=>onNavigate("/financial-reports")}/><Insight title="Créances anciennes" description="Segmenter les impayés par ancienneté, montant et famille, puis planifier les relances." action="Voir les soldes" tone="warning" onClick={()=>onNavigate("/student-balances")}/><Insight title="Budget par service" description="Comparer budget initial, dépenses engagées, dépenses payées et reste disponible." action="Voir les dépenses" onClick={()=>onNavigate("/expenses")}/></div></section></>:<section className="director-panel"><Heading eyebrow="FINANCES" title="Accès restreint"/><Empty>Les informations financières sont masquées pour ce compte.</Empty></section>}
+    </div>}
+    {activeTab==="activity"&&<div className="director-tab-content">
+      <section className="director-grid director-grid--two"><article className="director-panel director-panel--approvals"><Heading eyebrow="DÉCISIONS À PRENDRE" title="Validations en attente"/>{approvalRows.length?approvalRows.map(a=><button className="director-approval" key={a.id} type="button" onClick={()=>onNavigate(a.route)}><span className="director-approval-icon"><ClipboardList size={17}/></span><span className="director-approval-copy"><strong>{a.title}</strong><small>{a.age}</small></span><b>{a.count}</b><ArrowRight size={14}/></button>):<Empty>Aucune validation en attente pour vos autorisations.</Empty>}<p className="director-footnote">Comptages de démonstration ; aucune validation n’est exécutée depuis cette vue.</p></article><article className="director-panel"><Heading eyebrow="JOURNAL · DÉMONSTRATION" title="Activité récente" action="Voir l’historique" onClick={()=>onNavigate("/activity-history")}/><div className="director-activity-list">{displayedActivities.map(a=><button key={a.id} type="button" onClick={()=>onNavigate(a.route)}><span className="director-activity-dot"><Activity size={14}/></span><span><strong>{a.title}</strong><small>{a.who} · {timeLabel(a.when)}</small></span><ArrowRight size={13}/></button>)}</div><button className="director-show-more" type="button" onClick={()=>setShowAllActivities(v=>!v)}>{showAllActivities?"Réduire":"Afficher plus"}</button><p className="director-footnote">Événements fictifs, non issus d’un journal d’audit central.</p></article></section>
+      <section className="director-panel"><Heading eyebrow="AGENDA · DÉMONSTRATION" title="Échéances à préparer"/><div className="director-agenda-list">{[{date:"10 nov.",title:"Évaluation de mathématiques",owner:"Responsable pédagogique",priority:"Préparer les salles et surveillants"},{date:"12 nov.",title:"Réunion des parents",owner:"Direction et équipe éducative",priority:"Confirmer les convocations"},{date:"14 nov.",title:"Contrôle de français",owner:"Département de langues",priority:"Vérifier le calendrier des classes"},{date:"18 nov.",title:"Clôture des validations",owner:"Administration pédagogique",priority:"Relancer les validations en attente"}].map(x=><div key={x.title}><time>{x.date}</time><span><strong>{x.title}</strong><small>{x.owner}</small></span><em>{x.priority}</em></div>)}</div><p className="director-footnote">Dates et responsables fictifs à remplacer par les événements enregistrés.</p></section>
+      <section className="director-panel"><Heading eyebrow="GOUVERNANCE" title="Contrôles de direction"/><div className="director-insight-grid"><Insight title="Historique des opérations" description="Consulter les actions réalisées, leur auteur et leur date. Un historique de démonstration ne remplace pas un journal d’audit sécurisé." action="Ouvrir l’historique" onClick={()=>onNavigate("/activity-history")}/><Insight title="Accès et autorisations" description="Vérifier que chaque membre du personnel dispose uniquement des accès nécessaires à sa fonction." action="Contrôler les accès" onClick={()=>onNavigate("/access-control")}/><Insight title="Rapports consolidés" description="Préparer une revue périodique des indicateurs académiques, financiers et opérationnels." action="Ouvrir les rapports" onClick={()=>onNavigate("/reports-analytics")}/></div></section>
+      <section className="director-panel"><Heading eyebrow="ACCÈS DIRECTS" title="Actions de la direction"/><div className="director-quick-actions">{allowed("pedagogy.grades.view")&&<button type="button" onClick={()=>onNavigate("/grades-validation")}><FileCheck2 size={16}/>Valider les notes<ArrowRight size={13}/></button>}{allowed("pedagogy.reports.view")&&<button type="button" onClick={()=>onNavigate("/pedagogical-reports")}><BookOpen size={16}/>Examiner les rapports<ArrowRight size={13}/></button>}{allowed("pedagogy.content.view")&&<button type="button" onClick={()=>onNavigate("/courses-exercises")}><ClipboardList size={16}/>Examiner les ressources<ArrowRight size={13}/></button>}{allowed("student.analytics.view")&&<button type="button" onClick={()=>onNavigate("/student-risk")}><ShieldAlert size={16}/>Suivi des élèves à risque<ArrowRight size={13}/></button>}{allowed("archive.view")&&<button type="button" onClick={()=>onNavigate("/academic-years")}><CalendarDays size={16}/>Archives scolaires<ArrowRight size={13}/></button>}</div></section>
+    </div>}
+    <footer className="director-footer"><span>{schoolBranding.name} · Espace Direction</span><span>Actualisation manuelle · données locales et démonstratives</span></footer>
+  </main>;
 }

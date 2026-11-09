@@ -23,7 +23,7 @@ function useOnline() {
 interface ItemProps {
   id: ItemId;
   open: ItemId | null;
-  onToggle: (id: ItemId) => void;
+  onToggle: (id: ItemId, trigger: HTMLButtonElement) => void;
   tone: Tone;
   icon: ReactNode;
   label: string;
@@ -33,16 +33,25 @@ interface ItemProps {
 
 function StatusItem({ id, open, onToggle, tone, icon, label, title, detail }: ItemProps) {
   const isOpen = open === id;
+  const titleId = `status-title-${id}`;
+  const panelId = `status-panel-${id}`;
   return (
     <div className="status-item-wrap">
-      <button type="button" className={`status-item status-item--${tone}`} onClick={() => onToggle(id)} aria-expanded={isOpen} aria-haspopup="dialog">
+      <button
+        type="button"
+        className={`status-item status-item--${tone}`}
+        onClick={(event) => onToggle(id, event.currentTarget)}
+        aria-expanded={isOpen}
+        aria-controls={panelId}
+        aria-label={`${label}. ${isOpen ? "Masquer les détails" : "Afficher les détails"}`}
+      >
         <span className="status-dot" aria-hidden="true" />
         {icon}
         <span>{label}</span>
       </button>
       {isOpen && (
-        <div className="status-popover" role="dialog" aria-label={title}>
-          <strong>{title}</strong>
+        <div id={panelId} className="status-popover" role="region" aria-labelledby={titleId}>
+          <strong id={titleId}>{title}</strong>
           <div>{detail}</div>
           <small>Valeurs de démonstration : aucun serveur n’est encore connecté.</small>
         </div>
@@ -55,25 +64,33 @@ export function StatusBar() {
   const online = useOnline();
   const [open, setOpen] = useState<ItemId | null>(null);
   const ref = useRef<HTMLElement>(null);
+  const activeTrigger = useRef<HTMLButtonElement | null>(null);
   const s = systemStatus;
 
   useEffect(() => {
     if (!open) return;
-    const onDown = (event: MouseEvent) => {
+    const onPointerDown = (event: PointerEvent) => {
       if (!ref.current?.contains(event.target as Node)) setOpen(null);
     };
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(null);
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setOpen(null);
+        activeTrigger.current?.focus();
+      }
     };
-    document.addEventListener("mousedown", onDown);
-    document.addEventListener("keydown", onKey);
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
     return () => {
-      document.removeEventListener("mousedown", onDown);
-      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
     };
   }, [open]);
 
-  const toggle = (id: ItemId) => setOpen((current) => (current === id ? null : id));
+  const toggle = (id: ItemId, trigger: HTMLButtonElement) => {
+    activeTrigger.current = trigger;
+    setOpen((current) => (current === id ? null : id));
+  };
   const backupTone: Tone = s.backup.state === "ok" ? "ok" : s.backup.state === "stale" ? "warn" : "danger";
   const licenseTone: Tone = s.license.mode === "active" ? "ok" : s.license.mode === "grace" ? "warn" : "danger";
   const licenseLabel =
@@ -85,45 +102,45 @@ export function StatusBar() {
 
   return (
     <footer className="statusbar" ref={ref} aria-label="État du système">
-      <div className="status-group">
+      <div className="status-group" aria-label="Connectivité">
         <StatusItem
           id="server" open={open} onToggle={toggle}
           tone={s.server === "connected" ? "ok" : "danger"}
-          icon={<ServerCog size={14} aria-hidden="true" />}
+          icon={<ServerCog size={16} aria-hidden="true" />}
           label={s.server === "connected" ? "Serveur local connecté" : "Serveur local injoignable"}
           title="Serveur local"
-          detail="L’application communique avec le serveur de l’établissement sur le réseau local. Elle ne dépend pas d’Internet."
+          detail="Indicateur de démonstration uniquement. Aucun serveur local n’est actuellement connecté à cette interface."
         />
         <StatusItem
           id="internet" open={open} onToggle={toggle}
           tone={online ? "ok" : "neutral"}
-          icon={online ? <Cloud size={14} aria-hidden="true" /> : <CloudOff size={14} aria-hidden="true" />}
+          icon={online ? <Cloud size={16} aria-hidden="true" /> : <CloudOff size={16} aria-hidden="true" />}
           label={online ? "Internet connecté" : "Hors ligne : le travail local continue"}
           title="Connexion Internet"
           detail={online
-            ? "Internet est disponible : licence, notifications et mises à jour peuvent être synchronisées."
-            : "Internet est indisponible. Le travail sur le réseau local n’est pas affecté ; les notifications sont mises en file d’attente."}
+            ? "Le navigateur signale une connexion Internet. La synchronisation des services de l’établissement n’est pas encore connectée à cette démonstration."
+            : "Le navigateur signale une absence de connexion Internet. Cet indicateur ne vérifie ni la disponibilité du serveur local ni une éventuelle file d’attente réelle."}
         />
       </div>
-      <div className="status-group">
-        {s.queuedNotifications > 0 && <span className="status-plain">Notifications en attente : {s.queuedNotifications}</span>}
+      <div className="status-group" aria-label="État des services">
+        {s.queuedNotifications > 0 && <span className="status-plain" role="status">Notifications en attente : {s.queuedNotifications}</span>}
         <StatusItem
           id="backup" open={open} onToggle={toggle}
           tone={backupTone}
-          icon={<DatabaseBackup size={14} aria-hidden="true" />}
+          icon={<DatabaseBackup size={16} aria-hidden="true" />}
           label={s.backup.state === "failed" ? "Échec de la dernière sauvegarde" : `Dernière sauvegarde ${s.backup.lastRunLabel}`}
           title="Sauvegarde"
-          detail="Sauvegarde chiffrée quotidienne. Une alerte apparaît si elle a plus de 24 h ou si elle échoue."
+          detail="État de sauvegarde fictif utilisé pour présenter l’interface. Aucun processus de sauvegarde n’est connecté."
         />
         <StatusItem
           id="license" open={open} onToggle={toggle}
           tone={licenseTone}
-          icon={<ShieldCheck size={14} aria-hidden="true" />}
+          icon={<ShieldCheck size={16} aria-hidden="true" />}
           label={licenseLabel}
           title="Licence"
-          detail="La licence est vérifiée localement. En cas de coupure Internet, elle reste valable pendant la période de grâce ; aucune donnée n’est supprimée à l’expiration."
+          detail="État de licence fictif utilisé pour présenter l’interface. La validation locale et la période de grâce ne sont pas encore connectées."
         />
-        <span className="status-version">v{s.version}</span>
+        <span className="status-version" aria-label={`Version ${s.version}`}>v{s.version}</span>
       </div>
     </footer>
   );
