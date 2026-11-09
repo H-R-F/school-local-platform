@@ -69,7 +69,7 @@ function MiniChart({ title, unit, values, labels, color, suffix = "" }: {
 }
 
 export function SystemHealthPage() {
-  const [services, setServices] = useState(initialServices);
+  const [services] = useState(initialServices);
   const [incidents, setIncidents] = useState(initialIncidents);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All statuses");
