@@ -93,6 +93,8 @@ export function SubscriptionsPage() {
   const [toast,setToast] = useState("");
   const [page,setPage] = useState(1);
   const [busy,setBusy] = useState(false);
+  const [formDirty,setFormDirty] = useState(false);
+  const [discardConfirm,setDiscardConfirm] = useState(false);
   const pageSize=10;
 
   const visible=useMemo(()=>records.filter(r=>
@@ -114,10 +116,10 @@ export function SubscriptionsPage() {
   const filtered=!!(query||statusFilter!=="All"||planFilter!=="All"||cycleFilter!=="All"||renewalFrom||renewalTo);
   const notify=(message:string)=>{setToast(message);window.setTimeout(()=>setToast(""),3500);};
   const resetFilters=()=>{setQuery("");setStatusFilter("All");setPlanFilter("All");setCycleFilter("All");setRenewalFrom("");setRenewalTo("");setPage(1);};
-  const openCreate=()=>{setForm({...initialForm});setFormErrors({});setPanel({mode:"create"});};
-  const openEdit=(r:Subscription)=>{setForm({schoolCode:r.code,planId:r.planId,cycle:r.cycle,amount:r.amount===null?"":String(r.amount),currency:r.currency,start:r.start,renewal:r.renewal,trial:r.status==="Trial",trialEnd:r.trialEnd||"",status:r.status==="Draft"?"Draft":r.status==="Trial"?"Trial":"Active"});setFormErrors({});setPanel({mode:"edit",id:r.id});};
-  const closePanel=()=>setPanel(null);
-  const setField=<K extends keyof FormState,>(key:K,value:FormState[K])=>setForm(current=>({...current,[key]:value}));
+  const openCreate=()=>{setForm({...initialForm});setFormErrors({});setFormDirty(false);setPanel({mode:"create"});};
+  const openEdit=(r:Subscription)=>{setForm({schoolCode:r.code,planId:r.planId,cycle:r.cycle,amount:r.amount===null?"":String(r.amount),currency:r.currency,start:r.start,renewal:r.renewal,trial:r.status==="Trial",trialEnd:r.trialEnd||"",status:r.status==="Draft"?"Draft":r.status==="Trial"?"Trial":"Active"});setFormErrors({});setFormDirty(false);setPanel({mode:"edit",id:r.id});};
+  const closePanel=()=>{if((panel?.mode==="create"||panel?.mode==="edit")&&formDirty){setDiscardConfirm(true);return;}setPanel(null);};
+  const setField=<K extends keyof FormState,>(key:K,value:FormState[K])=>{setForm(current=>({...current,[key]:value}));setFormDirty(true);};
   const validate=(draftOnly:boolean)=>{
     const errors:Record<string,string>={};
     if(!form.schoolCode)errors.schoolCode="Select a registered school.";
@@ -148,7 +150,7 @@ export function SubscriptionsPage() {
       history:[...(current?.history||[]),event("local-"+Date.now(),current?"Subscription configuration updated":"Subscription created",today+" 12:00",current?"Plan: "+slugPlan(current.planId)+" → "+slugPlan(form.planId)+"; billing cycle: "+current.cycle+" → "+form.cycle+"; amount: "+money(current.amount,current.currency)+" → "+money(form.amount===""?null:Number(form.amount),form.currency)+". Updated in local demo state; previous payment records are unchanged.":"Subscription created in local demo state.",id)]
     };
     setRecords(current?records.map(r=>r.id===id?next:r):[next,...records]);
-    setBusy(false);setPanel(null);notify(current?"Demo subscription changes saved locally.":"Demo subscription created locally.");
+    setBusy(false);setFormDirty(false);setPanel(null);notify(current?"Demo subscription changes saved locally.":"Demo subscription created locally.");
   };
   const exportRows=()=>{
     const header=["School Name","School Code","Subscription ID","Plan","Billing Cycle","Status","Start Date","Renewal Date","Amount","Currency"];
@@ -290,6 +292,7 @@ export function SubscriptionsPage() {
       </aside>}
     </div>}
     {cancelTarget&&<div className="subs-confirm-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget)setCancelTarget(null);}}><section className="subs-confirm" role="dialog" aria-modal="true" aria-labelledby="subs-cancel-title"><div className="subs-confirm-icon"><AlertCircle/></div><h2 id="subs-cancel-title">Cancel subscription?</h2><p>You are about to cancel the commercial subscription for <b>{cancelTarget.school}</b>.</p><dl><div><dt>Subscription ID</dt><dd>{cancelTarget.id}</dd></div><div><dt>Current plan</dt><dd>{slugPlan(cancelTarget.planId)}</dd></div><div><dt>Current status</dt><dd>{cancelTarget.status}</dd></div><div><dt>Effective date</dt><dd>{dateLabel(today)}</dd></div></dl><div className="subs-confirm-note">This preserves the subscription record and its history. School data is not deleted, and no license deactivation is performed.</div><div className="subs-confirm-actions"><button className="subs-button secondary" onClick={()=>setCancelTarget(null)}>Keep subscription</button><button className="subs-button danger" onClick={confirmCancel}>Confirm cancellation</button></div></section></div>}
+    {discardConfirm&&<div className="subs-confirm-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget)setDiscardConfirm(false);}}><section className="subs-confirm" role="dialog" aria-modal="true" aria-labelledby="subs-discard-title"><div className="subs-confirm-icon"><AlertCircle/></div><h2 id="subs-discard-title">Discard unsaved changes?</h2><p>Your subscription form contains changes that have not been saved.</p><div className="subs-confirm-actions"><button className="subs-button secondary" onClick={()=>setDiscardConfirm(false)}>Continue editing</button><button className="subs-button danger" onClick={()=>{setDiscardConfirm(false);setFormDirty(false);setPanel(null);}}>Discard changes</button></div></section></div>}
     {toast&&<div className="subs-toast" role="status"><Check size={15}/>{toast}</div>}
   </div>;
 }
