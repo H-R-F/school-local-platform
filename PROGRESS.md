@@ -208,3 +208,12 @@ The shared shell has been repaired at source level. It is **not marked VERIFIED*
 - Added an explicit rule for the Events editor, which uses a controlled `.ev-form` container rather than a native `<form>` element.
 - `/sectors-programs` create/edit dialogs now render through a React portal to avoid transformed/overflow-clipped page ancestors.
 - Scope note: this is the shared visual/action-layout foundation; individual modules still retain their own submit, cancel, validation, permissions, and save handlers. No claim is made that every page has been migrated to a single reusable React drawer component or browser-tested.
+
+
+### Shared forms and actions architecture — 2026-11-09
+- Added reusable React primitives: `FormDrawer`, `ConfirmDialog`, `FormSection`, `FormField`, and `ActionMenu`.
+- Added canonical component styles in `src/styles/form-system.css` and `src/styles/action-system.css`, imported globally from `src/main.tsx`.
+- The drawer uses a document-level React portal, reads the root-level live sidebar-width token, locks background scrolling, supports Escape/backdrop close, restores focus, and includes a keyboard focus loop.
+- Confirmation dialogs are separate from form drawers. Action menus share one menu structure and support disabled/destructive items.
+- Migration is intentionally not marked complete: legacy modules still contain page-owned overlays and handlers. Each module must be migrated to the shared components while retaining its existing business rules, permissions, validation, and persistence.
+- Verification status: no local install/build/browser session was available through the connected repository interface. Do not treat source commits as proof of runtime correctness.
