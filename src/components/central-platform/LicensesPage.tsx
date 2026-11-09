@@ -36,7 +36,7 @@ const schools = [
 ];
 const moneyDate = (value:string) => value === "—" ? value : new Date(value+"T00:00:00").toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
 const statusTone = (status:string) => status.toLowerCase().replaceAll(" ","-");
-const validationAge = (value:string) => { if(value==="Never") return Number.POSITIVE_INFINITY; const match=value.match(/^(\\d+)\\s+(min|hour|day)s? ago$/); if(!match) return Number.POSITIVE_INFINITY; const amount=Number(match[1]); return amount*(match[2]==="min"?1:match[2]==="hour"?60:1440); };
+const validationAge = (value:string) => { if(value==="Never") return Number.POSITIVE_INFINITY; const match=value.match(/^(\d+)\s+(min|hour|day)s? ago$/); if(!match) return Number.POSITIVE_INFINITY; const amount=Number(match[1]); return amount*(match[2]==="min"?1:match[2]==="hour"?60:1440); };
 const graceTone = (value:GraceStatus) => value==="Active"||value==="Expiring Soon"?"warning":value==="Expired"?"danger":value==="Not Used"?"success":"neutral";
 const csv = (value:unknown) => '"' + String(value ?? "").replaceAll('"','""') + '"';
 
