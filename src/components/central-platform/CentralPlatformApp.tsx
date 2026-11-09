@@ -1,12 +1,12 @@
 import { useMemo, useState } from "react";
 import {
-  Activity, AlertCircle, AlertTriangle, ArrowUpDown, Bell, Building2, Check, ChevronDown, ChevronLeft, ChevronRight,
+  Activity, AlertCircle, AlertTriangle, ArrowUpDown, Bell, Building2, CalendarDays, Check, ChevronDown, ChevronLeft, ChevronRight, FileText, Mail, Phone, UserRound,
   Cloud, Command, CreditCard, Database, ExternalLink, FileClock, Gauge, KeyRound, MapPin,
   LayoutDashboard, LifeBuoy, LogOut, MoreHorizontal, Package, PanelLeft,
   Plus, RefreshCw, Search, Settings, ShieldCheck, X,
 } from "lucide-react";
 
-type PageKey = "Overview" | "Schools" | "Installations" | "Endpoints" | "Subscriptions" | "Licenses" | "Monitoring" | "Releases" | "Notifications" | "Support Access" | "Audit Logs" | "Settings";
+type PageKey = "Overview" | "Schools" | "Register School" | "Installations" | "Endpoints" | "Subscriptions" | "Licenses" | "Monitoring" | "Releases" | "Notifications" | "Support Access" | "Audit Logs" | "Settings";
 type School = { code: string; name: string; city: string; status: string; plan: string; health: string; license: string; version: string; heartbeat: string; endpoint: string };
 
 const schools: School[] = [
@@ -48,7 +48,7 @@ export default function CentralPlatformApp() {
     </aside>
     <main className="main"><header className="topbar"><div className="breadcrumbs"><span>Control Plane</span><ChevronRight size={14}/><b>{page}</b></div><div className="command-search" onClick={() => notify("Command search is ready") }><Search size={15}/><span>Search schools, pages...</span><kbd><Command size={11}/>K</kbd></div><div className="top-actions"><span className="demo-pill"><span />DEMO MODE</span><button className="icon-btn" onClick={() => notify("No new notifications")} aria-label="Notifications"><Bell size={18}/><i className="notification-dot" /></button><div className="top-avatar">AO</div></div></header>
       <div className="content">{banner && <div className="demo-banner"><div><ShieldCheck size={17}/><span><b>You are viewing a demo with mocked data.</b> No backend is connected. Actions are simulated.</span></div><button className="icon-btn" onClick={() => setBanner(false)} aria-label="Dismiss banner"><X size={16}/></button></div>}
-        {page === "Overview" ? <Dashboard setPage={setPage} notify={notify} setSearch={setSearch}/> : page === "Schools" ? <AllSchoolsPage setPage={setPage} setSearch={setSearch} notify={notify}/> : <DataPage page={page} schools={filtered} search={search} setSearch={setSearch} filter={filter} setFilter={setFilter} notify={notify} onCreate={() => setModal(page)}/>}</div>
+        {page === "Overview" ? <Dashboard setPage={setPage} notify={notify} setSearch={setSearch}/> : page === "Schools" ? <AllSchoolsPage setPage={setPage} setSearch={setSearch} notify={notify}/> : page === "Register School" ? <RegisterSchoolPage setPage={setPage} notify={notify}/> : <DataPage page={page} schools={filtered} search={search} setSearch={setSearch} filter={filter} setFilter={setFilter} notify={notify} onCreate={() => setModal(page)}/>}</div>
     </main>{modal && <CreateModal page={modal} onClose={() => setModal(null)} onSave={() => { setModal(null); notify(`${modal} created in demo mode`) }} />}{toast && <div className="toast"><Check size={16}/>{toast}</div>}
   </div></div>;
 }
@@ -274,7 +274,7 @@ function AllSchoolsPage({setPage,setSearch,notify}:{setPage:(page:PageKey)=>void
  const action=(label:string,school:RegistrySchool)=>{setOpenMenu(null);if(label==="View Infrastructure"){context("Installations",school.code);return;}if(label==="Manage Subscription"){context("Subscriptions",school.code);return;}if(label==="Manage License"){context("Licenses",school.code);return;}notify(label+" is not available in this demonstration workspace.");};
  const SortHeading=({label,k}:{label:string;k:keyof RegistrySchool})=><button className="as-sort" onClick={()=>sort(k)}>{label}<ArrowUpDown size={12} className={sortKey===k?"is-active":""}/></button>;
  return <div className="all-schools-page">
-  <div className="as-page-head"><div><span className="eyebrow">SCHOOLS / REGISTRY</span><h1>All Schools</h1><p>Manage registered schools, their subscriptions, licenses, and server connectivity.</p></div><button className="btn primary as-register" onClick={()=>notify("School registration workflow is not available in this demo workspace.")}><Plus size={15}/>Register School</button></div>
+  <div className="as-page-head"><div><span className="eyebrow">SCHOOLS / REGISTRY</span><h1>All Schools</h1><p>Manage registered schools, their subscriptions, licenses, and server connectivity.</p></div><button className="btn primary as-register" onClick={()=>setPage("Register School")}><Plus size={15}/>Register School</button></div>
   <div className="as-demo-note"><span className="as-demo-dot"/>DEMONSTRATION REGISTRY <span>Fictional records · no live school or heartbeat service is connected</span></div>
   <section className="as-summary" aria-label="License summary"><div className="as-summary-total"><span>Total Schools</span><strong>128</strong></div><div><span>Active</span><strong>112</strong></div><div><span>Pending</span><strong>4</strong></div><div><span>Suspended</span><strong>6</strong></div><div><span>Expired</span><strong>6</strong></div><small>License lifecycle totals</small></section>
   <section className="as-registry card" aria-labelledby="as-registry-title">
@@ -309,6 +309,107 @@ function AllSchoolsPage({setPage,setSearch,notify}:{setPage:(page:PageKey)=>void
 }
 
 function Attention({ icon: Icon, title, sub, tone: t, action, onClick }: { icon: typeof AlertCircle; title: string; sub: string; tone: string; action: string; onClick: () => void }) { return <div className="attention"><div className={`attention-icon ${t}`}><Icon size={16}/></div><div><b>{title}</b><small>{sub}</small></div><button className="link-btn" onClick={onClick}>{action}</button></div> }
+
+type RegistrationForm = {
+ schoolName:string; schoolCode:string; schoolType:string; city:string; address:string;
+ schoolEmail:string; schoolPhone:string; contactName:string; contactRole:string;
+ contactEmail:string; contactPhone:string; plan:string; billingCycle:string;
+ startDate:string; endDate:string; notes:string;
+};
+const emptyRegistration:RegistrationForm={schoolName:"",schoolCode:"",schoolType:"",city:"",address:"",schoolEmail:"",schoolPhone:"",contactName:"",contactRole:"",contactEmail:"",contactPhone:"",plan:"",billingCycle:"",startDate:"",endDate:"",notes:""};
+const REGISTRY_STORAGE_KEY="central-platform-demo-registered-schools";
+const DRAFT_STORAGE_KEY="central-platform-demo-school-draft";
+function readLocalRegistrations():RegistrySchool[]{
+ try{const value=JSON.parse(window.localStorage.getItem(REGISTRY_STORAGE_KEY)||"[]");return Array.isArray(value)?value:[];}catch{return [];}
+}
+function RegistrationField({label,required,helper,error,children}:{label:string;required?:boolean;helper?:string;error?:string;children:React.ReactNode}){
+ return <label className="rs-field"><span className="rs-label">{label}{required&&<i aria-hidden="true">*</i>}</span>{children}{helper&&<small className="rs-helper">{helper}</small>}{error&&<small className="rs-error" role="alert">{error}</small>}</label>;
+}
+function RegisterSchoolPage({setPage,notify}:{setPage:(page:PageKey)=>void;notify:(message:string)=>void}){
+ const [form,setForm]=useState<RegistrationForm>(()=>{try{return {...emptyRegistration,...JSON.parse(window.localStorage.getItem(DRAFT_STORAGE_KEY)||"{}")};}catch{return emptyRegistration;}});
+ const [touched,setTouched]=useState<Record<string,boolean>>({});
+ const [attempted,setAttempted]=useState(false);
+ const [success,setSuccess]=useState(false);
+ const [savedCode,setSavedCode]=useState("");
+ const [saving,setSaving]=useState(false);
+ const [draftSaved,setDraftSaved]=useState(false);
+ const update=(key:keyof RegistrationForm,value:string)=>{setForm(prev=>({...prev,[key]:key==="schoolCode"?value.toUpperCase().replace(/\s/g,""):value}));setDraftSaved(false);};
+ const duplicateCode=()=>{const code=form.schoolCode.trim().toUpperCase();return registrySchools.some(s=>s.code.toUpperCase()===code)||readLocalRegistrations().some(s=>s.code.toUpperCase()===code);};
+ const errors:Record<string,string>={};
+ if(!form.schoolName.trim())errors.schoolName="School name is required.";
+ if(!/^[A-Z0-9]+(?:-[A-Z0-9]+)*$/.test(form.schoolCode))errors.schoolCode="Use uppercase letters or numbers separated by hyphens (e.g. ATS-001).";
+ else if(duplicateCode())errors.schoolCode="This school code is already registered.";
+ if(!form.schoolType)errors.schoolType="Select a school type.";
+ if(!form.city.trim())errors.city="City is required.";
+ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.schoolEmail.trim()))errors.schoolEmail="Enter a valid school contact email.";
+ if(!form.contactName.trim())errors.contactName="Contact name is required.";
+ if(!form.contactRole)errors.contactRole="Select a contact role.";
+ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.contactEmail.trim()))errors.contactEmail="Enter a valid primary contact email.";
+ if(!form.plan)errors.plan="Select a subscription plan.";
+ if(!form.billingCycle)errors.billingCycle="Select a billing cycle.";
+ if(!form.startDate)errors.startDate="Subscription start date is required.";
+ if(!form.endDate)errors.endDate="Subscription end date is required.";
+ if(form.startDate&&form.endDate&&form.endDate<=form.startDate)errors.endDate="End date must be later than the start date.";
+ const valid=Object.keys(errors).length===0;
+ const errorFor=(key:keyof RegistrationForm)=>((attempted||touched[key])?errors[key]:undefined);
+ const mark=(key:keyof RegistrationForm)=>setTouched(v=>({...v,[key]:true}));
+ const changed=JSON.stringify(form)!==JSON.stringify(emptyRegistration);
+ const cancel=()=>{if(changed&&!window.confirm("Discard the information entered on this page?"))return;setPage("Schools");};
+ const saveDraft=()=>{try{window.localStorage.setItem(DRAFT_STORAGE_KEY,JSON.stringify(form));setDraftSaved(true);notify("Draft saved in this browser only.");}catch{notify("Unable to save the draft in this browser.");}};
+ const register=(event:React.FormEvent)=>{event.preventDefault();setAttempted(true);if(!valid)return;if(saving)return;setSaving(true);try{
+  const entry:RegistrySchool={name:form.schoolName.trim(),code:form.schoolCode.trim().toUpperCase(),city:form.city.trim(),plan:form.plan as RegistrySchool["plan"],license:"Pending",connectivity:"Unknown",heartbeat:"Never",heartbeatRank:999999};
+  const existing=readLocalRegistrations();window.localStorage.setItem(REGISTRY_STORAGE_KEY,JSON.stringify([...existing,entry]));window.localStorage.removeItem(DRAFT_STORAGE_KEY);setSavedCode(entry.code);setSuccess(true);
+ }catch{notify("Registration could not be saved in this browser. Please try again.");}finally{setSaving(false);}};
+ if(success)return <div className="rs-page"><div className="rs-success"><div className="rs-success-icon"><Check size={22}/></div><span className="rs-overline">DEMO REGISTRATION COMPLETE</span><h1>School record created</h1><p><strong>{form.schoolName}</strong> has been added to this browser's local demonstration registry.</p><div className="rs-success-record"><span>School code</span><code>{savedCode}</code><span>Initial license status</span><Badge tone="neutral">Pending</Badge><span>Infrastructure status</span><Badge tone="neutral">Not configured</Badge></div><p className="rs-success-note">This creates a central platform record only. No server was installed, configured, or connected. The record is stored locally in this browser, not in a central backend.</p><div className="rs-success-actions"><button className="btn secondary" onClick={()=>setPage("Schools")}>Back to All Schools</button><button className="btn primary" onClick={()=>{setForm(emptyRegistration);setTouched({});setAttempted(false);setSuccess(false);}}>Register another school</button></div></div></div>;
+ return <div className="rs-page">
+  <div className="rs-heading"><div><span className="rs-breadcrumb">Schools <ChevronRight size={12}/> Register School</span><h1>Register School</h1><p>Add a new school to your platform and prepare it for infrastructure setup.</p></div></div>
+  <div className="rs-demo-disclosure"><span/><div><strong>Central record only</strong><small>Registration does not install, configure, or connect local school infrastructure.</small></div></div>
+  <form className="rs-layout" onSubmit={register} noValidate>
+   <div className="rs-form-panel">
+    <section className="rs-section"><div className="rs-section-heading"><span className="rs-section-index">01</span><div><h2>School Information</h2><p>Enter the school's official identity and general contact details.</p></div></div>
+     <div className="rs-fields">
+      <RegistrationField label="School Name" required error={errorFor("schoolName")}><input value={form.schoolName} onChange={e=>update("schoolName",e.target.value)} onBlur={()=>mark("schoolName")} placeholder="e.g. Atlas International School"/></RegistrationField>
+      <RegistrationField label="School Code" required helper="A unique identifier used to identify this school across the platform." error={errorFor("schoolCode")}><input className="rs-code-input" value={form.schoolCode} onChange={e=>update("schoolCode",e.target.value)} onBlur={()=>mark("schoolCode")} placeholder="e.g. ATS-001" autoCapitalize="characters"/></RegistrationField>
+      <RegistrationField label="School Type" required error={errorFor("schoolType")}><select value={form.schoolType} onChange={e=>update("schoolType",e.target.value)} onBlur={()=>mark("schoolType")}><option value="">Select school type</option>{["Private School","Public School","International School","Other"].map(x=><option key={x}>{x}</option>)}</select></RegistrationField>
+      <RegistrationField label="City" required error={errorFor("city")}><input value={form.city} onChange={e=>update("city",e.target.value)} onBlur={()=>mark("city")} placeholder="e.g. Casablanca"/></RegistrationField>
+      <RegistrationField label="Address"><input value={form.address} onChange={e=>update("address",e.target.value)} placeholder="Street address (optional)"/></RegistrationField>
+      <RegistrationField label="Contact Email" required error={errorFor("schoolEmail")}><div className="rs-input-icon"><Mail size={14}/><input type="email" value={form.schoolEmail} onChange={e=>update("schoolEmail",e.target.value)} onBlur={()=>mark("schoolEmail")} placeholder="office@school.ma"/></div></RegistrationField>
+      <RegistrationField label="Contact Phone"><div className="rs-input-icon"><Phone size={14}/><input type="tel" value={form.schoolPhone} onChange={e=>update("schoolPhone",e.target.value)} placeholder="+212 5 22 00 00 00"/></div></RegistrationField>
+     </div>
+    </section>
+    <section className="rs-section"><div className="rs-section-heading"><span className="rs-section-index">02</span><div><h2>Primary Contact</h2><p>Designate the main administrative contact for this school.</p></div></div>
+     <div className="rs-contact-note"><UserRound size={14}/>This person is the school's administrative representative, not a school application user account.</div>
+     <div className="rs-fields">
+      <RegistrationField label="Contact Full Name" required error={errorFor("contactName")}><input value={form.contactName} onChange={e=>update("contactName",e.target.value)} onBlur={()=>mark("contactName")} placeholder="Full name"/></RegistrationField>
+      <RegistrationField label="Contact Role" required error={errorFor("contactRole")}><select value={form.contactRole} onChange={e=>update("contactRole",e.target.value)} onBlur={()=>mark("contactRole")}><option value="">Select role</option>{["Director","Administrator","IT Manager","Other"].map(x=><option key={x}>{x}</option>)}</select></RegistrationField>
+      <RegistrationField label="Contact Email" required error={errorFor("contactEmail")}><div className="rs-input-icon"><Mail size={14}/><input type="email" value={form.contactEmail} onChange={e=>update("contactEmail",e.target.value)} onBlur={()=>mark("contactEmail")} placeholder="name@school.ma"/></div></RegistrationField>
+      <RegistrationField label="Contact Phone"><div className="rs-input-icon"><Phone size={14}/><input type="tel" value={form.contactPhone} onChange={e=>update("contactPhone",e.target.value)} placeholder="+212 6 00 00 00 00"/></div></RegistrationField>
+     </div>
+    </section>
+    <section className="rs-section"><div className="rs-section-heading"><span className="rs-section-index">03</span><div><h2>Subscription Setup</h2><p>Configure the initial commercial subscription details.</p></div></div>
+     <div className="rs-fields">
+      <RegistrationField label="Subscription Plan" required error={errorFor("plan")}><select value={form.plan} onChange={e=>update("plan",e.target.value)} onBlur={()=>mark("plan")}><option value="">Select plan</option>{["Basic","Professional","Enterprise"].map(x=><option key={x}>{x}</option>)}</select></RegistrationField>
+      <RegistrationField label="Billing Cycle" required error={errorFor("billingCycle")}><select value={form.billingCycle} onChange={e=>update("billingCycle",e.target.value)} onBlur={()=>mark("billingCycle")}><option value="">Select billing cycle</option><option>Monthly</option><option>Annually</option></select></RegistrationField>
+      <RegistrationField label="Subscription Start Date" required error={errorFor("startDate")}><div className="rs-input-icon"><CalendarDays size={14}/><input type="date" value={form.startDate} onChange={e=>update("startDate",e.target.value)} onBlur={()=>mark("startDate")}/></div></RegistrationField>
+      <RegistrationField label="Subscription End Date" required error={errorFor("endDate")}><div className="rs-input-icon"><CalendarDays size={14}/><input type="date" min={form.startDate||undefined} value={form.endDate} onChange={e=>update("endDate",e.target.value)} onBlur={()=>mark("endDate")}/></div></RegistrationField>
+      <div className="rs-license-field"><span>Initial License Status <i>*</i></span><div><Badge tone="neutral">Pending</Badge><small>The school will remain pending until its subscription and license activation process is completed.</small></div></div>
+     </div>
+    </section>
+    <section className="rs-section rs-section-last"><div className="rs-section-heading"><span className="rs-section-index">04</span><div><h2>Internal Notes</h2><p>Optional context for your platform operations team.</p></div></div>
+     <RegistrationField label="Internal Notes" helper="Visible only to authorized platform administrators."><textarea rows={4} value={form.notes} onChange={e=>update("notes",e.target.value)} placeholder="Add any relevant administrative context..."/></RegistrationField>
+    </section>
+    <div className="rs-form-footer"><div className="rs-footer-actions"><button type="button" className="btn secondary" onClick={cancel}>Cancel</button><div><button type="button" className="btn secondary" onClick={saveDraft}><FileText size={14}/>Save as Draft</button><button type="submit" className="btn primary" disabled={!valid||saving}><Plus size={14}/>{saving?"Registering…":"Register School"}</button></div></div><p>Registering a school creates its central platform record. Server installation and connectivity setup are separate steps.</p>{draftSaved&&<small className="rs-draft-feedback" role="status">Draft saved locally in this browser.</small>}</div>
+   </div>
+   <aside className="rs-summary"><div className="rs-summary-head"><div className="rs-summary-icon"><FileText size={16}/></div><div><h2>Registration Summary</h2><p>Review the school details before registration.</p></div></div>
+    <div className="rs-summary-group"><span>School Details</span><div><small>School Name</small><strong>{form.schoolName.trim()||"Not provided"}</strong></div><div><small>School Code</small><strong className="rs-summary-code">{form.schoolCode.trim()||"Not provided"}</strong></div><div><small>City</small><strong>{form.city.trim()||"Not provided"}</strong></div></div>
+    <div className="rs-summary-group"><span>Subscription</span><div><small>Selected Plan</small><strong>{form.plan||"Not selected"}</strong></div><div><small>Billing Cycle</small><strong>{form.billingCycle||"Not selected"}</strong></div></div>
+    <div className="rs-summary-status"><div><small>Initial License Status</small><Badge tone="neutral">Pending</Badge></div><p>Activation is completed separately after registration.</p></div>
+    <div className="rs-summary-foot"><ShieldCheck size={15}/><span>Infrastructure provisioning is a separate operational step.</span></div>
+   </aside>
+  </form>
+ </div>;
+}
+
 function Bar({ label, value, width, tone: t }: { label: string; value: string; width: string; tone: string }) { return <div className="bar-row"><span>{label}</span><div><i className={t} style={{ width }}/></div><b>{value}</b></div> }
 function Audit({ time, actor, action, resource, outcome }: { time: string; actor: string; action: string; resource: string; outcome: string }) { return <div className="table-row"><span className="muted">{time}</span><span>{actor}</span><span>{action}</span><span className="mono">{resource}</span><span><Badge tone={tone(outcome)}>{outcome}</Badge></span></div> }
 
