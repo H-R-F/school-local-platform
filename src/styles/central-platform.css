@@ -372,3 +372,160 @@
     scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;
   }
 }
+
+
+/* Overview dashboard only — inherits the existing Central Platform tokens and shell. */
+.central-platform-root .overview-page{display:flex;flex-direction:column;gap:18px;color:var(--cp-ink)}
+.central-platform-root .overview-page .ov-page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:0}
+.central-platform-root .overview-page .ov-page-head h1{font-size:26px;line-height:1.25;letter-spacing:-.035em;font-weight:650;margin:5px 0 5px;color:var(--cp-ink)}
+.central-platform-root .overview-page .ov-page-head p{font-size:13px;color:var(--cp-ink-secondary);margin:0}
+.central-platform-root .overview-page .ov-head-controls{display:flex;align-items:flex-end;gap:8px}
+.central-platform-root .overview-page .ov-range{display:flex;flex-direction:column;gap:4px;color:var(--cp-ink-secondary);font-size:10px;font-weight:600}
+.central-platform-root .overview-page .ov-range select,.central-platform-root .overview-page .ov-filter select{height:36px;min-width:142px;padding:0 28px 0 10px;border:1px solid var(--cp-border-strong);border-radius:7px;background:#fff;color:var(--cp-ink);font:500 12px Geist,ui-sans-serif,system-ui,sans-serif}
+.central-platform-root .overview-page .ov-refresh{height:36px;white-space:nowrap}
+.central-platform-root .overview-page .ov-spin{animation:ov-spin .8s linear infinite}
+@keyframes ov-spin{to{transform:rotate(360deg)}}
+.central-platform-root .overview-page .ov-refresh-note{margin-top:-10px;color:var(--cp-ink-tertiary);font-size:10px;text-align:right}
+.central-platform-root .overview-page .ov-metrics{display:grid;grid-template-columns:1.1fr 1.1fr 1.35fr 1fr;gap:0;background:var(--cp-surface);border:1px solid var(--cp-border);border-radius:9px;min-height:104px;overflow:hidden}
+.central-platform-root .overview-page .ov-primary-metric{display:flex;flex-direction:column;justify-content:center;padding:14px 18px;border-right:1px solid var(--cp-border)}
+.central-platform-root .overview-page .ov-primary-metric>span,.central-platform-root .overview-page .ov-connectivity-metrics span,.central-platform-root .overview-page .ov-compact-metrics span{font-size:11px;font-weight:550;color:var(--cp-ink-secondary)}
+.central-platform-root .overview-page .ov-primary-metric>strong{font:600 27px/1.15 "Geist Mono",ui-monospace,monospace;letter-spacing:-.04em;color:var(--cp-ink);font-variant-numeric:tabular-nums;margin:4px 0 2px}
+.central-platform-root .overview-page .ov-primary-metric>small,.central-platform-root .overview-page .ov-connectivity-metrics small,.central-platform-root .overview-page .ov-compact-metrics small{font-size:10px;color:var(--cp-ink-tertiary)}
+.central-platform-root .overview-page .ov-connectivity-metrics{display:grid;grid-template-columns:1fr 1fr;border-right:1px solid var(--cp-border)}
+.central-platform-root .overview-page .ov-connectivity-metrics>div{display:flex;flex-direction:column;justify-content:center;padding:12px 14px}
+.central-platform-root .overview-page .ov-connectivity-metrics>div+div{border-left:1px solid var(--cp-border)}
+.central-platform-root .overview-page .ov-connectivity-metrics span{display:flex;align-items:center;gap:6px}
+.central-platform-root .overview-page .ov-connectivity-metrics strong{font:600 23px/1.2 "Geist Mono",ui-monospace,monospace;color:var(--cp-ink);font-variant-numeric:tabular-nums;margin:4px 0 1px}
+.central-platform-root .overview-page .ov-compact-metrics{display:grid;grid-template-rows:1fr 1fr}
+.central-platform-root .overview-page .ov-compact-metrics>div{display:flex;align-items:center;gap:8px;padding:8px 14px}
+.central-platform-root .overview-page .ov-compact-metrics>div+div{border-top:1px solid var(--cp-border)}
+.central-platform-root .overview-page .ov-compact-metrics span{flex:1}
+.central-platform-root .overview-page .ov-compact-metrics strong{font:600 18px "Geist Mono",ui-monospace,monospace;color:var(--cp-ink);font-variant-numeric:tabular-nums}
+.central-platform-root .overview-page .ov-dot{display:inline-block;width:7px;height:7px;border-radius:50%;flex:0 0 auto}
+.central-platform-root .overview-page .ov-dot.online{background:#16A34A}
+.central-platform-root .overview-page .ov-dot.offline{background:#DC2626}
+.central-platform-root .overview-page .ov-top-grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(380px,1fr);gap:16px;align-items:stretch}
+.central-platform-root .overview-page .ov-panel{min-width:0;background:var(--cp-surface);border:1px solid var(--cp-border);border-radius:9px;padding:16px 18px}
+.central-platform-root .overview-page .ov-section-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:12px}
+.central-platform-root .overview-page .ov-section-head h2{font-size:14px;line-height:1.3;font-weight:600;color:var(--cp-ink);margin:0 0 4px}
+.central-platform-root .overview-page .ov-section-head p{font-size:10px;color:var(--cp-ink-tertiary);margin:0;line-height:1.4}
+.central-platform-root .overview-page .ov-demo-tag{display:inline-block;margin-left:5px;padding:2px 5px;border-radius:3px;background:#F1F5F9;color:#475569;font:600 8px Geist,ui-sans-serif,system-ui,sans-serif;letter-spacing:.07em;vertical-align:1px}
+.central-platform-root .overview-page .ov-text-action{display:inline-flex;align-items:center;gap:3px;padding:2px 0;border:0;background:transparent;color:var(--cp-accent);font-size:10px;font-weight:600;white-space:nowrap;cursor:pointer}
+.central-platform-root .overview-page .ov-text-action:hover{text-decoration:underline;color:var(--cp-accent-hover)}
+.central-platform-root .overview-page .ov-connectivity-panel{display:flex;flex-direction:column;min-height:230px}
+.central-platform-root .overview-page .ov-connectivity-total{display:flex;align-items:baseline;gap:8px;margin:6px 0 14px}
+.central-platform-root .overview-page .ov-connectivity-total strong{font:600 24px "Geist Mono",ui-monospace,monospace;color:var(--cp-ink);font-variant-numeric:tabular-nums}
+.central-platform-root .overview-page .ov-connectivity-total span{font-size:11px;font-weight:600;color:var(--cp-ink-secondary)}
+.central-platform-root .overview-page .ov-connectivity-total small{margin-left:auto;font-size:10px;color:var(--cp-ink-tertiary)}
+.central-platform-root .overview-page .ov-distribution{display:flex;height:15px;overflow:hidden;border-radius:3px;background:var(--cp-surface-subtle);outline:1px solid rgba(148,163,184,.18);outline-offset:-1px}
+.central-platform-root .overview-page .ov-distribution-online{background:#16A34A}
+.central-platform-root .overview-page .ov-distribution-offline{background:#DC2626}
+.central-platform-root .overview-page .ov-connectivity-legend{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:13px}
+.central-platform-root .overview-page .ov-connectivity-legend>div{display:flex;align-items:center;justify-content:space-between}
+.central-platform-root .overview-page .ov-connectivity-legend>div>span{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--cp-ink-secondary)}
+.central-platform-root .overview-page .ov-connectivity-legend strong{font:600 12px "Geist Mono",ui-monospace,monospace;color:var(--cp-ink)}
+.central-platform-root .overview-page .ov-connectivity-legend strong small{font:400 10px Geist,ui-sans-serif,system-ui,sans-serif;color:var(--cp-ink-tertiary);margin-left:3px}
+.central-platform-root .overview-page .ov-monitoring-meta{display:flex;align-items:center;gap:8px;margin-top:auto;padding-top:12px;border-top:1px solid var(--cp-border)}
+.central-platform-root .overview-page .ov-monitoring-meta span{font-size:10px;color:var(--cp-ink-secondary)}
+.central-platform-root .overview-page .ov-monitoring-meta strong{font-size:10px;color:#475569;background:#F1F5F9;padding:3px 6px;border-radius:4px}
+.central-platform-root .overview-page .ov-monitoring-meta small{margin-left:auto;font-size:9px;color:var(--cp-ink-tertiary);text-align:right}
+.central-platform-root .overview-page .ov-alerts-panel{padding-bottom:8px}
+.central-platform-root .overview-page .ov-alert-count{min-width:23px;height:23px;display:grid;place-items:center;border-radius:5px;background:#FEE2E2;color:#B91C1C;font:600 11px "Geist Mono",monospace}
+.central-platform-root .overview-page .ov-alert-list{display:flex;flex-direction:column}
+.central-platform-root .overview-page .ov-alert{display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:9px;align-items:start;padding:9px 0;border-top:1px solid var(--cp-border)}
+.central-platform-root .overview-page .ov-alert-mark{width:24px;height:24px;display:grid;place-items:center;border-radius:5px}
+.central-platform-root .overview-page .ov-alert-mark.critical{color:#B91C1C;background:#FEE2E2}
+.central-platform-root .overview-page .ov-alert-mark.warning{color:#92400E;background:#FEF3C7}
+.central-platform-root .overview-page .ov-alert-title{font-size:11px;line-height:1.35;font-weight:600;color:var(--cp-ink)}
+.central-platform-root .overview-page .ov-alert-school{margin-top:2px;font-size:10px;color:var(--cp-ink-secondary)}
+.central-platform-root .overview-page .ov-alert-school code,.central-platform-root .overview-page .ov-school-table code{font:10px "Geist Mono",ui-monospace,monospace;color:var(--cp-ink-tertiary)}
+.central-platform-root .overview-page .ov-alert-meta{display:flex;align-items:center;gap:7px;margin-top:4px}
+.central-platform-root .overview-page .ov-severity{font-size:9px;font-weight:650;padding:2px 5px;border-radius:3px}
+.central-platform-root .overview-page .ov-severity.critical{color:#B91C1C;background:#FEE2E2}
+.central-platform-root .overview-page .ov-severity.warning{color:#92400E;background:#FEF3C7}
+.central-platform-root .overview-page .ov-alert-meta time{font-size:9px;color:var(--cp-ink-tertiary);font-variant-numeric:tabular-nums}
+.central-platform-root .overview-page .ov-view-action{align-self:center;padding:4px 0;border:0;background:transparent;color:var(--cp-accent);font-size:9px;font-weight:600;white-space:nowrap;cursor:pointer}
+.central-platform-root .overview-page .ov-view-action:hover{text-decoration:underline}
+.central-platform-root .overview-page .ov-schools-panel{padding:15px 0 0;overflow:visible}
+.central-platform-root .overview-page .ov-schools-heading{padding:0 18px}
+.central-platform-root .overview-page .ov-table-toolbar{display:flex;align-items:center;gap:9px;padding:0 18px 12px}
+.central-platform-root .overview-page .ov-search{display:flex;align-items:center;gap:7px;min-width:220px;max-width:340px;height:34px;padding:0 9px;border:1px solid var(--cp-border-strong);border-radius:6px;color:var(--cp-ink-tertiary);background:#fff;flex:1}
+.central-platform-root .overview-page .ov-search input{width:100%;border:0;outline:0;background:transparent;color:var(--cp-ink);font:11px Geist,ui-sans-serif,system-ui,sans-serif}
+.central-platform-root .overview-page .ov-search:focus-within{border-color:var(--cp-accent);box-shadow:0 0 0 2px rgba(15,118,110,.12)}
+.central-platform-root .overview-page .ov-filter{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--cp-ink-secondary)}
+.central-platform-root .overview-page .ov-filter select{height:34px;min-width:100px;font-size:10px}
+.central-platform-root .overview-page .ov-reset{height:32px;padding:0 8px;border:0;background:transparent;color:var(--cp-accent);font-size:10px;font-weight:600;white-space:nowrap;cursor:pointer}
+.central-platform-root .overview-page .ov-reset:disabled{color:var(--cp-ink-tertiary);cursor:default}
+.central-platform-root .overview-page .ov-table-wrap{width:100%;overflow-x:auto}
+.central-platform-root .overview-page .ov-school-table{width:100%;min-width:950px;border-collapse:collapse;text-align:left}
+.central-platform-root .overview-page .ov-school-table th{height:35px;padding:0 10px;background:#F8FAFC;border-top:1px solid var(--cp-border);border-bottom:1px solid var(--cp-border);color:var(--cp-ink-secondary);font-size:9px;font-weight:650;white-space:nowrap}
+.central-platform-root .overview-page .ov-school-table th:first-child,.central-platform-root .overview-page .ov-school-table td:first-child{padding-left:18px}
+.central-platform-root .overview-page .ov-school-table th:last-child,.central-platform-root .overview-page .ov-school-table td:last-child{padding-right:14px}
+.central-platform-root .overview-page .ov-school-table td{height:45px;padding:5px 10px;border-bottom:1px solid var(--cp-border);font-size:11px;color:var(--cp-ink-secondary);white-space:nowrap}
+.central-platform-root .overview-page .ov-school-table tbody tr:last-child td{border-bottom:0}
+.central-platform-root .overview-page .ov-sort{display:inline-flex;align-items:center;gap:5px;padding:0;border:0;background:transparent;color:inherit;font:inherit;cursor:pointer;white-space:nowrap}
+.central-platform-root .overview-page .ov-sort span{color:var(--cp-ink-tertiary);font-size:11px}
+.central-platform-root .overview-page .ov-actions-label{font-size:9px}
+.central-platform-root .overview-page .ov-school-name{padding:0;border:0;background:transparent;color:var(--cp-ink);font-size:11px;font-weight:600;text-align:left;cursor:pointer}
+.central-platform-root .overview-page .ov-school-name:hover{color:var(--cp-accent);text-decoration:underline}
+.central-platform-root .overview-page .ov-status{display:inline-flex;align-items:center;min-height:20px;padding:2px 7px;border-radius:4px;font-size:9px;font-weight:600}
+.central-platform-root .overview-page .ov-status.success{color:#166534;background:#DCFCE7}
+.central-platform-root .overview-page .ov-status.warning{color:#92400E;background:#FEF3C7}
+.central-platform-root .overview-page .ov-status.danger{color:#B91C1C;background:#FEE2E2}
+.central-platform-root .overview-page .ov-heartbeat{font:9px "Geist Mono",ui-monospace,monospace;color:var(--cp-ink-secondary)}
+.central-platform-root .overview-page .ov-row-menu{position:relative;display:flex;justify-content:center}
+.central-platform-root .overview-page .ov-menu-trigger{width:28px;height:28px;display:grid;place-items:center;border:1px solid transparent;border-radius:5px;background:transparent;color:var(--cp-ink-secondary);cursor:pointer}
+.central-platform-root .overview-page .ov-menu-trigger:hover,.central-platform-root .overview-page .ov-menu-trigger[aria-expanded=true]{background:var(--cp-surface-subtle);border-color:var(--cp-border)}
+.central-platform-root .overview-page .ov-menu{position:absolute;z-index:20;right:0;top:30px;min-width:180px;padding:4px;background:#fff;border:1px solid var(--cp-border);border-radius:7px;box-shadow:0 8px 22px rgba(15,23,42,.12)}
+.central-platform-root .overview-page .ov-menu button{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 9px;border:0;border-radius:4px;background:transparent;color:var(--cp-ink);font-size:10px;text-align:left;cursor:pointer}
+.central-platform-root .overview-page .ov-menu button:hover{background:var(--cp-surface-subtle)}
+.central-platform-root .overview-page .ov-menu button span{color:var(--cp-ink-tertiary);font-size:9px}
+.central-platform-root .overview-page .ov-table-footer{display:flex;align-items:center;justify-content:space-between;padding:9px 18px;border-top:1px solid var(--cp-border);color:var(--cp-ink-tertiary);font-size:9px}
+.central-platform-root .overview-page .ov-empty-table{display:flex;flex-direction:column;align-items:center;gap:6px;padding:23px 12px;color:var(--cp-ink-tertiary);white-space:normal}
+.central-platform-root .overview-page .ov-empty-table strong{font-size:11px;color:var(--cp-ink)}
+.central-platform-root .overview-page .ov-empty-table span{font-size:10px}
+.central-platform-root .overview-page .ov-empty-table button{border:0;background:transparent;color:var(--cp-accent);font-size:10px;font-weight:600;cursor:pointer}
+.central-platform-root .overview-page .ov-empty-inline{padding:18px 8px;color:var(--cp-ink-tertiary);font-size:11px;text-align:center}
+.central-platform-root .overview-page .ov-activity-panel{padding-bottom:5px}
+.central-platform-root .overview-page .ov-activity-list{display:flex;flex-direction:column}
+.central-platform-root .overview-page .ov-activity{display:grid;grid-template-columns:27px minmax(0,1fr) auto;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--cp-border)}
+.central-platform-root .overview-page .ov-activity-icon{width:25px;height:25px;display:grid;place-items:center;border-radius:5px;background:#F1F5F9;color:#475569}
+.central-platform-root .overview-page .ov-activity-icon.registration{background:#DBEAFE;color:#1D4ED8}
+.central-platform-root .overview-page .ov-activity-icon.license{background:#FEF3C7;color:#92400E}
+.central-platform-root .overview-page .ov-activity-icon.connectivity{background:#DCFCE7;color:#166534}
+.central-platform-root .overview-page .ov-activity-icon.subscription{background:#F1F5F9;color:#475569}
+.central-platform-root .overview-page .ov-activity-icon.software{background:#CCFBF1;color:#0F766E}
+.central-platform-root .overview-page .ov-activity-copy{display:flex;flex-direction:column;gap:2px}
+.central-platform-root .overview-page .ov-activity-copy strong{font-size:11px;font-weight:550;color:var(--cp-ink)}
+.central-platform-root .overview-page .ov-activity-copy span{font-size:10px;color:var(--cp-ink-tertiary)}
+.central-platform-root .overview-page .ov-activity time{font-size:9px;color:var(--cp-ink-tertiary);font-variant-numeric:tabular-nums}
+.central-platform-root .overview-page button:focus-visible,.central-platform-root .overview-page select:focus-visible,.central-platform-root .overview-page input:focus-visible{outline:2px solid var(--cp-accent);outline-offset:2px}
+@media(max-width:1180px){
+ .central-platform-root .overview-page .ov-metrics{grid-template-columns:1fr 1fr}
+ .central-platform-root .overview-page .ov-primary-metric:nth-child(2){border-right:0}
+ .central-platform-root .overview-page .ov-connectivity-metrics{border-top:1px solid var(--cp-border)}
+ .central-platform-root .overview-page .ov-compact-metrics{border-top:1px solid var(--cp-border)}
+ .central-platform-root .overview-page .ov-top-grid{grid-template-columns:minmax(0,1.2fr) minmax(340px,1fr)}
+}
+@media(max-width:900px){
+ .central-platform-root .overview-page .ov-top-grid{grid-template-columns:1fr}
+ .central-platform-root .overview-page .ov-table-toolbar{flex-wrap:wrap}
+}
+@media(max-width:650px){
+ .central-platform-root .overview-page .ov-page-head{align-items:flex-start;flex-direction:column}
+ .central-platform-root .overview-page .ov-head-controls{width:100%}
+ .central-platform-root .overview-page .ov-range{flex:1}
+ .central-platform-root .overview-page .ov-range select{width:100%}
+ .central-platform-root .overview-page .ov-metrics{grid-template-columns:1fr}
+ .central-platform-root .overview-page .ov-primary-metric{border-right:0;border-bottom:1px solid var(--cp-border)}
+ .central-platform-root .overview-page .ov-connectivity-metrics{border-right:0}
+ .central-platform-root .overview-page .ov-compact-metrics{border-top:1px solid var(--cp-border)}
+ .central-platform-root .overview-page .ov-panel{padding:13px}
+ .central-platform-root .overview-page .ov-schools-panel{padding:13px 0 0}
+ .central-platform-root .overview-page .ov-schools-heading,.central-platform-root .overview-page .ov-table-toolbar{padding-left:13px;padding-right:13px}
+ .central-platform-root .overview-page .ov-table-footer{align-items:flex-start;gap:6px;flex-direction:column;padding-left:13px}
+ .central-platform-root .overview-page .ov-monitoring-meta{align-items:flex-start;flex-direction:column;gap:4px}
+ .central-platform-root .overview-page .ov-monitoring-meta small{margin-left:0;text-align:left}
+ .central-platform-root .overview-page .ov-activity{grid-template-columns:27px minmax(0,1fr)}
+ .central-platform-root .overview-page .ov-activity time{grid-column:2}
+}
