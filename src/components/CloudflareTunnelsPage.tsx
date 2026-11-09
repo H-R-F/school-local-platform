@@ -76,7 +76,7 @@ export function CloudflareTunnelsPage({ notify }: { notify: (message: string) =>
   const saveTunnel = () => {
     const hostname = form.hostname.trim().toLowerCase();
     if (!form.name.trim() || !form.school || !hostname) { setFormError("Complete the required fields before saving."); return; }
-    if (!/^(?=.{1,253}$)([a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z]{2,}$/i.test(hostname)) { setFormError("Enter a valid public hostname."); return; }
+    if (!/^(?=.{1,253}$)([a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$/i.test(hostname)) { setFormError("Enter a valid public hostname."); return; }
     if (tunnels.some(t => t.hostname.toLowerCase() === hostname && t.id !== selected?.id)) { setFormError("This public hostname is already registered."); return; }
     if (drawer === "edit" && selected) {
       setTunnels(prev => prev.map(t => t.id === selected.id ? {...t,name:form.name.trim(),hostname,server:form.server || "Not assigned",description:form.description,updated:"Just now"} : t));
