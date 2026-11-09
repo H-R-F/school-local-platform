@@ -117,7 +117,7 @@ export function SubscriptionsPage() {
   const openCreate=()=>{setForm({...initialForm});setFormErrors({});setPanel({mode:"create"});};
   const openEdit=(r:Subscription)=>{setForm({schoolCode:r.code,planId:r.planId,cycle:r.cycle,amount:r.amount===null?"":String(r.amount),currency:r.currency,start:r.start,renewal:r.renewal,trial:r.status==="Trial",trialEnd:r.trialEnd||"",status:r.status==="Draft"?"Draft":r.status==="Trial"?"Trial":"Active"});setFormErrors({});setPanel({mode:"edit",id:r.id});};
   const closePanel=()=>setPanel(null);
-  const setField=<K extends keyof FormState>(key:K,value:FormState[K])=>setForm(current=>({...current,[key]:value}));
+  const setField=<K extends keyof FormState,>(key:K,value:FormState[K])=>setForm(current=>({...current,[key]:value}));
   const validate=(draftOnly:boolean)=>{
     const errors:Record<string,string>={};
     if(!form.schoolCode)errors.schoolCode="Select a registered school.";
