@@ -56,7 +56,8 @@
 .lic-status i{width:var(--ds-indicator-dot-size);height:var(--ds-indicator-dot-size);border-radius:50%;background:currentColor}
 .lic-status.active{color:var(--ds-color-success);background:var(--ds-color-success-subtle)}
 .lic-status.pending{color:var(--ds-color-warning);background:var(--ds-color-warning-subtle)}
-.lic-status.suspended,.lic-status.expired{color:var(--ds-color-error);background:var(--ds-color-error-subtle)}\n.lic-status.deactivated{color:var(--ds-color-text-secondary);background:var(--ds-color-surface-sunken)}
+.lic-status.suspended,.lic-status.expired{color:var(--ds-color-error);background:var(--ds-color-error-subtle)}
+.lic-status.deactivated{color:var(--ds-color-text-secondary);background:var(--ds-color-surface-sunken)}
 .lic-grace.success{color:var(--ds-color-success);background:var(--ds-color-success-subtle)}
 .lic-grace.warning{color:var(--ds-color-warning);background:var(--ds-color-warning-subtle)}
 .lic-grace.danger{color:var(--ds-color-error);background:var(--ds-color-error-subtle)}
