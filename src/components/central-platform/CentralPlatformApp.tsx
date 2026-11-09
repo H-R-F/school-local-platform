@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import {
-  Activity, AlertCircle, Bell, Building2, Check, ChevronDown, ChevronRight,
+  Activity, AlertCircle, AlertTriangle, Bell, Building2, Check, ChevronDown, ChevronRight,
   Cloud, Command, CreditCard, Database, ExternalLink, FileClock, Gauge, KeyRound,
   LayoutDashboard, LifeBuoy, LogOut, MoreHorizontal, Package, PanelLeft,
   Plus, RefreshCw, Search, Settings, ShieldCheck, X,
@@ -77,8 +77,8 @@ const overviewSchools: OverviewSchool[] = [
 ];
 const overviewAlerts: OverviewAlert[] = [
   {id:"ALT-2401",school:"Groupe Scolaire Al Amal",code:"SCH-002",title:"School server unreachable",severity:"Critical",timestamp:"09 Nov 2026, 14:05 UTC · demo",sort:Date.UTC(2026,10,9,14,5),destination:"Monitoring"},
-  {id:"ALT-2398",school:"École Les Orangers",code:"SCH-004",title:"Cloudflare Tunnel disconnected",severity:"Critical",timestamp:"09 Nov 2026, 13:42 UTC · demo",sort:Date.UTC(2026,10,9,13,42),destination:"Installations"},
-  {id:"ALT-2392",school:"Institution Al Manar",code:"SCH-003",title:"License approaching expiration",severity:"Warning",timestamp:"09 Nov 2026, 11:30 UTC · demo",sort:Date.UTC(2026,10,9,11,30),destination:"Licenses"},
+  {id:"ALT-2398",school:"Groupe Scolaire Al Waha",code:"SCH-005",title:"Cloudflare Tunnel disconnected",severity:"Critical",timestamp:"09 Nov 2026, 13:42 UTC · demo",sort:Date.UTC(2026,10,9,13,42),destination:"Installations"},
+  {id:"ALT-2392",school:"École Atlas",code:"SCH-001",title:"License approaching expiration",severity:"Warning",timestamp:"09 Nov 2026, 11:30 UTC · demo",sort:Date.UTC(2026,10,9,11,30),destination:"Licenses"},
   {id:"ALT-2387",school:"Groupe Scolaire Al Waha",code:"SCH-005",title:"Backup operation failed",severity:"Critical",timestamp:"08 Nov 2026, 21:45 UTC · demo",sort:Date.UTC(2026,10,8,21,45),destination:"Monitoring"}
 ];
 const overviewActivities: OverviewActivity[] = [
@@ -134,7 +134,7 @@ function Dashboard({ setPage, notify, setSearch }: { setPage: (page: PageKey) =>
     window.setTimeout(()=>{
       setSnapshot(v=>v+1);
       setRefreshing(false);
-      setRefreshNote("Local demonstration snapshot reloaded. Live refresh is unavailable without a monitoring service.");
+      setRefreshNote("No live data source is connected. The demonstration snapshot is unchanged.");
     },350);
   };
   const iconFor=(category:OverviewActivity["category"])=>{
