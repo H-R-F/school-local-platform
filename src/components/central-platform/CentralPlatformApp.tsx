@@ -2,11 +2,11 @@ import { useMemo, useState } from "react";
 import {
   Activity, AlertCircle, Bell, Building2, Check, ChevronDown, ChevronRight,
   Cloud, Command, CreditCard, Database, ExternalLink, FileClock, Gauge, KeyRound,
-  LayoutDashboard, LifeBuoy, LogOut, Moon, MoreHorizontal, Package, PanelLeft,
-  Plus, RefreshCw, Search, Settings, ShieldCheck, Sun, X,
+  LayoutDashboard, LifeBuoy, LogOut, MoreHorizontal, Package, PanelLeft,
+  Plus, RefreshCw, Search, Settings, ShieldCheck, X,
 } from "lucide-react";
 
-type PageKey = "Dashboard" | "Schools" | "Installations" | "Endpoints" | "Subscriptions" | "Licenses" | "Monitoring" | "Releases" | "Notifications" | "Support Access" | "Audit Logs" | "Settings";
+type PageKey = "Overview" | "Schools" | "Installations" | "Endpoints" | "Subscriptions" | "Licenses" | "Monitoring" | "Releases" | "Notifications" | "Support Access" | "Audit Logs" | "Settings";
 type School = { code: string; name: string; city: string; status: string; plan: string; health: string; license: string; version: string; heartbeat: string; endpoint: string };
 
 const schools: School[] = [
@@ -21,7 +21,7 @@ const schools: School[] = [
 ];
 
 const nav: { label: PageKey; icon: typeof LayoutDashboard; section: string; count?: number }[] = [
-  { label: "Dashboard", icon: LayoutDashboard, section: "Overview" },
+  { label: "Overview", icon: LayoutDashboard, section: "Overview" },
   { label: "Schools", icon: Building2, section: "Fleet" }, { label: "Installations", icon: Database, section: "Fleet" }, { label: "Endpoints", icon: Cloud, section: "Fleet" },
   { label: "Subscriptions", icon: CreditCard, section: "Commercial" }, { label: "Licenses", icon: KeyRound, section: "Commercial" },
   { label: "Monitoring", icon: Activity, section: "Operations", count: 3 }, { label: "Releases", icon: Package, section: "Operations" }, { label: "Notifications", icon: Bell, section: "Operations" },
@@ -35,7 +35,7 @@ function Sparkline() { return <div className="connectivity-summary"><div classNa
 function Donut() { return <div className="donut-wrap"><div className="donut"><div><strong>8</strong><span>schools</span></div></div><div className="legend"><span><i className="dot green" />Healthy <b>5</b></span><span><i className="dot amber" />Degraded <b>1</b></span><span><i className="dot red" />Offline <b>2</b></span></div></div> }
 
 export default function CentralPlatformApp() {
-  const [page, setPage] = useState<PageKey>("Dashboard"); const [search, setSearch] = useState(""); const [banner, setBanner] = useState(true); const [toast, setToast] = useState(""); const [sidebar, setSidebar] = useState(true); const [filter, setFilter] = useState("All"); const [modal, setModal] = useState<PageKey | null>(null);
+  const [page, setPage] = useState<PageKey>("Overview"); const [search, setSearch] = useState(""); const [banner, setBanner] = useState(true); const [toast, setToast] = useState(""); const [sidebar, setSidebar] = useState(true); const [filter, setFilter] = useState("All"); const [modal, setModal] = useState<PageKey | null>(null);
   const notify = (message: string) => { setToast(message); window.setTimeout(() => setToast(""), 2400); };
   const filtered = useMemo(() => schools.filter(s => (filter === "All" || s.health === filter) && `${s.name} ${s.code} ${s.city}`.toLowerCase().includes(search.toLowerCase())), [filter, search]);
   const sections = [...new Set(nav.map(n => n.section))];
@@ -48,7 +48,7 @@ export default function CentralPlatformApp() {
     </aside>
     <main className="main"><header className="topbar"><div className="breadcrumbs"><span>Control Plane</span><ChevronRight size={14}/><b>{page}</b></div><div className="command-search" onClick={() => notify("Command search is ready") }><Search size={15}/><span>Search schools, pages...</span><kbd><Command size={11}/>K</kbd></div><div className="top-actions"><span className="demo-pill"><span />DEMO MODE</span><button className="icon-btn" onClick={() => notify("No new notifications")} aria-label="Notifications"><Bell size={18}/><i className="notification-dot" /></button><div className="top-avatar">AO</div></div></header>
       <div className="content">{banner && <div className="demo-banner"><div><ShieldCheck size={17}/><span><b>You are viewing a demo with mocked data.</b> No backend is connected. Actions are simulated.</span></div><button className="icon-btn" onClick={() => setBanner(false)} aria-label="Dismiss banner"><X size={16}/></button></div>}
-        {page === "Dashboard" ? <Dashboard setPage={setPage} notify={notify}/> : <DataPage page={page} schools={filtered} search={search} setSearch={setSearch} filter={filter} setFilter={setFilter} notify={notify} onCreate={() => setModal(page)}/>}</div>
+        {page === "Overview" ? <Dashboard setPage={setPage} notify={notify}/> : <DataPage page={page} schools={filtered} search={search} setSearch={setSearch} filter={filter} setFilter={setFilter} notify={notify} onCreate={() => setModal(page)}/>}</div>
     </main>{modal && <CreateModal page={modal} onClose={() => setModal(null)} onSave={() => { setModal(null); notify(`${modal} created in demo mode`) }} />}{toast && <div className="toast"><Check size={16}/>{toast}</div>}
   </div></div>;
 }
