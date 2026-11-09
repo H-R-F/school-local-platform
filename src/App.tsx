@@ -1,288 +1,70 @@
-import { useCallback, useEffect, useState } from "react";
-import { AppSidebar } from "./components/AppSidebar";
-import { CommandPalette } from "./components/shell/CommandPalette";
-import { StatusBar } from "./components/shell/StatusBar";
-import { TopBar } from "./components/shell/TopBar";
-import "./components/shell/shell.css";
-import { navigation } from "./data/navigation";
-import { systemStatus } from "./config/system-status";
-import { StaffSignIn } from "./components/auth/StaffSignIn";
-import { DirectorOverviewPage } from "./components/dashboard/DirectorOverviewPage";
-import { AdministrativeOverviewPage } from "./components/dashboard/AdministrativeOverviewPage";
-import { PedagogicalOverviewPage } from "./components/dashboard/PedagogicalOverviewPage";
-import { FinanceLogisticsOverviewPage } from "./components/dashboard/FinanceLogisticsOverviewPage";
-import { AcademicYearsPage } from "./components/academic-years/AcademicYearsPage";
-import { SectorsProgramsPage } from "./components/sectors-programs/SectorsProgramsPage";
-import { LevelsPage } from "./components/levels/LevelsPage";
-import { ClassesGroupsPage } from "./components/classes-groups/ClassesGroupsPage";
-import { SubjectsPage } from "./components/subjects/SubjectsPage";
-import { DepartmentsPage } from "./components/departments/DepartmentsPage";
-import { StudentsPage } from "./components/students/StudentsPage";
-import { ParentsPage } from "./components/parents/ParentsPage";
-import { TeachersPage } from "./components/teachers/TeachersPage";
-import { EmployeesPage } from "./components/employees/EmployeesPage";
-import { RolesPermissionsPage } from "./components/roles-permissions/RolesPermissionsPage";
-import { GradesValidationPage } from "./components/grades-validation/GradesValidationPage";
-import { ExaminationsPage } from "./components/examinations/ExaminationsPage";
-import { CoursesExercisesPage } from "./components/courses-exercises/CoursesExercisesPage";
-import { PedagogicalReportsPage } from "./components/pedagogical-reports/PedagogicalReportsPage";
-import { BadgesRecognitionPage } from "./components/badges-recognition/BadgesRecognitionPage";
-import { TimetablesPage } from "./components/timetables/TimetablesPage";
-import { StudentAttendancePage } from "./components/student-attendance/StudentAttendancePage";
-import { StaffAttendancePage } from "./components/staff-attendance/StaffAttendancePage";
-import { DocumentsPage } from "./components/documents/DocumentsPage";
-import { ClassRankingsPage } from "./components/class-rankings/ClassRankingsPage";
-import { StudentRiskPage } from "./components/student-risk/StudentRiskPage";
-import { StudentActivitiesPage } from "./components/student-activities/StudentActivitiesPage";
-import { PaymentRegistersPage } from "./components/payment-registers/PaymentRegistersPage";
-import { CashRegistersPage } from "./components/cash-registers/CashRegistersPage";
-import { PaymentsPage } from "./components/payments/PaymentsPage";
-import { StudentBalancesPage } from "./components/student-balances/StudentBalancesPage";
-import { ExpensesPage } from "./components/expenses/ExpensesPage";
-import { FinancialReportsPage } from "./components/financial-reports/FinancialReportsPage";
-import { TransportPage } from "./components/transport/TransportPage";
-import { TripsOutingsPage } from "./components/trips-outings/TripsOutingsPage";
-import { AccidentsIncidentsPage } from "./components/accidents-incidents/AccidentsIncidentsPage";
-import { InventoryPage } from "./components/inventory/InventoryPage";
-import { AnnouncementsPage } from "./components/announcements/AnnouncementsPage";
-import { NotificationsPage } from "./components/notifications/NotificationsPage";
-import { EventsPage } from "./components/events/EventsPage";
-import { MeetingsPage } from "./components/meetings/MeetingsPage";
-import { ActivityHistoryPage } from "./components/activity-history/ActivityHistoryPage";
-import { ReportsAnalyticsPage } from "./components/reports-analytics/ReportsAnalyticsPage";
-import { schoolBranding } from "./config/school";
-import { getDemoStaffById } from "./data/demo-accounts";
-import type { AuthenticatedSidebarUser } from "./types/navigation";
+import { useMemo, useState } from "react";
+import {
+  Activity, AlertCircle, Bell, Building2, Check, ChevronDown, ChevronRight,
+  Cloud, Command, CreditCard, Database, ExternalLink, FileClock, Gauge, KeyRound,
+  LayoutDashboard, LifeBuoy, LogOut, Moon, MoreHorizontal, Package, PanelLeft,
+  Plus, RefreshCw, Search, Settings, ShieldCheck, Sun, X,
+} from "lucide-react";
 
-function readSavedUser(): AuthenticatedSidebarUser | null {
-  try {
-    const id = window.localStorage.getItem("school-demo-user");
-    return id ? getDemoStaffById(id) : null;
-  } catch {
-    return null;
-  }
-}
+type PageKey = "Dashboard" | "Schools" | "Installations" | "Endpoints" | "Subscriptions" | "Licenses" | "Monitoring" | "Releases" | "Notifications" | "Support Access" | "Audit Logs" | "Settings";
+type School = { code: string; name: string; city: string; status: string; plan: string; health: string; license: string; version: string; heartbeat: string; endpoint: string };
+
+const schools: School[] = [
+  { code: "SCH001", name: "École Horizon", city: "Casablanca, MA", status: "Active", plan: "Premium", health: "Healthy", license: "Active", version: "v2.8.1", heartbeat: "2 min ago", endpoint: "horizon.school.local" },
+  { code: "SCH002", name: "Lycée Atlas", city: "Rabat, MA", status: "Active", plan: "Standard", health: "Healthy", license: "Active", version: "v2.8.1", heartbeat: "8 min ago", endpoint: "atlas.school.local" },
+  { code: "SCH003", name: "Groupe Scolaire Al Amal", city: "Fès, MA", status: "Active", plan: "Premium", health: "Degraded", license: "In grace", version: "v2.7.4", heartbeat: "11 hours ago", endpoint: "alamal.school.local" },
+  { code: "SCH004", name: "École Les Oliviers", city: "Marrakech, MA", status: "Onboarding", plan: "Starter", health: "Healthy", license: "Active", version: "v2.8.1", heartbeat: "18 min ago", endpoint: "oliviers.school.local" },
+  { code: "SCH005", name: "Collège Ibn Sina", city: "Tangier, MA", status: "Active", plan: "Standard", health: "Offline", license: "Active", version: "v2.6.9", heartbeat: "36 hours ago", endpoint: "ibnsina.school.local" },
+  { code: "SCH006", name: "Académie La Plume", city: "Agadir, MA", status: "Active", plan: "Premium", health: "Healthy", license: "Active", version: "v2.8.1", heartbeat: "4 min ago", endpoint: "laplume.school.local" },
+  { code: "SCH007", name: "École Al Qalam", city: "Meknès, MA", status: "Suspended", plan: "Standard", health: "Offline", license: "Revoked", version: "v2.5.2", heartbeat: "12 days ago", endpoint: "alqalam.school.local" },
+  { code: "SCH008", name: "Lycée Riad", city: "Oujda, MA", status: "Active", plan: "Standard", health: "Healthy", license: "Active", version: "v2.8.0", heartbeat: "42 min ago", endpoint: "riad.school.local" },
+];
+
+const nav: { label: PageKey; icon: typeof LayoutDashboard; section: string; count?: number }[] = [
+  { label: "Dashboard", icon: LayoutDashboard, section: "Overview" },
+  { label: "Schools", icon: Building2, section: "Fleet" }, { label: "Installations", icon: Database, section: "Fleet" }, { label: "Endpoints", icon: Cloud, section: "Fleet" },
+  { label: "Subscriptions", icon: CreditCard, section: "Commercial" }, { label: "Licenses", icon: KeyRound, section: "Commercial" },
+  { label: "Monitoring", icon: Activity, section: "Operations", count: 3 }, { label: "Releases", icon: Package, section: "Operations" }, { label: "Notifications", icon: Bell, section: "Operations" },
+  { label: "Support Access", icon: LifeBuoy, section: "Governance", count: 2 }, { label: "Audit Logs", icon: FileClock, section: "Governance" }, { label: "Settings", icon: Settings, section: "System" },
+];
+
+function Badge({ children, tone = "neutral" }: { children: React.ReactNode; tone?: string }) { return <span className={`badge badge-${tone}`}><span className="badge-dot" />{children}</span>; }
+function tone(value: string) { const v = value.toLowerCase(); if (v.includes("healthy") || v.includes("active") || v.includes("delivered") || v.includes("approved")) return "success"; if (v.includes("degraded") || v.includes("grace") || v.includes("pending") || v.includes("onboarding")) return "warning"; if (v.includes("offline") || v.includes("revoked") || v.includes("failed") || v.includes("suspended")) return "danger"; if (v.includes("connected")) return "info"; return "neutral"; }
+function Stat({ label, value, helper, icon: Icon, accent = "indigo", onClick }: { label: string; value: string; helper: string; icon: typeof Activity; accent?: string; onClick?: () => void }) { return <button className="stat-card" onClick={onClick}><div className={`stat-icon ${accent}`}><Icon size={17} /></div><div className="stat-label">{label}</div><strong>{value}</strong><small>{helper}</small></button>; }
+function Sparkline() { return <div className="chart"><div className="chart-grid" /><svg viewBox="0 0 700 190" preserveAspectRatio="none"><path d="M0 150 C35 120 48 142 78 110 S124 132 154 88 S203 126 236 82 S278 118 310 60 S355 105 392 77 S440 98 468 48 S520 83 555 42 S606 74 640 28 S675 49 700 18 L700 190 L0 190Z" fill="url(#fill)"/><path d="M0 150 C35 120 48 142 78 110 S124 132 154 88 S203 126 236 82 S278 118 310 60 S355 105 392 77 S440 98 468 48 S520 83 555 42 S606 74 640 28 S675 49 700 18" fill="none" stroke="#6366f1" strokeWidth="3"/><defs><linearGradient id="fill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stopColor="#6366f1" stopOpacity=".2"/><stop offset="1" stopColor="#6366f1" stopOpacity="0"/></linearGradient></defs></svg><div className="chart-axis"><span>7 days ago</span><span>Today</span></div></div> }
+function Donut() { return <div className="donut-wrap"><div className="donut"><div><strong>8</strong><span>schools</span></div></div><div className="legend"><span><i className="dot green" />Healthy <b>5</b></span><span><i className="dot amber" />Degraded <b>1</b></span><span><i className="dot red" />Offline <b>2</b></span></div></div> }
 
 export default function App() {
-  const [user, setUser] = useState<AuthenticatedSidebarUser | null>(readSavedUser);
-  const [currentPath, setCurrentPath] = useState(() => window.location.pathname || "/overview");
-  const [collapsed, setCollapsed] = useState(() => {
-    try { return window.localStorage.getItem("school-sidebar-collapsed") === "1"; } catch { return false; }
-  });
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [narrow, setNarrow] = useState(() => window.matchMedia("(max-width: 1100px)").matches);
-  useEffect(() => {
-    const query = window.matchMedia("(max-width: 1100px)");
-    const onChange = (event: MediaQueryListEvent) => setNarrow(event.matches);
-    query.addEventListener("change", onChange);
-    return () => query.removeEventListener("change", onChange);
-  }, []);
-  const sidebarCollapsed = collapsed || narrow;
-
-  const updateCollapsed = useCallback((next: boolean) => {
-    setCollapsed(next);
-    try { window.localStorage.setItem("school-sidebar-collapsed", next ? "1" : "0"); } catch { /* storage may be unavailable */ }
-  }, []);
-
-  // Global shortcuts: Ctrl/Cmd+K opens search, Ctrl/Cmd+B toggles the sidebar.
-  useEffect(() => {
-    if (!user) return;
-    const onKey = (event: KeyboardEvent) => {
-      if (!(event.ctrlKey || event.metaKey) || event.altKey) return;
-      const key = event.key.toLowerCase();
-      if (key === "k") { event.preventDefault(); setSearchOpen((open) => !open); }
-      else if (key === "b") { event.preventDefault(); updateCollapsed(!sidebarCollapsed); }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [user, sidebarCollapsed, updateCollapsed]);
-
-  // Per-page document title, skip-link target and scroll reset on navigation.
-  useEffect(() => {
-    if (!user) { document.title = `Connexion · ${schoolBranding.name}`; return; }
-    const item = navigation.flatMap((group) => group.items).find((entry) => entry.route === currentPath);
-    document.title = `${item?.label ?? "Espace du personnel"} · ${schoolBranding.name}`;
-    window.scrollTo(0, 0);
-    document.querySelector(".sidebar-demo > main")?.setAttribute("id", "main-content");
-  }, [user, currentPath]);
-
-  useEffect(() => {
-    const syncPath = () => setCurrentPath(window.location.pathname || "/overview");
-    window.addEventListener("popstate", syncPath);
-    return () => window.removeEventListener("popstate", syncPath);
-  }, []);
-
-  function navigate(route: string) {
-    if (window.location.pathname !== route) window.history.pushState({}, "", route);
-    setCurrentPath(window.location.pathname || "/overview");
-  }
-
-  function handleSignIn(nextUser: AuthenticatedSidebarUser) {
-    setUser(nextUser);
-    try { window.localStorage.setItem("school-demo-user", nextUser.id); } catch { /* storage may be unavailable */ }
-    window.history.replaceState({}, "", "/overview");
-    setCurrentPath("/overview");
-  }
-
-  function handleSignOut() {
-    setUser(null);
-    try { window.localStorage.removeItem("school-demo-user"); } catch { /* storage may be unavailable */ }
-    window.history.replaceState({}, "", "/");
-    setCurrentPath("/");
-  }
-
-  if (!user) return <StaffSignIn onSignIn={handleSignIn} />;
-
-  const isDirectorOverview = user.role === "director" && currentPath === "/overview";
-  const isAdministrativeOverview = user.role === "administrative" && currentPath === "/overview";
-  const isPedagogicalOverview = user.role === "pedagogical" && currentPath === "/overview";
-  const isFinanceOverview = user.role === "finance" && currentPath === "/overview";
-  const isAcademicYearsPage = currentPath === "/academic-years";
-  const isSectorsProgramsPage = currentPath === "/sectors-programs";
-  const isLevelsPage = currentPath === "/levels";
-  const isClassesGroupsPage = currentPath === "/classes-groups";
-  const isSubjectsPage = currentPath === "/subjects";
-  const isDepartmentsPage = currentPath === "/departments";
-  const isStudentsPage = currentPath === "/students";
-  const isParentsPage = currentPath === "/parents";
-  const isTeachersPage = currentPath === "/teachers";
-  const isEmployeesPage = currentPath === "/employees";
-  const isRolesPermissionsPage = currentPath === "/roles-permissions";
-  const isGradesValidationPage = currentPath === "/grades-validation";
-  const isExaminationsPage = currentPath === "/examinations";
-  const isCoursesExercisesPage = currentPath === "/courses-exercises";
-  const isPedagogicalReportsPage = currentPath === "/pedagogical-reports";
-  const isBadgesRecognitionPage = currentPath === "/badges-recognition";
-  const isTimetablesPage = currentPath === "/timetables";
-  const isStudentAttendancePage = currentPath === "/student-attendance";
-  const isStaffAttendancePage = currentPath === "/staff-attendance";
-  const isDocumentsPage = currentPath === "/documents";
-  const isClassRankingsPage = currentPath === "/class-rankings";
-  const isStudentRiskPage = currentPath === "/student-risk";
-  const isStudentActivitiesPage = currentPath === "/student-activities";
-  const isPaymentRegistersPage = currentPath === "/payment-registers";
-  const isCashRegistersPage = currentPath === "/cash-registers";
-  const isPaymentsPage = currentPath === "/payments";
-  const isStudentBalancesPage = currentPath === "/student-balances";
-  const isExpensesPage = currentPath === "/expenses";
-  const isFinancialReportsPage = currentPath === "/financial-reports";
-  const isTransportPage = currentPath === "/transport";
-  const isTripsOutingsPage = currentPath === "/trips-outings";
-  const isAccidentsIncidentsPage = currentPath === "/accidents-incidents";
-  const isInventoryPage = currentPath === "/inventory";
-  const isAnnouncementsPage = currentPath === "/announcements";
-  const isNotificationsPage = currentPath === "/notifications";
-  const isEventsPage = currentPath === "/events";
-  const isMeetingsPage = currentPath === "/meetings";
-  const isActivityHistoryPage = currentPath === "/activity-history";
-  const isReportsAnalyticsPage = currentPath === "/reports-analytics";
-
-  return (
-    <div className={`sidebar-demo${sidebarCollapsed ? " is-collapsed" : ""}`}>
-      <a className="skip-link" href="#main-content">Aller au contenu principal</a>
-      <AppSidebar user={user} school={schoolBranding} currentPath={currentPath} onNavigate={navigate} onExit={handleSignOut} collapsed={sidebarCollapsed} onCollapsedChange={updateCollapsed} />
-      <TopBar user={user} school={schoolBranding} onOpenSearch={() => setSearchOpen(true)} onNavigate={navigate} onSignOut={handleSignOut} />
-      {systemStatus.license.mode === "restricted" && (
-        <div className="license-banner" role="alert">
-          <strong>Mode restreint :</strong> la création et la modification sont désactivées. Les données existantes restent disponibles. Renouvelez la licence pour rétablir l’accès complet.
-        </div>
-      )}
-      {isDirectorOverview ? (
-        <DirectorOverviewPage user={user} onNavigate={navigate} />
-      ) : isAdministrativeOverview ? (
-        <AdministrativeOverviewPage user={user} onNavigate={navigate} />
-      ) : isPedagogicalOverview ? (
-        <PedagogicalOverviewPage user={user} onNavigate={navigate} />
-      ) : isFinanceOverview ? (
-        <FinanceLogisticsOverviewPage user={user} onNavigate={navigate} />
-      ) : isAcademicYearsPage ? (
-        <AcademicYearsPage user={user} onNavigate={navigate} />
-      ) : isSectorsProgramsPage ? (
-        <SectorsProgramsPage user={user} onNavigate={navigate} />
-      ) : isLevelsPage ? (
-        <LevelsPage user={user} onNavigate={navigate} />
-      ) : isClassesGroupsPage ? (
-        <ClassesGroupsPage user={user} onNavigate={navigate} />
-      ) : isSubjectsPage ? (
-        <SubjectsPage user={user} onNavigate={navigate} />
-      ) : isDepartmentsPage ? (
-        <DepartmentsPage user={user} onNavigate={navigate} />
-      ) : isStudentsPage ? (
-        <StudentsPage user={user} onNavigate={navigate} />
-      ) : isParentsPage ? (
-        <ParentsPage user={user} onNavigate={navigate} />
-      ) : isTeachersPage ? (
-        <TeachersPage user={user} onNavigate={navigate} />
-      ) : isEmployeesPage ? (
-        <EmployeesPage user={user} onNavigate={navigate} />
-      ) : isRolesPermissionsPage ? (
-        <RolesPermissionsPage user={user} onNavigate={navigate} />
-      ) : isGradesValidationPage ? (
-        <GradesValidationPage user={user} onNavigate={navigate} />
-      ) : isExaminationsPage ? (
-        <ExaminationsPage user={user} onNavigate={navigate} />
-      ) : isCoursesExercisesPage ? (
-        <CoursesExercisesPage user={user} onNavigate={navigate} />
-      ) : isPedagogicalReportsPage ? (
-        <PedagogicalReportsPage user={user} onNavigate={navigate} />
-      ) : isBadgesRecognitionPage ? (
-        <BadgesRecognitionPage user={user} onNavigate={navigate} />
-      ) : isTimetablesPage ? (
-        <TimetablesPage user={user} onNavigate={navigate} />
-      ) : isStudentAttendancePage ? (
-        <StudentAttendancePage user={user} onNavigate={navigate} />
-      ) : isStaffAttendancePage ? (
-        <StaffAttendancePage user={user} onNavigate={navigate} />
-      ) : isDocumentsPage ? (
-        <DocumentsPage user={user} onNavigate={navigate} />
-      ) : isClassRankingsPage ? (
-        <ClassRankingsPage user={user} onNavigate={navigate} />
-      ) : isStudentRiskPage ? (
-        <StudentRiskPage user={user} onNavigate={navigate} />
-      ) : isStudentActivitiesPage ? (
-        <StudentActivitiesPage user={user} />
-      ) : isPaymentRegistersPage ? (
-        <PaymentRegistersPage user={user} />
-      ) : isCashRegistersPage ? (
-        <CashRegistersPage user={user} />
-      ) : isPaymentsPage ? (
-        <PaymentsPage user={user} />
-      ) : isStudentBalancesPage ? (
-        <StudentBalancesPage user={user} />
-      ) : isExpensesPage ? (
-        <ExpensesPage user={user} />
-      ) : isFinancialReportsPage ? (
-        <FinancialReportsPage user={user} />
-      ) : isTransportPage ? (
-        <TransportPage user={user} onNavigate={navigate} />
-      ) : isTripsOutingsPage ? (
-        <TripsOutingsPage user={user} />
-      ) : isAccidentsIncidentsPage ? (
-        <AccidentsIncidentsPage user={user} />
-      ) : isInventoryPage ? (
-        <InventoryPage user={user} />
-      ) : isAnnouncementsPage ? (
-        <AnnouncementsPage user={user} />
-      ) : isNotificationsPage ? (
-        <NotificationsPage user={user} />
-      ) : isEventsPage ? (
-        <EventsPage user={user} onNavigate={navigate} />
-      ) : isMeetingsPage ? (
-        <MeetingsPage user={user} />
-      ) : isActivityHistoryPage ? (
-        <ActivityHistoryPage user={user} />
-      ) : isReportsAnalyticsPage ? (
-        <ReportsAnalyticsPage user={user} onNavigate={navigate} />
-      ) : (
-        <main className="workspace-placeholder">
-          <span className="workspace-eyebrow">ESPACE DU PERSONNEL</span>
-          <h1>{currentPath === "/overview" ? `Bienvenue, ${user.displayName.split(" ")[0]}` : "Module en préparation"}</h1>
-          <p>{currentPath === "/overview" ? `Votre espace de travail est prêt. Fonction : ${user.role === "finance" ? "Responsable financier et logistique" : user.role === "administrative" ? "Responsable administratif" : user.role === "pedagogical" ? "Responsable pédagogique" : "Directeur"}.` : "Cette page sera développée dans une prochaine étape."}</p>
-          <span className="workspace-note">Les modules sont construits progressivement, sans modifier les espaces déjà en place.</span>
-        </main>
-      )}
-      <StatusBar />
-      <CommandPalette open={searchOpen} user={user} onClose={() => setSearchOpen(false)} onNavigate={navigate} />
-    </div>
-  );
+  const [page, setPage] = useState<PageKey>("Dashboard"); const [dark, setDark] = useState(true); const [search, setSearch] = useState(""); const [banner, setBanner] = useState(true); const [toast, setToast] = useState(""); const [sidebar, setSidebar] = useState(true); const [filter, setFilter] = useState("All");
+  const notify = (message: string) => { setToast(message); window.setTimeout(() => setToast(""), 2400); };
+  const filtered = useMemo(() => schools.filter(s => (filter === "All" || s.health === filter) && `${s.name} ${s.code} ${s.city}`.toLowerCase().includes(search.toLowerCase())), [filter, search]);
+  const sections = [...new Set(nav.map(n => n.section))];
+  return <div className={dark ? "app dark" : "app"}>
+    <aside className={`sidebar ${sidebar ? "" : "collapsed"}`}><div className="brand"><div className="brand-mark">CF</div>{sidebar && <div><strong>control<span>plane</span></strong><small>LOCAL-FIRST CLOUD</small></div>}<button className="icon-btn sidebar-toggle" onClick={() => setSidebar(!sidebar)} aria-label="Toggle sidebar"><PanelLeft size={17} /></button></div>
+      <div className="workspace"><div className="workspace-avatar">HR</div>{sidebar && <div><b>H-R-F Education</b><small>Demo workspace</small></div>}<ChevronDown size={14} /></div>
+      <nav>{sections.map(section => <div className="nav-section" key={section}>{sidebar && <span className="nav-heading">{section}</span>}{nav.filter(n => n.section === section).map(item => { const Icon = item.icon; return <button key={item.label} className={`nav-item ${page === item.label ? "active" : ""}`} onClick={() => setPage(item.label)} title={item.label}><Icon size={17} />{sidebar && <span>{item.label}</span>}{sidebar && item.count && <em>{item.count}</em>}</button> })}</div>)}</nav>
+      {sidebar && <div className="sidebar-footer"><div className="user-avatar">AO</div><div><b>Amina Ops</b><small>Platform Admin</small></div><button className="icon-btn" onClick={() => notify("Signed out of demo mode") }><LogOut size={15}/></button></div>}
+    </aside>
+    <main className="main"><header className="topbar"><div className="breadcrumbs"><span>Control Plane</span><ChevronRight size={14}/><b>{page}</b></div><div className="command-search" onClick={() => notify("Command search is ready") }><Search size={15}/><span>Search schools, pages...</span><kbd><Command size={11}/>K</kbd></div><div className="top-actions"><span className="demo-pill"><span />DEMO MODE</span><button className="icon-btn" onClick={() => notify("No new notifications")} aria-label="Notifications"><Bell size={18}/><i className="notification-dot" /></button><button className="icon-btn" onClick={() => setDark(!dark)} aria-label="Toggle theme">{dark ? <Sun size={18}/> : <Moon size={18}/>}</button><div className="top-avatar">AO</div></div></header>
+      <div className="content">{banner && <div className="demo-banner"><div><ShieldCheck size={17}/><span><b>You are viewing a demo with mocked data.</b> No backend is connected. Actions are simulated.</span></div><button className="icon-btn" onClick={() => setBanner(false)} aria-label="Dismiss banner"><X size={16}/></button></div>}
+        {page === "Dashboard" ? <Dashboard setPage={setPage} notify={notify}/> : <DataPage page={page} schools={filtered} search={search} setSearch={setSearch} filter={filter} setFilter={setFilter} notify={notify}/>}</div>
+    </main>{toast && <div className="toast"><Check size={16}/>{toast}</div>}
+  </div>;
 }
+
+function Dashboard({ setPage, notify }: { setPage: (page: PageKey) => void; notify: (s: string) => void }) { return <>
+  <div className="page-head"><div><span className="eyebrow">FLEET OVERVIEW</span><h1>Good morning, Amina <span className="wave">—</span></h1><p>Here&apos;s what&apos;s happening across your school fleet today.</p></div><div className="head-actions"><button className="btn secondary" onClick={() => notify("Dashboard refreshed") }><RefreshCw size={15}/>Refresh</button><button className="btn primary" onClick={() => setPage("Schools")}><Plus size={15}/>Add school</button></div></div>
+  <div className="stat-grid"><Stat label="Total schools" value="8" helper="7 active · 1 onboarding" icon={Building2} onClick={() => setPage("Schools")} /><Stat label="Installations healthy" value="5 / 8" helper="62.5% of fleet" icon={Gauge} accent="green" onClick={() => setPage("Installations")} /><Stat label="Licenses expiring" value="2" helper="Within 30 days" icon={KeyRound} accent="amber" onClick={() => setPage("Licenses")} /><Stat label="Installations offline" value="2" helper="Heartbeat over 30h" icon={AlertCircle} accent="red" onClick={() => setPage("Monitoring")} /><Stat label="Support requests" value="2" helper="Awaiting approval" icon={LifeBuoy} accent="sky" onClick={() => setPage("Support Access")} /><Stat label="Failed notifications" value="3" helper="In the last 24 hours" icon={Bell} accent="red" onClick={() => setPage("Notifications")} /></div>
+  <div className="dashboard-grid"><section className="card wide"><div className="card-head"><div><h2>Heartbeat activity</h2><p>Last 7 days · checked-in vs expected</p></div><div className="chart-legend"><span><i className="dot indigo"/>Checked in</span><span><i className="dot slate"/>Expected</span></div></div><Sparkline/></section><section className="card"><div className="card-head"><div><h2>Fleet health</h2><p>Current distribution</p></div><button className="icon-btn"><MoreHorizontal size={17}/></button></div><Donut/></section></div>
+  <div className="dashboard-grid lower"><section className="card"><div className="card-head"><div><h2>Needs attention</h2><p>Prioritized operational alerts</p></div><button className="link-btn" onClick={() => setPage("Monitoring")}>View monitoring <ChevronRight size={14}/></button></div><div className="attention-list"><Attention icon={AlertCircle} title="Installation offline" sub="Collège Ibn Sina · 36 hours ago" tone="danger" action="Open school" onClick={() => setPage("Schools")}/><Attention icon={KeyRound} title="License in grace period" sub="Groupe Scolaire Al Amal · expires in 12 days" tone="warning" action="Review lease" onClick={() => setPage("Licenses")}/><Attention icon={Cloud} title="Tunnel disconnected" sub="École Al Qalam · last seen 12 days ago" tone="danger" action="Open school" onClick={() => setPage("Schools")}/><Attention icon={LifeBuoy} title="Support request pending" sub="École Les Oliviers · requested by Karim B." tone="warning" action="Review" onClick={() => setPage("Support Access")}/></div></section><section className="card"><div className="card-head"><div><h2>Deployments by version</h2><p>Software versions across fleet</p></div></div><div className="bars"><Bar label="v2.8.1" value="5" width="76%" tone="indigo"/><Bar label="v2.8.0" value="1" width="18%" tone="sky"/><Bar label="v2.7.4" value="1" width="18%" tone="amber"/><Bar label="v2.6.9" value="1" width="18%" tone="red"/></div><div className="version-note"><span className="dot amber"/>1 school is running a deprecated version</div></section></div>
+  <section className="card audit-card"><div className="card-head"><div><h2>Recent audit activity</h2><p>Latest actions across the control plane</p></div><button className="link-btn" onClick={() => setPage("Audit Logs")}>View all <ChevronRight size={14}/></button></div><div className="audit-table"><div className="table-row table-header"><span>TIME</span><span>ACTOR</span><span>ACTION</span><span>RESOURCE</span><span>OUTCOME</span></div><Audit time="2 min ago" actor="Amina Ops" action="Approved support access" resource="SCH002 / Installation" outcome="Approved"/><Audit time="18 min ago" actor="System" action="Heartbeat check completed" resource="SCH001 / Installation" outcome="Success"/><Audit time="42 min ago" actor="Youssef Admin" action="Updated subscription plan" resource="SCH006 / Subscription" outcome="Success"/></div></section>
+</> }
+function Attention({ icon: Icon, title, sub, tone: t, action, onClick }: { icon: typeof AlertCircle; title: string; sub: string; tone: string; action: string; onClick: () => void }) { return <div className="attention"><div className={`attention-icon ${t}`}><Icon size={16}/></div><div><b>{title}</b><small>{sub}</small></div><button className="link-btn" onClick={onClick}>{action}</button></div> }
+function Bar({ label, value, width, tone: t }: { label: string; value: string; width: string; tone: string }) { return <div className="bar-row"><span>{label}</span><div><i className={t} style={{ width }}/></div><b>{value}</b></div> }
+function Audit({ time, actor, action, resource, outcome }: { time: string; actor: string; action: string; resource: string; outcome: string }) { return <div className="table-row"><span className="muted">{time}</span><span>{actor}</span><span>{action}</span><span className="mono">{resource}</span><span><Badge tone={tone(outcome)}>{outcome}</Badge></span></div> }
+
+function DataPage({ page, schools, search, setSearch, filter, setFilter, notify }: { page: PageKey; schools: School[]; search: string; setSearch: (s: string) => void; filter: string; setFilter: (s: string) => void; notify: (s: string) => void }) { const isSchools = page === "Schools"; const isInstall = page === "Installations"; const isEndpoint = page === "Endpoints"; const rows = isEndpoint ? schools : schools; return <><div className="page-head"><div><span className="eyebrow">{page === "Support Access" ? "GOVERNANCE" : page === "Settings" ? "SYSTEM" : "FLEET OPERATIONS"}</span><h1>{page}</h1><p>{page === "Schools" ? "Manage school registrations and operational health." : page === "Installations" ? "Every on-premise installation connected to the fleet." : page === "Endpoints" ? "Approved hostnames and tunnel references." : page === "Monitoring" ? "Live operational signals from your school fleet." : `Review and manage ${page.toLowerCase()} across the control plane.`}</p></div><div className="head-actions"><button className="btn secondary" onClick={() => notify("Data refreshed") }><RefreshCw size={15}/>Refresh</button>{(isSchools || page === "Releases") && <button className="btn primary" onClick={() => notify("Create dialog opened (demo)")}><Plus size={15}/> {isSchools ? "Add school" : "Publish release"}</button>}</div></div>
+  <div className="stat-grid mini"><Stat label={isInstall ? "Total" : "Active"} value="8" helper="Across the fleet" icon={isInstall ? Database : Activity}/><Stat label="Healthy" value="5" helper="62.5% of total" icon={Check} accent="green"/><Stat label="Needs attention" value="3" helper="Review required" icon={AlertCircle} accent="amber"/><Stat label="Offline" value="2" helper="Over 30 hours" icon={Cloud} accent="red"/></div>
+  <section className="card table-card"><div className="table-toolbar"><div className="search-input"><Search size={16}/><input value={search} onChange={e => setSearch(e.target.value)} placeholder={`Search ${page.toLowerCase()}...`} /></div><div className="filter-tabs">{["All", "Healthy", "Degraded", "Offline"].map(f => <button className={filter === f ? "selected" : ""} onClick={() => setFilter(f)} key={f}>{f}</button>)}</div><button className="icon-btn"><MoreHorizontal size={18}/></button></div>{page === "Support Access" ? <SupportRows notify={notify}/> : page === "Licenses" ? <LicenseRows notify={notify}/> : <div className="data-table"><div className="table-row table-header">{(isSchools ? ["SCHOOL", "STATUS", "PLAN", "HEALTH", "LICENSE", "LAST HEARTBEAT", ""] : isEndpoint ? ["SCHOOL", "PUBLIC HOSTNAME", "TUNNEL", "STATUS", "LAST VERIFIED", ""] : ["SCHOOL", "INSTALLATION ID", "VERSION", "HEALTH", "TUNNEL", "LAST HEARTBEAT", ""]).map((h, i) => <span key={i}>{h}</span>)}</div>{rows.map(s => <div className="table-row clickable" key={s.code} onClick={() => notify(`${s.name} opened (demo)`)}><span><div className="school-cell"><div className="school-avatar">{s.code.slice(-2)}</div><div><b>{s.name}</b><small>{s.code} · {s.city}</small></div></div></span>{isSchools ? <><span><Badge tone={tone(s.status)}>{s.status}</Badge></span><span><b>{s.plan}</b></span><span><Badge tone={tone(s.health)}>{s.health}</Badge></span><span><Badge tone={tone(s.license)}>{s.license}</Badge></span><span className="muted">{s.heartbeat}</span></> : isEndpoint ? <><span className="mono">{s.endpoint}</span><span className="mono">tun_{s.code.toLowerCase()}_a1</span><span><Badge tone={s.health === "Offline" ? "danger" : "success"}>{s.health === "Offline" ? "Disconnected" : "Connected"}</Badge></span><span className="muted">{s.heartbeat}</span></> : <><span className="mono">inst_{s.code.toLowerCase()}_8f2a</span><span className="mono">{s.version}</span><span><Badge tone={tone(s.health)}>{s.health}</Badge></span><span><Badge tone={s.health === "Offline" ? "danger" : "success"}>{s.health === "Offline" ? "Disconnected" : "Connected"}</Badge></span><span className="muted">{s.heartbeat}</span></>}<span><button className="icon-btn"><MoreHorizontal size={16}/></button></span></div>)}</div>}<div className="table-footer"><span>Showing {rows.length} of {schools.length} schools</span><div><button className="pagination-btn">Previous</button><button className="pagination-btn active">1</button><button className="pagination-btn">Next</button></div></div></section></> }
+function SupportRows({ notify }: { notify: (s: string) => void }) { return <div className="support-list"><div className="support-row"><div className="school-avatar">EO</div><div><b>École Les Oliviers</b><small>Requested by Karim Benali · 14 min ago</small></div><Badge tone="warning">Pending</Badge><button className="btn primary small" onClick={() => notify("Support access approved (demo)")}>Review request</button></div><div className="support-row"><div className="school-avatar">LA</div><div><b>Lycée Atlas</b><small>Requested by Sarah El Idrissi · 2 hours ago</small></div><Badge tone="warning">Pending</Badge><button className="btn secondary small" onClick={() => notify("Support access request opened")}>Review request</button></div></div> }
+function LicenseRows({ notify }: { notify: (s: string) => void }) { return <div className="license-list">{schools.map(s => <div className="license-row" key={s.code}><div className="school-cell"><div className="school-avatar">{s.code.slice(-2)}</div><div><b>{s.name}</b><small>{s.code} · License lease</small></div></div><span className="mono">lic_{s.code.toLowerCase()}_2025</span><span><Badge tone={tone(s.license)}>{s.license}</Badge></span><span className="muted">{s.license === "In grace" ? "Expires in 12 days" : "Valid until Dec 31, 2025"}</span><button className="btn secondary small" onClick={() => notify("Lease JSON opened (demo)")}>View lease <ExternalLink size={13}/></button></div>)}</div> }
