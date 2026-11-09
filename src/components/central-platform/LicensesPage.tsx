@@ -36,6 +36,7 @@ const schools = [
 ];
 const moneyDate = (value:string) => value === "—" ? value : new Date(value+"T00:00:00").toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
 const statusTone = (status:string) => status.toLowerCase().replaceAll(" ","-");
+const validationAge = (value:string) => { if(value==="Never") return Number.POSITIVE_INFINITY; const match=value.match(/^(\\d+)\\s+(min|hour|day)s? ago$/); if(!match) return Number.POSITIVE_INFINITY; const amount=Number(match[1]); return amount*(match[2]==="min"?1:match[2]==="hour"?60:1440); };
 const graceTone = (value:GraceStatus) => value==="Active"||value==="Expiring Soon"?"warning":value==="Expired"?"danger":value==="Not Used"?"success":"neutral";
 const csv = (value:unknown) => '"' + String(value ?? "").replaceAll('"','""') + '"';
 
@@ -65,7 +66,7 @@ export function LicensesPage() {
     const days=(new Date(l.expires+"T00:00:00").getTime()-new Date("2026-11-09T00:00:00").getTime())/86400000;
     const matchesExpiry=expiration==="All"||(expiration==="Expired"&&l.status==="Expired")||(expiration==="Expiring Soon"&&l.status!=="Expired"&&days>=0&&days<=30);
     return matchesSearch&&matchesStatus&&matchesExpiry&&(schoolFilter==="All"||l.code===schoolFilter);
-  }).sort((a,b)=>sort==="issued"?b.issued.localeCompare(a.issued):sort==="expires"?a.expires.localeCompare(b.expires):a.lastValidation.localeCompare(b.lastValidation)),[licenses,query,status,expiration,schoolFilter,sort]);
+  }).sort((a,b)=>sort==="issued"?b.issued.localeCompare(a.issued):sort==="expires"?a.expires.localeCompare(b.expires):validationAge(a.lastValidation)-validationAge(b.lastValidation)),[licenses,query,status,expiration,schoolFilter,sort]);
   const pageCount=Math.max(1,Math.ceil(filtered.length/pageSize));
   const rows=filtered.slice((page-1)*pageSize,page*pageSize);
   const active=licenses.filter(l=>l.status==="Active").length;
