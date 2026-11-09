@@ -37,7 +37,7 @@ const initialPlans: Plan[] = [
   makePlan("professional", "Professional", "PLAN-PRO", "Designed for growing schools.", "Active", "990", "9900", "Both", 64, ["core","reporting","priority-support","monitoring"], "Priority"),
   makePlan("enterprise", "Enterprise", "PLAN-ENT", "Designed for larger institutions.", "Active", "2490", "24900", "Both", 20, ["core","reporting","priority-support","monitoring","dedicated-support","operations","updates"], "Dedicated"),
 ];
-const moduleOptions = ["Academic management", "Vie scolaire", "Finance", "Admissions", "Communication", "Human resources"];
+const moduleOptions = ["Academic management", "Vie scolaire", "Finance"];
 const money = (value: string, currency: string) => value === "Custom" ? "Custom pricing" : value ? `${Number(value).toLocaleString("en-US")} ${currency}` : "Not configured";
 const clone = (plan: Plan): Plan => ({ ...plan, features: plan.features.map(f => ({ ...f })), modules: [...plan.modules], services: [...plan.services] });
 
@@ -60,7 +60,7 @@ export function PlansPage() {
     (statusFilter === "All" || p.status === statusFilter) &&
     (billingFilter === "All" || p.billing === billingFilter)
   ), [plans, query, statusFilter, billingFilter]);
-  const subscribed = plans.filter(p => p.status !== "Archived").reduce((n,p) => n + p.subscribers, 0);
+  const subscribed = plans.reduce((n,p) => n + p.subscribers, 0);
   const active = plans.filter(p => p.status === "Active").length;
   const notify = (message: string) => { setToast(message); window.setTimeout(() => setToast(""), 3200); };
   const openCreate = () => { const p = makePlan("new-"+Date.now(), "", "", "", "Draft", "", "", "Both", 0, ["core"], "Standard"); setDraft(p); setPanel({mode:"create",plan:p}); setErrors({}); setDirty(false); };
