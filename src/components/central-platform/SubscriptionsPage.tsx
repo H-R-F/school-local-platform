@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 import {
-  AlertCircle, ArrowDownToLine, CalendarDays, Check, ChevronDown, Clock3,
-  CreditCard, Eye, FileClock, MoreHorizontal, Pencil, Plus, RefreshCw,
-  Search, X, ArrowLeftRight, Ban, Building2, Receipt, History, Info
+  AlertCircle, ArrowDownToLine, CalendarDays, Check, CreditCard, Eye,
+  MoreHorizontal, Pencil, Plus, RefreshCw, Search, X, ArrowLeftRight,
+  Ban, Building2, Receipt, Info
 } from "lucide-react";
 import "./subscriptions-page.css";
 
@@ -136,7 +136,7 @@ export function SubscriptionsPage() {
   const saveForm=(draftOnly:boolean)=>{
     if(busy||!validate(draftOnly))return;
     setBusy(true);
-    const status:Status=draftOnly?"Draft":form.trial?"Trial":form.status;
+    const status:Status=current?current.status:draftOnly?"Draft":form.trial?"Trial":form.status;
     const school=schools.find(s=>s.code===form.schoolCode)!;
     const id=panel?.mode==="edit"&&"id" in panel?panel.id:"SUB-DEMO-"+String(Date.now()).slice(-6);
     const current=records.find(r=>r.id===id);
@@ -144,7 +144,7 @@ export function SubscriptionsPage() {
       id,school:school.name,code:school.code,planId:form.planId,cycle:form.cycle,status,
       start:form.start,renewal:form.renewal,amount:form.amount===""?null:Number(form.amount),currency:form.currency,
       billingContact:current?.billingContact||"—",created:current?.created||today,
-      trialEnd:form.trial?form.trialEnd:undefined,cancelledAt:current?.cancelledAt,
+      trialEnd:current?current.trialEnd:form.trial?form.trialEnd:undefined,cancelledAt:current?.cancelledAt,
       history:[...(current?.history||[]),event("local-"+Date.now(),current?"Subscription updated":"Subscription created",today+" 12:00",current?"Subscription configuration updated in local demo state.":"Subscription created in local demo state.",id)]
     };
     setRecords(current?records.map(r=>r.id===id?next:r):[next,...records]);
@@ -235,7 +235,7 @@ export function SubscriptionsPage() {
           <td><span className="subs-cycle">{r.cycle}</span></td><td><span className={"subs-status "+r.status.toLowerCase().replace(" ","-")}>{r.status}</span></td>
           <td className="subs-date">{dateLabel(r.start)}</td><td className="subs-date">{r.status==="Cancelled"||r.status==="Expired"?<span className="subs-no-renewal">No upcoming renewal</span>:dateLabel(r.renewal)}</td>
           <td className="subs-amount">{money(r.amount,r.currency)}</td>
-          <td className="subs-row-actions"><button aria-label={"Actions for "+r.id} className="subs-icon-button" onClick={()=>setMenuId(menuId===r.id?null:r.id)}><MoreHorizontal size={17}/></button>{menuId===r.id&&<div className="subs-action-menu" role="menu">{["View Details","Edit Subscription","Change Plan","View Payment History","Renew Subscription","Cancel Subscription"].map((action,i)=><button key={action} role="menuitem" onClick={()=>openMenuAction(action,r)} className={i===5?"danger":""}>{[<Eye/>,<Pencil/>,<ArrowLeftRight/>,<CreditCard/>,<RefreshCw/>,<Ban/>][i]}{action}</button>)}</div>}</td>
+          <td className="subs-row-actions"><button aria-label={"Actions for "+r.id} className="subs-icon-button" onClick={()=>setMenuId(menuId===r.id?null:r.id)}><MoreHorizontal size={17}/></button>{menuId===r.id&&<div className="subs-action-menu" role="menu">{["View Details","Edit Subscription","Change Plan","View Payment History",...(r.status==="Cancelled"||r.status==="Expired"?[]:["Renew Subscription","Cancel Subscription"])].map((action,i)=><button key={action} role="menuitem" onClick={()=>openMenuAction(action,r)} className={i===5?"danger":""}>{[<Eye/>,<Pencil/>,<ArrowLeftRight/>,<CreditCard/>,<RefreshCw/>,<Ban/>][i]}{action}</button>)}</div>}</td>
         </tr>)}</tbody>
       </table>
       {!rows.length&&<div className="subs-empty"><Search size={22}/><b>No subscriptions found</b><span>Try adjusting the search terms or clearing one or more filters.</span><button onClick={resetFilters}>Clear all filters</button></div>}
@@ -265,14 +265,14 @@ export function SubscriptionsPage() {
             </div>
           </section>
           <section className="subs-form-section"><div className="subs-form-title"><b>04</b><div><h3>Trial configuration</h3><p>Trial status is a subscription lifecycle state.</p></div></div>
-            <label className="subs-toggle"><input type="checkbox" checked={form.trial} onChange={e=>{setField("trial",e.target.checked);if(e.target.checked)setField("status","Trial");else if(form.status==="Trial")setField("status","Draft");}}/><span><b>Enable trial period</b><small>Mark this subscription as Trial when saved.</small></span></label>
+            <label className="subs-toggle"><input type="checkbox" disabled={panel.mode==="edit"} checked={form.trial} onChange={e=>{setField("trial",e.target.checked);if(e.target.checked)setField("status","Trial");else if(form.status==="Trial")setField("status","Draft");}}/><span><b>Enable trial period</b><small>Mark this subscription as Trial when saved.</small></span></label>
             {form.trial&&<label className="subs-field">Trial end date <em>*</em><input type="date" min={form.start||undefined} value={form.trialEnd} onChange={e=>setField("trialEnd",e.target.value)}/>{formErrors.trialEnd&&<small>{formErrors.trialEnd}</small>}</label>}
           </section>
           <section className="subs-form-section"><div className="subs-form-title"><b>05</b><div><h3>Subscription status</h3><p>Status transitions are kept separate from payment and license workflows.</p></div></div>
-            <label className="subs-field">Creation status<select value={form.trial?"Trial":form.status} disabled={form.trial} onChange={e=>setField("status",e.target.value as FormState["status"])}><option>Draft</option><option>Active</option><option>Trial</option></select><span className="subs-field-hint">Active is a demo lifecycle selection only; it does not verify payment or activate a license.</span></label>
+            <label className="subs-field">Creation status<select value={form.trial?"Trial":form.status} disabled={form.trial||panel.mode==="edit"} onChange={e=>setField("status",e.target.value as FormState["status"])}><option>Draft</option><option>Active</option><option>Trial</option></select><span className="subs-field-hint">Active is a demo lifecycle selection only; it does not verify payment or activate a license.</span></label>
           </section>
         </div>
-        <div className="subs-drawer-footer"><button type="button" className="subs-button secondary" onClick={closePanel}>Cancel</button><button type="button" className="subs-button secondary" disabled={busy} onClick={()=>saveForm(true)}>Save as Draft</button><button type="submit" className="subs-button primary" disabled={busy}>{busy?"Saving…":panel.mode==="create"?"Create Subscription":"Save Changes"}</button></div>
+        <div className="subs-drawer-footer"><button type="button" className="subs-button secondary" onClick={closePanel}>Cancel</button>{panel.mode==="create"&&<button type="button" className="subs-button secondary" disabled={busy} onClick={()=>saveForm(true)}>Save as Draft</button>}<button type="submit" className="subs-button primary" disabled={busy}>{busy?"Saving…":panel.mode==="create"?"Create Subscription":"Save Changes"}</button></div>
       </form>:<aside className="subs-side-panel">
         <div className="subs-drawer-head"><div><span>SUBSCRIPTION RECORD</span><h2>{panel.mode==="details"?"Subscription Details":panel.mode==="payments"?"Payment History":panel.mode==="change"?"Change Plan":"Renew Subscription"}</h2><p>{selected?.school||"Selected subscription"} · {selected?.id}</p></div><button className="subs-icon-button" aria-label="Close panel" onClick={closePanel}><X/></button></div>
         {selected&&panel.mode==="details"&&<div className="subs-drawer-body">
