@@ -159,7 +159,7 @@ export function SubscriptionsPage() {
     const csv=[header,...visible.map(r=>[r.school,r.code,r.id,slugPlan(r.planId),r.cycle,r.status,r.start,r.status==="Cancelled"||r.status==="Expired"?"":r.renewal,r.amount,r.currency])].map(row=>row.map(csvCell).join(",")).join("\r\n");
     const blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8"});const url=URL.createObjectURL(blob);
     const link=document.createElement("a");link.href=url;link.download="subscriptions-demo-export.csv";document.body.appendChild(link);link.click();link.remove();URL.revokeObjectURL(url);
-    notify("CSV export generated for "+visible.length+" filtered records.");
+    notify("CSV download prepared for "+visible.length+" filtered records.");
   };
   const updateRecord=(id:string,patch:Partial<Subscription>,historyEvent:Event)=>{
     setRecords(current=>current.map(r=>r.id===id?{...r,...patch,history:[...r.history,historyEvent]}:r));
