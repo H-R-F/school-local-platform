@@ -48,20 +48,192 @@ export default function CentralPlatformApp() {
     </aside>
     <main className="main"><header className="topbar"><div className="breadcrumbs"><span>Control Plane</span><ChevronRight size={14}/><b>{page}</b></div><div className="command-search" onClick={() => notify("Command search is ready") }><Search size={15}/><span>Search schools, pages...</span><kbd><Command size={11}/>K</kbd></div><div className="top-actions"><span className="demo-pill"><span />DEMO MODE</span><button className="icon-btn" onClick={() => notify("No new notifications")} aria-label="Notifications"><Bell size={18}/><i className="notification-dot" /></button><div className="top-avatar">AO</div></div></header>
       <div className="content">{banner && <div className="demo-banner"><div><ShieldCheck size={17}/><span><b>You are viewing a demo with mocked data.</b> No backend is connected. Actions are simulated.</span></div><button className="icon-btn" onClick={() => setBanner(false)} aria-label="Dismiss banner"><X size={16}/></button></div>}
-        {page === "Overview" ? <Dashboard setPage={setPage} notify={notify}/> : <DataPage page={page} schools={filtered} search={search} setSearch={setSearch} filter={filter} setFilter={setFilter} notify={notify} onCreate={() => setModal(page)}/>}</div>
+        {page === "Overview" ? <Dashboard setPage={setPage} notify={notify} setSearch={setSearch}/> : <DataPage page={page} schools={filtered} search={search} setSearch={setSearch} filter={filter} setFilter={setFilter} notify={notify} onCreate={() => setModal(page)}/>}</div>
     </main>{modal && <CreateModal page={modal} onClose={() => setModal(null)} onSave={() => { setModal(null); notify(`${modal} created in demo mode`) }} />}{toast && <div className="toast"><Check size={16}/>{toast}</div>}
   </div></div>;
 }
 
 function CreateModal({ page, onClose, onSave }: { page: PageKey; onClose: () => void; onSave: () => void }) { const [name, setName] = useState(""); const singular = page === "Schools" ? "school" : page === "Releases" ? "release" : page.slice(0, -1).toLowerCase(); return <div className="modal-backdrop" role="presentation" onMouseDown={onClose}><section className="modal" role="dialog" aria-modal="true" aria-labelledby="create-title" onMouseDown={event => event.stopPropagation()}><div className="modal-head"><div><span className="eyebrow">DEMO WORKSPACE</span><h2 id="create-title">Create {singular}</h2><p>This form updates the interface for the current session.</p></div><button className="icon-btn" onClick={onClose} aria-label="Close dialog"><X size={18}/></button></div><label>Name<input autoFocus value={name} onChange={event => setName(event.target.value)} placeholder={`Enter ${singular} name`} /></label><label>Status<select defaultValue="Active"><option>Active</option><option>Pending</option><option>Draft</option></select></label><div className="modal-actions"><button className="btn secondary" onClick={onClose}>Cancel</button><button className="btn primary" disabled={!name.trim()} onClick={onSave}><Check size={15}/>Create {singular}</button></div></section></div> }
 
-function Dashboard({ setPage, notify }: { setPage: (page: PageKey) => void; notify: (s: string) => void }) { return <>
-  <div className="page-head"><div><span className="eyebrow">OPERATIONS OVERVIEW</span><h1>School network overview</h1><p>Operational status across registered school installations.</p></div><div className="head-actions"><button className="btn secondary" onClick={() => notify("Dashboard refreshed") }><RefreshCw size={15}/>Refresh</button><button className="btn primary" onClick={() => setPage("Schools")}><Plus size={15}/>Add school</button></div></div>
-  <div className="stat-grid"><Stat label="Total schools" value="8" helper="Registered demo records" icon={Building2} onClick={() => setPage("Schools")} /><Stat label="Schools online" value="5" helper="Current demo snapshot" icon={Gauge} accent="green" onClick={() => setPage("Installations")} /><Stat label="Schools offline" value="2" helper="Heartbeat reported as stale" icon={AlertCircle} accent="red" onClick={() => setPage("Monitoring")} /><Stat label="Degraded installations" value="1" helper="Requires investigation" icon={Activity} accent="amber" onClick={() => setPage("Monitoring")} /><Stat label="Licenses in grace" value="1" helper="Commercial state is separate" icon={KeyRound} accent="amber" onClick={() => setPage("Licenses")} /><Stat label="Pending support" value="2" helper="Awaiting administrator review" icon={LifeBuoy} accent="sky" onClick={() => setPage("Support Access")} /></div>
-  <div className="dashboard-grid"><section className="card wide"><div className="card-head"><div><h2>Connectivity distribution</h2><p>Current reported states · fictional demo records</p></div><div className="chart-legend"><span><i className="dot indigo"/>Checked in</span><span><i className="dot slate"/>Expected</span></div></div><Sparkline/></section><section className="card"><div className="card-head"><div><h2>Fleet health</h2><p>Current distribution</p></div><button className="icon-btn"><MoreHorizontal size={17}/></button></div><Donut/></section></div>
-  <div className="dashboard-grid lower"><section className="card"><div className="card-head"><div><h2>Needs attention</h2><p>Prioritized operational alerts</p></div><button className="link-btn" onClick={() => setPage("Monitoring")}>View monitoring <ChevronRight size={14}/></button></div><div className="attention-list"><Attention icon={AlertCircle} title="Installation offline" sub="Collège Ibn Sina · 36 hours ago" tone="danger" action="Open school" onClick={() => setPage("Schools")}/><Attention icon={KeyRound} title="License in grace period" sub="Groupe Scolaire Al Amal · expires in 12 days" tone="warning" action="Review lease" onClick={() => setPage("Licenses")}/><Attention icon={Cloud} title="Tunnel disconnected" sub="École Al Qalam · last seen 12 days ago" tone="danger" action="Open school" onClick={() => setPage("Schools")}/><Attention icon={LifeBuoy} title="Support request pending" sub="École Les Oliviers · requested by Karim B." tone="warning" action="Review" onClick={() => setPage("Support Access")}/></div></section><section className="card"><div className="card-head"><div><h2>Installed software versions</h2><p>Distribution across the demo fleet</p></div></div><div className="bars"><Bar label="v2.8.1" value="4" width="50%" tone="indigo"/><Bar label="v2.8.0" value="1" width="18%" tone="sky"/><Bar label="v2.7.4" value="1" width="18%" tone="amber"/><Bar label="v2.6.9" value="1" width="18%" tone="red"/></div><div className="version-note"><span className="dot amber"/>1 school is running a deprecated version</div></section></div>
-  <section className="card audit-card"><div className="card-head"><div><h2>Recent audit activity</h2><p>Latest actions across the control plane</p></div><button className="link-btn" onClick={() => setPage("Audit Logs")}>View all <ChevronRight size={14}/></button></div><div className="audit-table"><div className="table-row table-header"><span>TIME</span><span>ACTOR</span><span>ACTION</span><span>RESOURCE</span><span>OUTCOME</span></div><Audit time="2 min ago" actor="Amina Ops" action="Approved support access" resource="SCH002 / Installation" outcome="Approved"/><Audit time="18 min ago" actor="System" action="Heartbeat check completed" resource="SCH001 / Installation" outcome="Success"/><Audit time="42 min ago" actor="Youssef Admin" action="Updated subscription plan" resource="SCH006 / Subscription" outcome="Success"/></div></section>
-</> }
+type OverviewSchool = {
+  code: string; name: string; plan: string; license: "Active" | "Suspended" | "Expired";
+  connectivity: "Online" | "Offline"; heartbeat: string; heartbeatSort: number;
+};
+type OverviewAlert = {
+  id: string; school: string; code: string; title: string; severity: "Critical" | "Warning";
+  timestamp: string; sort: number; destination: PageKey;
+};
+type OverviewActivity = {
+  id: string; event: string; school: string; timestamp: string; sort: number;
+  category: "Registration" | "License" | "Connectivity" | "Subscription" | "Software";
+};
+const overviewSchools: OverviewSchool[] = [
+  {code:"SCH-001",name:"École Atlas",plan:"Professional",license:"Active",connectivity:"Online",heartbeat:"09 Nov 2026, 14:20 UTC · demo",heartbeatSort:Date.UTC(2026,10,9,14,20)},
+  {code:"SCH-002",name:"Groupe Scolaire Al Amal",plan:"Enterprise",license:"Active",connectivity:"Offline",heartbeat:"09 Nov 2026, 12:05 UTC · demo",heartbeatSort:Date.UTC(2026,10,9,12,5)},
+  {code:"SCH-003",name:"Institution Al Manar",plan:"Starter",license:"Suspended",connectivity:"Online",heartbeat:"09 Nov 2026, 14:12 UTC · demo",heartbeatSort:Date.UTC(2026,10,9,14,12)},
+  {code:"SCH-004",name:"École Les Orangers",plan:"Professional",license:"Active",connectivity:"Online",heartbeat:"09 Nov 2026, 14:17 UTC · demo",heartbeatSort:Date.UTC(2026,10,9,14,17)},
+  {code:"SCH-005",name:"Groupe Scolaire Al Waha",plan:"Enterprise",license:"Expired",connectivity:"Offline",heartbeat:"08 Nov 2026, 21:40 UTC · demo",heartbeatSort:Date.UTC(2026,10,8,21,40)},
+  {code:"SCH-006",name:"Institution Al Fajr",plan:"Professional",license:"Active",connectivity:"Online",heartbeat:"09 Nov 2026, 14:24 UTC · demo",heartbeatSort:Date.UTC(2026,10,9,14,24)}
+];
+const overviewAlerts: OverviewAlert[] = [
+  {id:"ALT-2401",school:"Groupe Scolaire Al Amal",code:"SCH-002",title:"School server unreachable",severity:"Critical",timestamp:"09 Nov 2026, 14:05 UTC · demo",sort:Date.UTC(2026,10,9,14,5),destination:"Monitoring"},
+  {id:"ALT-2398",school:"École Les Orangers",code:"SCH-004",title:"Cloudflare Tunnel disconnected",severity:"Critical",timestamp:"09 Nov 2026, 13:42 UTC · demo",sort:Date.UTC(2026,10,9,13,42),destination:"Installations"},
+  {id:"ALT-2392",school:"Institution Al Manar",code:"SCH-003",title:"License approaching expiration",severity:"Warning",timestamp:"09 Nov 2026, 11:30 UTC · demo",sort:Date.UTC(2026,10,9,11,30),destination:"Licenses"},
+  {id:"ALT-2387",school:"Groupe Scolaire Al Waha",code:"SCH-005",title:"Backup operation failed",severity:"Critical",timestamp:"08 Nov 2026, 21:45 UTC · demo",sort:Date.UTC(2026,10,8,21,45),destination:"Monitoring"}
+];
+const overviewActivities: OverviewActivity[] = [
+  {id:"ACT-501",event:"New school registered",school:"Institution Al Fajr",timestamp:"09 Nov 2026, 14:10 UTC · demo",sort:Date.UTC(2026,10,9,14,10),category:"Registration"},
+  {id:"ACT-498",event:"License activated",school:"École Atlas",timestamp:"09 Nov 2026, 12:55 UTC · demo",sort:Date.UTC(2026,10,9,12,55),category:"License"},
+  {id:"ACT-494",event:"Server reconnected",school:"Groupe Scolaire Al Amal",timestamp:"09 Nov 2026, 11:40 UTC · demo",sort:Date.UTC(2026,10,9,11,40),category:"Connectivity"},
+  {id:"ACT-489",event:"Subscription renewed",school:"Groupe Scolaire Al Waha",timestamp:"08 Nov 2026, 16:25 UTC · demo",sort:Date.UTC(2026,10,8,16,25),category:"Subscription"},
+  {id:"ACT-482",event:"Software update reported complete",school:"Institution Al Manar",timestamp:"08 Nov 2026, 10:15 UTC · demo",sort:Date.UTC(2026,10,8,10,15),category:"Software"}
+];
+function dateCutoff(range: string) {
+  if (range === "24h") return Date.UTC(2026,10,8,14,30);
+  if (range === "7d") return Date.UTC(2026,10,2,14,30);
+  return Date.UTC(2026,9,10,14,30);
+}
+function Dashboard({ setPage, notify, setSearch }: { setPage: (page: PageKey) => void; notify: (s: string) => void; setSearch: (s: string) => void }) {
+  const [dateRange,setDateRange] = useState("7d");
+  const [refreshing,setRefreshing] = useState(false);
+  const [refreshNote,setRefreshNote] = useState("");
+  const [schoolSearch,setSchoolSearch] = useState("");
+  const [licenseFilter,setLicenseFilter] = useState("All");
+  const [connectivityFilter,setConnectivityFilter] = useState("All");
+  const [sortKey,setSortKey] = useState<"name"|"code"|"plan"|"license"|"connectivity"|"heartbeat">("name");
+  const [sortDirection,setSortDirection] = useState<"asc"|"desc">("asc");
+  const [openMenu,setOpenMenu] = useState<string|null>(null);
+  const [snapshot,setSnapshot] = useState(0);
+  const cutoff = dateCutoff(dateRange);
+  const visibleAlerts = overviewAlerts.filter(a=>a.sort>=cutoff).sort((a,b)=>b.sort-a.sort);
+  const visibleActivity = overviewActivities.filter(a=>a.sort>=cutoff).sort((a,b)=>b.sort-a.sort);
+  const filteredSchools = overviewSchools.filter(s=>
+    (licenseFilter==="All"||s.license===licenseFilter) &&
+    (connectivityFilter==="All"||s.connectivity===connectivityFilter) &&
+    (s.name+" "+s.code).toLowerCase().includes(schoolSearch.trim().toLowerCase())
+  ).sort((a,b)=>{
+    const left=sortKey==="heartbeat"?a.heartbeatSort:String(a[sortKey]).toLowerCase();
+    const right=sortKey==="heartbeat"?b.heartbeatSort:String(b[sortKey]).toLowerCase();
+    const result=left<right?-1:left>right?1:0;
+    return sortDirection==="asc"?result:-result;
+  });
+  const resetFilters=()=>{setSchoolSearch("");setLicenseFilter("All");setConnectivityFilter("All");};
+  const sortBy=(key:typeof sortKey)=>{
+    if(sortKey===key)setSortDirection(d=>d==="asc"?"desc":"asc");
+    else{setSortKey(key);setSortDirection("asc");}
+  };
+  const goToSchoolContext=(page:PageKey,code:string)=>{
+    setSearch(code);
+    setPage(page);
+    setOpenMenu(null);
+  };
+  const refresh=()=>{
+    if(refreshing)return;
+    setRefreshing(true);
+    setRefreshNote("Reloading the local demonstration snapshot…");
+    window.setTimeout(()=>{
+      setSnapshot(v=>v+1);
+      setRefreshing(false);
+      setRefreshNote("Local demonstration snapshot reloaded. Live refresh is unavailable without a monitoring service.");
+    },350);
+  };
+  const iconFor=(category:OverviewActivity["category"])=>{
+    if(category==="Registration")return <Building2 size={15}/>;
+    if(category==="License")return <KeyRound size={15}/>;
+    if(category==="Connectivity")return <Cloud size={15}/>;
+    if(category==="Subscription")return <CreditCard size={15}/>;
+    return <Package size={15}/>;
+  };
+  const SortButton=({label,k}:{label:string;k:typeof sortKey})=><button className="ov-sort" onClick={()=>sortBy(k)} aria-label={"Sort by "+label}>{label}<span>{sortKey===k?(sortDirection==="asc"?"↑":"↓"):"↕"}</span></button>;
+  return <div className="overview-page" data-snapshot={snapshot}>
+    <div className="ov-page-head">
+      <div><span className="eyebrow">OPERATIONS</span><h1>Overview</h1><p>Monitor your school network, infrastructure, and platform operations.</p></div>
+      <div className="ov-head-controls">
+        <label className="ov-range"><span>Date range</span><select value={dateRange} onChange={e=>setDateRange(e.target.value)} aria-label="Date range"><option value="24h">Last 24 hours</option><option value="7d">Last 7 days</option><option value="30d">Last 30 days</option></select></label>
+        <button className="btn secondary ov-refresh" onClick={refresh} disabled={refreshing}><RefreshCw size={14} className={refreshing?"ov-spin":""}/>{refreshing?"Refreshing…":"Refresh"}</button>
+      </div>
+    </div>
+    {refreshNote&&<div className="ov-refresh-note" role="status">{refreshNote}</div>}
+    <div className="ov-metrics" aria-label="Key school network metrics">
+      <div className="ov-primary-metric"><span>Total Schools</span><strong>128</strong><small>Registered school installations</small></div>
+      <div className="ov-primary-metric"><span>Active Subscriptions</span><strong>112</strong><small>Schools with active subscriptions</small></div>
+      <div className="ov-connectivity-metrics">
+        <div><span><i className="ov-dot online"/>Schools Online</span><strong>103</strong><small>Currently reporting online</small></div>
+        <div><span><i className="ov-dot offline"/>Schools Offline</span><strong>25</strong><small>Not reporting online</small></div>
+      </div>
+      <div className="ov-compact-metrics">
+        <div><span>Suspended Licenses</span><strong>6</strong><small>Licenses currently suspended</small></div>
+        <div><span>Infrastructure Alerts</span><strong>4</strong><small>Requiring operational attention</small></div>
+      </div>
+    </div>
+    <div className="ov-top-grid">
+      <section className="ov-panel ov-connectivity-panel" aria-labelledby="ov-connectivity-title">
+        <div className="ov-section-head"><div><h2 id="ov-connectivity-title">School Connectivity</h2><p>Network reachability across 128 registered schools <span className="ov-demo-tag">DEMO DATA</span></p></div><button className="ov-text-action" onClick={()=>setPage("Monitoring")}>Open monitoring <ChevronRight size={14}/></button></div>
+        <div className="ov-connectivity-total"><strong>128</strong><span>Total schools</span><small>103 online · 25 offline</small></div>
+        <div className="ov-distribution" role="img" aria-label="School connectivity distribution: 103 online schools, 25 offline schools, out of 128 total.">
+          <span className="ov-distribution-online" style={{width:"80.46875%"}}/><span className="ov-distribution-offline" style={{width:"19.53125%"}}/>
+        </div>
+        <div className="ov-connectivity-legend">
+          <div><span><i className="ov-dot online"/>Online</span><strong>103 <small>80.47%</small></strong></div>
+          <div><span><i className="ov-dot offline"/>Offline</span><strong>25 <small>19.53%</small></strong></div>
+        </div>
+        <div className="ov-monitoring-meta"><span>Last monitoring update</span><strong>Unavailable</strong><small>No live monitoring service is connected in this demo.</small></div>
+      </section>
+      <section className="ov-panel ov-alerts-panel" aria-labelledby="ov-alerts-title">
+        <div className="ov-section-head"><div><h2 id="ov-alerts-title">Recent Alerts</h2><p>Operational issues requiring attention <span className="ov-demo-tag">DEMO DATA</span></p></div><span className="ov-alert-count">4</span></div>
+        <div className="ov-alert-list">
+          {visibleAlerts.map(alert=><article className="ov-alert" key={alert.id}>
+            <div className={"ov-alert-mark "+(alert.severity==="Critical"?"critical":"warning")}>{alert.severity==="Critical"?<AlertCircle size={15}/>:<AlertTriangle size={15}/>}</div>
+            <div className="ov-alert-body"><div className="ov-alert-title">{alert.title}</div><div className="ov-alert-school">{alert.school} <code>{alert.code}</code></div><div className="ov-alert-meta"><span className={"ov-severity "+(alert.severity==="Critical"?"critical":"warning")}>{alert.severity}</span><time>{alert.timestamp}</time></div></div>
+            <button className="ov-view-action" onClick={()=>goToSchoolContext(alert.destination,alert.code)}>View Details</button>
+          </article>)}
+          {visibleAlerts.length===0&&<div className="ov-empty-inline">No demonstration alerts in this date range.</div>}
+        </div>
+      </section>
+    </div>
+    <section className="ov-panel ov-schools-panel" aria-labelledby="ov-schools-title">
+      <div className="ov-section-head ov-schools-heading"><div><h2 id="ov-schools-title">Schools Overview</h2><p>School registry snapshot · fictional sample records <span className="ov-demo-tag">DEMO DATA</span></p></div><button className="ov-text-action" onClick={()=>{resetFilters();setPage("Schools");}}>View All Schools <ChevronRight size={14}/></button></div>
+      <div className="ov-table-toolbar">
+        <label className="ov-search"><Search size={15}/><input value={schoolSearch} onChange={e=>setSchoolSearch(e.target.value)} placeholder="Search school name or code" aria-label="Search school name or code"/></label>
+        <label className="ov-filter"><span>License</span><select value={licenseFilter} onChange={e=>setLicenseFilter(e.target.value)}><option>All</option><option>Active</option><option>Suspended</option><option>Expired</option></select></label>
+        <label className="ov-filter"><span>Connectivity</span><select value={connectivityFilter} onChange={e=>setConnectivityFilter(e.target.value)}><option>All</option><option>Online</option><option>Offline</option></select></label>
+        <button className="ov-reset" onClick={resetFilters} disabled={!schoolSearch&&!((licenseFilter!=="All")||(connectivityFilter!=="All"))}>Clear filters</button>
+      </div>
+      <div className="ov-table-wrap">
+        <table className="ov-school-table">
+          <thead><tr><th><SortButton label="School Name" k="name"/></th><th><SortButton label="School Code" k="code"/></th><th><SortButton label="Subscription" k="plan"/></th><th><SortButton label="License Status" k="license"/></th><th><SortButton label="Connectivity" k="connectivity"/></th><th><SortButton label="Last Heartbeat" k="heartbeat"/></th><th><span className="ov-actions-label">Actions</span></th></tr></thead>
+          <tbody>
+            {filteredSchools.map(school=><tr key={school.code}>
+              <td><button className="ov-school-name" onClick={()=>notify("School Details is not available in this demo workspace yet.")}>{school.name}</button></td>
+              <td><code>{school.code}</code></td>
+              <td>{school.plan}</td>
+              <td><span className={"ov-status "+(school.license==="Active"?"success":school.license==="Suspended"?"warning":"danger")}>{school.license}</span></td>
+              <td><span className={"ov-status "+(school.connectivity==="Online"?"success":"danger")}>{school.connectivity}</span></td>
+              <td><time className="ov-heartbeat">{school.heartbeat}</time></td>
+              <td><div className="ov-row-menu"><button className="ov-menu-trigger" aria-label={"Actions for "+school.name} aria-expanded={openMenu===school.code} onClick={()=>setOpenMenu(openMenu===school.code?null:school.code)}><MoreHorizontal size={17}/></button>
+                {openMenu===school.code&&<div className="ov-menu" role="menu">
+                  <button role="menuitem" onClick={()=>{setOpenMenu(null);notify("School Details is not available in this demo workspace yet.");}}>View Details <span>Unavailable</span></button>
+                  <button role="menuitem" onClick={()=>goToSchoolContext("Installations",school.code)}>View Infrastructure</button>
+                  <button role="menuitem" onClick={()=>goToSchoolContext("Audit Logs",school.code)}>View Activity</button>
+                </div>}
+              </div></td>
+            </tr>)}
+            {filteredSchools.length===0&&<tr><td colSpan={7}><div className="ov-empty-table"><Search size={18}/><strong>No schools match these filters</strong><span>Try another search or clear the selected filters.</span><button onClick={resetFilters}>Clear filters</button></div></td></tr>}
+          </tbody>
+        </table>
+      </div>
+      <div className="ov-table-footer"><span>Showing {filteredSchools.length} of 6 demonstration school records</span><span>License and connectivity are independent states.</span></div>
+    </section>
+    <section className="ov-panel ov-activity-panel" aria-labelledby="ov-activity-title">
+      <div className="ov-section-head"><div><h2 id="ov-activity-title">Recent Activity</h2><p>Chronological operational events <span className="ov-demo-tag">DEMO DATA</span></p></div><button className="ov-text-action" onClick={()=>setPage("Audit Logs")}>Open audit logs <ChevronRight size={14}/></button></div>
+      <div className="ov-activity-list">
+        {visibleActivity.map(activity=><div className="ov-activity" key={activity.id}><div className={"ov-activity-icon "+activity.category.toLowerCase()}>{iconFor(activity.category)}</div><div className="ov-activity-copy"><strong>{activity.event}</strong><span>{activity.school}</span></div><time>{activity.timestamp}</time></div>)}
+        {visibleActivity.length===0&&<div className="ov-empty-inline">No demonstration activity in this date range.</div>}
+      </div>
+    </section>
+  </div>;
+}
+
 function Attention({ icon: Icon, title, sub, tone: t, action, onClick }: { icon: typeof AlertCircle; title: string; sub: string; tone: string; action: string; onClick: () => void }) { return <div className="attention"><div className={`attention-icon ${t}`}><Icon size={16}/></div><div><b>{title}</b><small>{sub}</small></div><button className="link-btn" onClick={onClick}>{action}</button></div> }
 function Bar({ label, value, width, tone: t }: { label: string; value: string; width: string; tone: string }) { return <div className="bar-row"><span>{label}</span><div><i className={t} style={{ width }}/></div><b>{value}</b></div> }
 function Audit({ time, actor, action, resource, outcome }: { time: string; actor: string; action: string; resource: string; outcome: string }) { return <div className="table-row"><span className="muted">{time}</span><span>{actor}</span><span>{action}</span><span className="mono">{resource}</span><span><Badge tone={tone(outcome)}>{outcome}</Badge></span></div> }
