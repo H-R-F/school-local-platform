@@ -135,9 +135,8 @@ export function AccessControlPage({ user, onNavigate }: Props) {
   const activeCount = accounts.filter(a => a.status === "Actif").length;
   const disabledCount = accounts.filter(a => a.status === "Désactivé").length;
   const reviewCount = accounts.filter(a => a.status === "Verrouillé").length;
-  const selectedEmployee = selected ? employeeById.get(selected.employeeId) : null;
-  const selectedEvents = selected ? events.filter(e => e.accountId === selected.id).sort((a,b)=>b.at.localeCompare(a.at)) : [];
   const sessions = selected ? demoSessions(accounts).filter(s => s.accountId === selected.id) : [];
+  const selectedEvents = selected ? events.filter(e => e.accountId === selected.id).sort((a,b)=>b.at.localeCompare(a.at)) : [];
 
   function persistAccounts(next: Account[]) {
     setAccounts(next);

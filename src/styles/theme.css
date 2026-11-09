@@ -220,10 +220,10 @@
   --font-weight-normal:400;--font-weight-medium:500;--font-weight-semibold:600;--font-weight-bold:700;
   --line-height-body:1.5;--line-height-heading:1.2;
   /* Spacing scale */
-  --space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;
-  --space-6:24px;--space-8:32px;--space-12:48px;--space-16:64px;
-  /* Compatibility aliases for existing dense layouts and shell dimensions */
-  --space-1:1px;--space-2:2px;--space-3:3px;--space-4:4px;--space-5:5px;--space-6:6px;--space-7:7px;--space-8:8px;--space-9:9px;--space-10:10px;--space-11:11px;--space-12:12px;--space-13:13px;--space-14:14px;--space-15:15px;--space-16:16px;--space-17:17px;--space-18:18px;--space-19:19px;--space-20:20px;--space-21:21px;--space-22:22px;--space-23:23px;--space-24:24px;--space-25:25px;--space-26:26px;--space-27:27px;--space-28:28px;--space-29:29px;--space-30:30px;--space-32:32px;--space-34:34px;--space-35:35px;--space-36:36px;--space-38:38px;--space-40:40px;--space-42:42px;--space-45:45px;--space-48:48px;--space-60:60px;--space-64:64px;--space-72:72px;--space-75:75px;--space-100:100px;--space-248:248px;--space-258:258px;
+  --space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-5:20px;
+  --space-6:24px;--space-7:32px;--space-8:40px;--space-12:48px;--space-16:64px;
+  /* Compatibility aliases for specific dense layout measurements */
+  --space-9:9px;--space-10:10px;--space-11:11px;--space-13:13px;--space-14:14px;--space-15:15px;--space-17:17px;--space-18:18px;--space-19:19px;--space-21:21px;--space-22:22px;--space-23:23px;--space-25:25px;--space-26:26px;--space-27:27px;--space-28:28px;--space-29:29px;--space-30:30px;--space-34:34px;--space-35:35px;--space-36:36px;--space-38:38px;--space-42:42px;--space-45:45px;--space-60:60px;--space-72:72px;--space-75:75px;--space-100:100px;--space-248:248px;--space-258:258px;
   /* Radius and shadows */
   --radius-sm:6px;--radius-md:10px;--radius-lg:16px;--radius-full:9999px;
   --radius-1:1px;--radius-2:2px;--radius-3:3px;--radius-4:4px;--radius-5:5px;--radius-6:6px;--radius-7:7px;--radius-8:8px;--radius-9:9px;--radius-10:10px;--radius-11:11px;--radius-12:12px;--radius-13:13px;--radius-20:20px;

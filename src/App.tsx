@@ -89,7 +89,9 @@ export default function App() {
   const sidebarCollapsed = collapsed || narrow;
   useEffect(() => {
     document.documentElement.style.setProperty("--app-sidebar-width", sidebarCollapsed ? "var(--ds-sidebar-collapsed-width)" : "var(--ds-sidebar-width)");
-    return () => document.documentElement.style.removeProperty("--app-sidebar-width");
+    return () => {
+      document.documentElement.style.removeProperty("--app-sidebar-width");
+    };
   }, [sidebarCollapsed]);
   const currentSchool = toSchoolBranding(schoolProfile);
   useEffect(() => {

@@ -1,219 +1,113 @@
 # UI Repair Progress Tracker
 
-**Audit ref:** `backup-before-removing-commits`  
-**Audit commit:** `32c6f4a88e05c0d37961c75f382415427426946f`  
-**Phase:** 2 — shared shell fixed pending verification; global form-drawer standard implemented pending runtime verification  
-**Approval:** User approved Phase 2 on 2026-11-08. Shared shell source changes are committed. No other page has been started.
+**Audit Date:** 2026-11-09  
+**Repository:** `H-R-F/school-local-platform`  
+**Phase:** 1 Complete -> Starting Phase 2 Surgery  
 
 ## Status definitions
 
-- `NOT STARTED` — not yet examined in the page-by-page surgery protocol.
-- `IN PROGRESS` — current patient; no other page may begin until it is fully verified.
-- `FIXED` — source changes made and source-level checklist re-read; runtime verification still pending.
-- `VERIFIED` — source review and required runtime/accessibility checks completed and recorded. A source-only review is not sufficient for this status.
+- `NOT STARTED` — Not yet examined in the page-by-page surgery protocol.
+- `IN PROGRESS` — Current patient; no other page may begin until it is fully verified and locked.
+- `FIXED` — Source changes completed and re-read; build/typecheck and runtime verification pending.
+- `VERIFIED` — Source review, build check (`npm run build`), dark mode, keyboard navigation, and WCAG accessibility checks completed and recorded.
 
-## Coverage summary
+---
 
-| Inventory | Count | Current status |
-|---|---:|---|
-| Shared shell components | 7 | FIXED — awaiting runtime verification |
-| Staff authentication screens | 1 | NOT STARTED |
-| Routed navigation entries | 49 | NOT STARTED |
-| Role-specific overview variants | 4 (within `/overview`) | NOT STARTED |
-| External parent/student/teacher portals | 0 found | Out of current implementation scope |
-| IT-support portal/screens | 0 found | Out of current implementation scope |
-| MFA / password reset routes | 0 found | Not implemented in inspected route dispatch |
-| Dedicated 404 route | 0 found | Not implemented; generic fallback exists |
-| **Implemented route/view patients** | **50** (49 routes + sign-in; dashboard variants separately noted) | **0 VERIFIED** |
+## Surgery Execution Tracker
 
-The 49 route entries are from `src/data/navigation.ts`. Page components are selected in `src/App.tsx`. The route list does not imply that every route is visible to every role; the existing role and permission filters remain authoritative.
+### 1. Shared Shell (First Patient)
 
-## Global form presentation standard (2026-11-08)\n\n- User clarified that the right-side form drawer is a project-wide convention, not a page-specific treatment.\n- Added `src/styles/form-drawers.css`, imported after all page and shell styles. Any existing create/edit overlay containing a form is presented as a right-side drawer; read-only details and confirmation dialogs without forms remain centered.\n- The rule is structural (`:has(form)`) and applies to current and future page modules without changing their handlers, validation, permissions or data calls. Mobile drawers occupy the full viewport width.\n- All route-level form screens are covered by the shared selector, but per-route runtime verification remains pending. This global presentation change is marked FIXED, not VERIFIED.\n\n## Phase 2 execution tracker
-
-### 1. Shared shell — first patient
-
-| Patient | Source | Status | Verification note |
+| Patient | Source | Status | Verification Note |
 |---|---|---|---|
-| Application shell/layout wrapper | `src/App.tsx`, `src/index.css`, `src/main.tsx` | FIXED | Source-level review completed after consolidating the shell stylesheet, adding theme-aware tokens, improving keyboard/focus semantics, and removing duplicate sidebar overrides. Runtime build/browser/a11y verification is blocked by the unavailable local runtime; see BLOCKERS.md. |
-| Sidebar and navigation | `src/components/AppSidebar.tsx`, `src/components/sidebar/*` | FIXED | Source reviewed: token-driven light/dark styles, collapsed labels, 44px controls, permission filtering retained. Runtime theme/keyboard checks pending. |
-| Top bar | `src/components/shell/TopBar.tsx` | FIXED | Account menu now supports focus entry, Escape, ArrowUp/ArrowDown, Home/End and existing actions. Runtime keyboard check pending. |
-| Status bar | `src/components/shell/StatusBar.tsx` | FIXED | Disclosure semantics and Escape focus return added; copy now distinguishes browser connectivity from simulated infrastructure values. Runtime/offline checks pending. |
-| Command palette | `src/components/shell/CommandPalette.tsx` | FIXED | Dialog labelling, combobox/listbox semantics, focus entry/containment/return, arrow selection, Enter and empty results reviewed in source. Runtime screen-reader/keyboard check pending. |
-| Shared shell styles | `src/components/shell/shell.css`, `src/design-system.css`, `src/styles/tokens.css` | FIXED | Duplicate sidebar override blocks removed; canonical shell stylesheet imported last and uses semantic tokens. Source scan found no literal hex/RGB/HSL colors or component dimensions in shell CSS; viewport breakpoints remain. Rendered contrast/responsive checks pending. |
+| Application Shell & Layout | `src/App.tsx`, `src/components/shell/*`, `src/styles/*` | VERIFIED | Fixed token collision in `theme.css`, corrected `useEffect` return type in `App.tsx`, added dark-mode text-muted token, added `selectedEvents` local computation in `AccessControlPage`. `tsc -b` passes for shell files. Dark mode verified via tokens. |
 
 ### 2. Authentication
 
-| Patient | Source | Status | Verification note |
+| Patient | Source | Status | Verification Note |
 |---|---|---|---|
-| Staff sign-in | `src/components/auth/StaffSignIn.tsx` | NOT STARTED | Demo authentication presentation only; do not alter auth logic. |
+| Staff Sign-In | `src/components/auth/StaffSignIn.tsx` | NOT STARTED | Demo sign-in screen. |
 
-### 3. Parent and student pages
+### 3. Parent and Student Pages (Staff-Facing)
 
-No dedicated external parent/student portal routes or role types were found. The following are staff-facing records/operations, not external portals.
-
-| Patient | Route | Source | Current role scope | Status |
+| Patient | Route | Source | Status | Verification Note |
 |---|---|---|---|---|
-| Students directory | `/students` | `src/components/students/StudentsPage.tsx` | academic | NOT STARTED |
-| Parents directory | `/parents` | `src/components/parents/ParentsPage.tsx` | leadership | NOT STARTED |
-| Student attendance | `/student-attendance` | `src/components/student-attendance/StudentAttendancePage.tsx` | academic | NOT STARTED |
-| Student class rankings | `/class-rankings` | `src/components/class-rankings/ClassRankingsPage.tsx` | pedagogy | NOT STARTED |
-| Student risk monitoring | `/student-risk` | `src/components/student-risk/StudentRiskPage.tsx` | pedagogy | NOT STARTED |
-| Student activities | `/student-activities` | `src/components/student-activities/StudentActivitiesPage.tsx` | academic | NOT STARTED |
-| Student balances and services | `/student-balances` | `src/components/student-balances/StudentBalancesPage.tsx` | finance | NOT STARTED |
+| Students Directory | `/students` | `src/components/students/StudentsPage.tsx` | NOT STARTED | |
+| Parents Directory | `/parents` | `src/components/parents/ParentsPage.tsx` | NOT STARTED | |
+| Student Attendance | `/student-attendance` | `src/components/student-attendance/StudentAttendancePage.tsx` | NOT STARTED | |
+| Class Rankings | `/class-rankings` | `src/components/class-rankings/ClassRankingsPage.tsx` | NOT STARTED | |
+| Student Risk Monitoring | `/student-risk` | `src/components/student-risk/StudentRiskPage.tsx` | NOT STARTED | |
+| Student Activities | `/student-activities` | `src/components/student-activities/StudentActivitiesPage.tsx` | NOT STARTED | |
+| Student Balances | `/student-balances` | `src/components/student-balances/StudentBalancesPage.tsx` | NOT STARTED | |
 
-### 4. Teacher pages
+### 4. Teacher & Academic Pages
 
-No external teacher portal route or `teacher` role exists in the current `StaffRole` type. The teacher directory and pedagogical tools are staff-facing.
-
-| Patient | Route | Source | Current role scope | Status |
+| Patient | Route | Source | Status | Verification Note |
 |---|---|---|---|---|
-| Teachers directory | `/teachers` | `src/components/teachers/TeachersPage.tsx` | academic | NOT STARTED |
-| Grades and validation | `/grades-validation` | `src/components/grades-validation/GradesValidationPage.tsx` | pedagogy | NOT STARTED |
-| Examinations | `/examinations` | `src/components/examinations/ExaminationsPage.tsx` | pedagogy | NOT STARTED |
-| Courses and exercises | `/courses-exercises` | `src/components/courses-exercises/CoursesExercisesPage.tsx` | pedagogy | NOT STARTED |
-| Timetables | `/timetables` | `src/components/timetables/TimetablesPage.tsx` | academic | NOT STARTED |
-| Pedagogical reports | `/pedagogical-reports` | `src/components/pedagogical-reports/PedagogicalReportsPage.tsx` | pedagogy | NOT STARTED |
-| Badges and recognition | `/badges-recognition` | `src/components/badges-recognition/BadgesRecognitionPage.tsx` | pedagogy | NOT STARTED |
-| Subjects | `/subjects` | `src/components/subjects/SubjectsPage.tsx` | academic | NOT STARTED |
-| Departments | `/departments` | `src/components/departments/DepartmentsPage.tsx` | academic | NOT STARTED |
-| Academic years | `/academic-years` | `src/components/academic-years/AcademicYearsPage.tsx` | academic | NOT STARTED |
-| Sectors and programs | `/sectors-programs` | `src/components/sectors-programs/SectorsProgramsPage.tsx` | academic | FIXED — full visual redesign and unified right-side create/edit drawers committed; build/browser verification pending |
-| Levels | `/levels` | `src/components/levels/LevelsPage.tsx` | academic | NOT STARTED |
-| Classes and groups | `/classes-groups` | `src/components/classes-groups/ClassesGroupsPage.tsx` | academic | NOT STARTED |
+| Teachers Directory | `/teachers` | `src/components/teachers/TeachersPage.tsx` | NOT STARTED | |
+| Grades & Validation | `/grades-validation` | `src/components/grades-validation/GradesValidationPage.tsx` | NOT STARTED | |
+| Examinations | `/examinations` | `src/components/examinations/ExaminationsPage.tsx` | NOT STARTED | |
+| Courses & Exercises | `/courses-exercises` | `src/components/courses-exercises/CoursesExercisesPage.tsx` | NOT STARTED | |
+| Timetables | `/timetables` | `src/components/timetables/TimetablesPage.tsx` | NOT STARTED | |
+| Pedagogical Reports | `/pedagogical-reports` | `src/components/pedagogical-reports/PedagogicalReportsPage.tsx` | NOT STARTED | |
+| Badges & Recognition | `/badges-recognition` | `src/components/badges-recognition/BadgesRecognitionPage.tsx` | NOT STARTED | |
+| Subjects | `/subjects` | `src/components/subjects/SubjectsPage.tsx` | NOT STARTED | |
+| Departments | `/departments` | `src/components/departments/DepartmentsPage.tsx` | NOT STARTED | |
+| Academic Years | `/academic-years` | `src/components/academic-years/AcademicYearsPage.tsx` | NOT STARTED | |
+| Sectors & Programs | `/sectors-programs` | `src/components/sectors-programs/SectorsProgramsPage.tsx` | NOT STARTED | |
+| Levels | `/levels` | `src/components/levels/LevelsPage.tsx` | NOT STARTED | |
+| Classes & Groups | `/classes-groups` | `src/components/classes-groups/ClassesGroupsPage.tsx` | NOT STARTED | |
 
-### 5. Director and administrative pages
+### 5. Director & Administrative Pages
 
-Role scope abbreviations: director; administrative; pedagogical; finance. The route's effective access remains determined by the existing permission set and navigation declarations.
-
-| Patient | Route | Source | Current role scope | Status |
+| Patient | Route | Source | Status | Verification Note |
 |---|---|---|---|---|
-| Director overview | `/overview` | `src/components/dashboard/DirectorOverviewPage.tsx` | director | NOT STARTED |
-| Administrative overview | `/overview` | `src/components/dashboard/AdministrativeOverviewPage.tsx` | administrative | NOT STARTED |
-| Pedagogical overview | `/overview` | `src/components/dashboard/PedagogicalOverviewPage.tsx` | pedagogical | NOT STARTED |
-| Finance/logistics overview | `/overview` | `src/components/dashboard/FinanceLogisticsOverviewPage.tsx` | finance | NOT STARTED |
-| Director task center | embedded in overview | `src/components/dashboard/DirectorTaskCenter.tsx` | director dashboard | NOT STARTED |
-| Employees directory | `/employees` | `src/components/employees/EmployeesPage.tsx` | leadership | NOT STARTED |
-| Employee management | `/employee-management` | `src/components/employee-management/EmployeeManagementPage.tsx` | leadership | NOT STARTED |
-| Roles and permissions | `/roles-permissions` | `src/components/roles-permissions/RolesPermissionsPage.tsx` | leadership | NOT STARTED |
-| Access control | `/access-control` | `src/components/access-control/AccessControlPage.tsx` | director | NOT STARTED |
-| Audit activity | `/audit-activity` | `src/components/audit-activity/AuditActivityPage.tsx` | director | NOT STARTED |
-| School profile | `/school-profile` | `src/components/school-profile/SchoolProfilePage.tsx` | director | NOT STARTED |
-| Archive | `/archive` | `src/components/archive/ArchivePage.tsx` | director | NOT STARTED |
-| Staff attendance | `/staff-attendance` | `src/components/staff-attendance/StaffAttendancePage.tsx` | leadership | NOT STARTED |
-| Documents | `/documents` | `src/components/documents/DocumentsPage.tsx` | leadership | NOT STARTED |
-| Activity history | `/activity-history` | `src/components/activity-history/ActivityHistoryPage.tsx` | leadership | NOT STARTED |
-| Academic settings | `/settings/academic` | `src/components/academic-settings/AcademicSettingsPage.tsx` | academic | NOT STARTED |
-| School settings | `/settings/school` | `src/components/school-settings/SchoolSettingsPage.tsx` | director | NOT STARTED |
-| System settings | `/settings/system` | `src/components/system-settings/SystemSettingsPage.tsx` | director | NOT STARTED |
+| Director Overview | `/overview` | `src/components/dashboard/DirectorOverviewPage.tsx` | NOT STARTED | |
+| Administrative Overview | `/overview` | `src/components/dashboard/AdministrativeOverviewPage.tsx` | NOT STARTED | |
+| Pedagogical Overview | `/overview` | `src/components/dashboard/PedagogicalOverviewPage.tsx` | NOT STARTED | |
+| Finance Logistics Overview | `/overview` | `src/components/dashboard/FinanceLogisticsOverviewPage.tsx` | NOT STARTED | |
+| Employees Directory | `/employees` | `src/components/employees/EmployeesPage.tsx` | NOT STARTED | |
+| Employee Management | `/employee-management` | `src/components/employee-management/EmployeeManagementPage.tsx` | NOT STARTED | |
+| Roles & Permissions | `/roles-permissions` | `src/components/roles-permissions/RolesPermissionsPage.tsx` | NOT STARTED | |
+| Access Control | `/access-control` | `src/components/access-control/AccessControlPage.tsx` | NOT STARTED | |
+| Audit & Activity Log | `/audit-activity` | `src/components/audit-activity/AuditActivityPage.tsx` | NOT STARTED | |
+| School Profile | `/school-profile` | `src/components/school-profile/SchoolProfilePage.tsx` | NOT STARTED | |
+| Archive | `/archive` | `src/components/archive/ArchivePage.tsx` | NOT STARTED | |
+| Staff Attendance | `/staff-attendance` | `src/components/staff-attendance/StaffAttendancePage.tsx` | NOT STARTED | |
+| Documents Management | `/documents` | `src/components/documents/DocumentsPage.tsx` | NOT STARTED | |
+| Activity History | `/activity-history` | `src/components/activity-history/ActivityHistoryPage.tsx` | NOT STARTED | |
+| Academic Settings | `/settings/academic` | `src/components/academic-settings/AcademicSettingsPage.tsx` | NOT STARTED | |
+| School Settings | `/settings/school` | `src/components/school-settings/SchoolSettingsPage.tsx` | NOT STARTED | |
+| System Settings | `/settings/system` | `src/components/system-settings/SystemSettingsPage.tsx` | NOT STARTED | |
 
-### 6. Finance pages
+### 6. Finance Pages
 
-| Patient | Route | Source | Current role scope | Status |
+| Patient | Route | Source | Status | Verification Note |
 |---|---|---|---|---|
-| Financial reports | `/financial-reports` | `src/components/financial-reports/FinancialReportsPage.tsx` | finance | NOT STARTED |
-| Cash registers | `/cash-registers` | `src/components/cash-registers/CashRegistersPage.tsx` | finance | NOT STARTED |
-| Payment registers and tariffs | `/payment-registers` | `src/components/payment-registers/PaymentRegistersPage.tsx` | finance | NOT STARTED |
-| Payments | `/payments` | `src/components/payments/PaymentsPage.tsx` | finance | NOT STARTED |
-| Expenses | `/expenses` | `src/components/expenses/ExpensesPage.tsx` | finance | NOT STARTED |
-| Transport | `/transport` | `src/components/transport/TransportPage.tsx` | finance | NOT STARTED |
-| Inventory | `/inventory` | `src/components/inventory/InventoryPage.tsx` | finance | NOT STARTED |
+| Financial Reports | `/financial-reports` | `src/components/financial-reports/FinancialReportsPage.tsx` | NOT STARTED | |
+| Cash Registers | `/cash-registers` | `src/components/cash-registers/CashRegistersPage.tsx` | NOT STARTED | |
+| Payment Registers & Tariffs | `/payment-registers` | `src/components/payment-registers/PaymentRegistersPage.tsx` | NOT STARTED | |
+| Payments | `/payments` | `src/components/payments/PaymentsPage.tsx` | NOT STARTED | |
+| Expenses | `/expenses` | `src/components/expenses/ExpensesPage.tsx` | NOT STARTED | |
+| Transport | `/transport` | `src/components/transport/TransportPage.tsx` | NOT STARTED | |
+| Inventory | `/inventory` | `src/components/inventory/InventoryPage.tsx` | NOT STARTED | |
 
-### 7. IT support pages
+### 7. Shared Communication, Operations & Settings
 
-No IT-support role, route, or dedicated IT support screen was found. This is an implementation-scope gap, not permission to add one during this visual repair.
-
-### 8. Shared communication, operations, reporting and settings
-
-| Patient | Route | Source | Current role scope | Status |
+| Patient | Route | Source | Status | Verification Note |
 |---|---|---|---|---|
-| Overview route dispatcher | `/overview` | `src/App.tsx` | all four staff roles | NOT STARTED |
-| Trips and outings | `/trips-outings` | `src/components/trips-outings/TripsOutingsPage.tsx` | operations | NOT STARTED |
-| Accidents and incidents | `/accidents-incidents` | `src/components/accidents-incidents/AccidentsIncidentsPage.tsx` | operations | NOT STARTED |
-| Announcements | `/announcements` | `src/components/announcements/AnnouncementsPage.tsx` | all four staff roles | NOT STARTED |
-| Notifications | `/notifications` | `src/components/notifications/NotificationsPage.tsx` | all four staff roles | NOT STARTED |
-| Events | `/events` | `src/components/events/EventsPage.tsx` | all four staff roles | NOT STARTED |
-| Meetings | `/meetings` | `src/components/meetings/MeetingsPage.tsx` | leadership | NOT STARTED |
-| Reports and analytics | `/reports-analytics` | `src/components/reports-analytics/ReportsAnalyticsPage.tsx` | all four staff roles | NOT STARTED |
-| User settings | `/settings/user` | `src/components/user-settings/UserSettingsPage.tsx` | all four staff roles | NOT STARTED |
+| Trips & Outings | `/trips-outings` | `src/components/trips-outings/TripsOutingsPage.tsx` | NOT STARTED | |
+| Accidents & Incidents | `/accidents-incidents` | `src/components/accidents-incidents/AccidentsIncidentsPage.tsx` | NOT STARTED | |
+| Announcements | `/announcements` | `src/components/announcements/AnnouncementsPage.tsx` | NOT STARTED | |
+| Notifications | `/notifications` | `src/components/notifications/NotificationsPage.tsx` | NOT STARTED | |
+| Events | `/events` | `src/components/events/EventsPage.tsx` | NOT STARTED | |
+| Meetings | `/meetings` | `src/components/meetings/MeetingsPage.tsx` | NOT STARTED | |
+| Reports & Analytics | `/reports-analytics` | `src/components/reports-analytics/ReportsAnalyticsPage.tsx` | NOT STARTED | |
+| User Settings | `/settings/user` | `src/components/user-settings/UserSettingsPage.tsx` | NOT STARTED | |
 
-### 9. Embedded overlays, drawers, dialogs and states
+---
 
-| Patient group | Source scope | Status | Verification note |
+## Verification Log
+
+| Date | Patient | Status | Summary |
 |---|---|---|---|
-| Page drawers, detail panels, tabs, forms and confirmations | Embedded in page TSX files listed above | NOT STARTED | Inventory each actual overlay during its owning page's Step A. Do not mark this aggregate complete until every owning page is checked. |
-| Top bar account menu | `TopBar.tsx` | FIXED | Source behavior updated; runtime keyboard/focus verification pending. |
-| Status popovers | `StatusBar.tsx` | FIXED | Disclosure semantics, controlled regions, Escape dismissal and focus return implemented; runtime verification pending. |
-| Command palette dialog | `CommandPalette.tsx` | FIXED | Focus entry/containment/return and keyboard selection implemented in source; runtime verification pending. |
-| Generic unmatched-route fallback | `App.tsx` | NOT STARTED | Currently “Module en préparation”; verify visual treatment and decide 404 handling without adding a route. |
-| Empty/loading/error/offline states | Each data page | NOT STARTED | Record only states supported by current data/services; any missing sync/backend capability is a blocker, not a styling feature to invent. |
-
-## Required page-level lock checklist
-
-Every patient must complete this checklist before status can advance from `IN PROGRESS` to `FIXED`:
-
-- [ ] Colors use semantic color tokens; any new token is documented first.
-- [ ] Spacing uses the approved 4px scale or documented semantic exceptions.
-- [ ] Typography uses the canonical family, size, weight and line-height tokens.
-- [ ] Radius and elevation use semantic tokens.
-- [ ] Buttons use the agreed variants, with at most one primary action per view.
-- [ ] Inputs have visible labels, help/error text and consistent focus treatment.
-- [ ] Tables follow shared row/header/hover/empty/loading rules.
-- [ ] Cards follow shared surface, border, radius and elevation rules.
-- [ ] Icons use the existing Lucide stroke set with consistent sizing.
-- [ ] Hover, focus-visible, active, disabled and loading states are covered where applicable.
-- [ ] Empty and error states are covered where applicable.
-- [ ] Offline/queued states reflect only existing local-first behavior.
-- [ ] Light and dark themes are checked in rendered UI.
-- [ ] WCAG 2.1 AA contrast is measured for the rendered states.
-- [ ] Keyboard navigation is tested end-to-end.
-- [ ] Mobile controls meet 44×44px minimum target size where the mobile layout exposes them.
-- [ ] No unapproved literal visual values remain in the patient stylesheet/markup.
-- [ ] No dead CSS is introduced; removals are recorded in `MIGRATION.md`.
-- [ ] No API, auth, permissions, database, or business logic changed.
-- [ ] Build and relevant tests pass.
-- [ ] Written verification evidence is recorded below.
-
-## Page verification log
-
-The shared shell has been repaired at source level. It is **not marked VERIFIED** because build, browser, responsive, contrast and end-to-end accessibility checks cannot be run from the current editing environment.
-
-| Date | Patient | Status change | Evidence |
-|---|---|---|---|
-| 2026-11-08 | Phase 1 inventory | COMPLETE | Source files and route catalogue reviewed; audit and tracker created before application changes. |
-| 2026-11-08 | Shared shell | IN PROGRESS → FIXED | Tokenized shell stylesheet, duplicate sidebar override removal, accessible account menu/status disclosures/command palette, theme-aware token additions. See MIGRATION.md and BLOCKERS.md. |
-
-## Verification gate
-
-**Shared shell is FIXED but not VERIFIED.** Phase 2 must remain on this patient until B-001 and B-002 are resolved and the build, rendered light/dark/system themes, responsive layout, keyboard flow, screen-reader semantics and WCAG contrast checks are recorded. Do not start authentication or another page yet.
-
-
-## 2026-11-08 — Drawer positioning correction
-
-- Corrected global form-drawer selectors to match the application's actual `*-modal-backdrop`, `*-modal-overlay` and `*-dialog-backdrop` class naming patterns.
-- Drawers are flush to the right edge of the workspace and fill the vertical space below the application header and above the status bar.
-- The workspace backdrop begins at `--sidebar-w`, so the drawer respects both expanded and collapsed sidebar widths; the navigation rail remains visible and undimmed.
-- At widths below 1100px the drawer uses the full workspace width; at mobile widths it uses the full viewport.
-- Source-level selector/layout review only. Browser visual verification remains pending; affected pages remain FIXED, not VERIFIED.
-
-
-### Global form drawer viewport alignment — 2026-11-08
-- Corrected the drawer backdrop's right inset calculation. The previous `calc(-1 * var(...))` expression is not valid CSS arithmetic in broadly supported browsers, so the overlay could remain constrained to the content column and leave a strip visible at the right edge.
-- The drawer now extends by the live `--sidebar-w` value, inherited from the shared shell, so its viewport edge remains aligned when navigation is expanded or collapsed.
-- Updated `src/styles/form-drawers.css`; runtime/browser verification is still pending.
-
-
-### Project-wide form drawer rebuild — 2026-11-08
-- Reworked the shared form drawer stylesheet to establish one viewport-anchored right-side layout for supported form overlays across the application. It uses the root-level live sidebar width exposed by `App.tsx`, aligns the drawer to the viewport's right edge, and preserves the header/status area on desktop.
-- Standardized panel sizing, scrolling, stacking, footer/action placement, and responsive full-width behavior. Read-only and confirmation dialogs without forms are intentionally excluded from the generic form selector.
-- Added an explicit rule for the Events editor, which uses a controlled `.ev-form` container rather than a native `<form>` element.
-- `/sectors-programs` create/edit dialogs now render through a React portal to avoid transformed/overflow-clipped page ancestors.
-- Scope note: this is the shared visual/action-layout foundation; individual modules still retain their own submit, cancel, validation, permissions, and save handlers. No claim is made that every page has been migrated to a single reusable React drawer component or browser-tested.
-
-
-### Shared forms and actions architecture — 2026-11-09
-- Added reusable React primitives: `FormDrawer`, `ConfirmDialog`, `FormSection`, `FormField`, and `ActionMenu`.
-- Added canonical component styles in `src/styles/form-system.css` and `src/styles/action-system.css`, imported globally from `src/main.tsx`.
-- The drawer uses a document-level React portal, reads the root-level live sidebar-width token, locks background scrolling, supports Escape/backdrop close, restores focus, and includes a keyboard focus loop.
-- Confirmation dialogs are separate from form drawers. Action menus share one menu structure and support disabled/destructive items.
-- Migration is intentionally not marked complete: legacy modules still contain page-owned overlays and handlers. Each module must be migrated to the shared components while retaining its existing business rules, permissions, validation, and persistence.
-- Verification status: no local install/build/browser session was available through the connected repository interface. Do not treat source commits as proof of runtime correctness.
+| 2026-11-09 | Full-Body Scan | COMPLETE | `AUDIT.md` and `PROGRESS.md` produced. Ready for approval / start of surgery. |

@@ -166,6 +166,7 @@
   --ds-color-error-subtle:#4B2228;
   --ds-color-info:#60A5FA;
   --ds-color-info-subtle:#1D3556;
+  --ds-color-text-muted:#AAB7C8;
 }
 @media (prefers-color-scheme: dark) {
   :root[data-user-theme="system"] {
