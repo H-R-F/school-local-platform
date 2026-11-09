@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react";
 import {
-  Activity, AlertTriangle, ArrowDown, ArrowUp, CheckCircle2, ChevronDown,
-  Clock3, Database, Download, ExternalLink, FileText, Filter, Gauge,
-  HeartPulse, Info, Layers3, ListFilter, RefreshCw, Search, Server,
-  ShieldCheck, SlidersHorizontal, X, XCircle, Zap
+  Activity, AlertTriangle, ArrowUp, CheckCircle2, ChevronDown,
+  Clock3, Database, ExternalLink, FileText, Filter, Gauge,
+  HeartPulse, Info, Layers3, RefreshCw, Search, Server,
+  SlidersHorizontal, X, XCircle, Zap
 } from "lucide-react";
 import "./system-health.css";
 
