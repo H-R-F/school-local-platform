@@ -82,7 +82,6 @@ export function SystemHealthPage() {
   const [logSearch, setLogSearch] = useState("");
   const [severity, setSeverity] = useState("All levels");
   const [lastCheck, setLastCheck] = useState(new Date(Date.now()-30000));
-  const [refreshing, setRefreshing] = useState(false);
   const [notice, setNotice] = useState("");
   const filtered = useMemo(() => {
     const result = services.filter(s =>
@@ -107,13 +106,7 @@ export function SystemHealthPage() {
   const chart = chartSeries[range];
 
   const refresh = () => {
-    setRefreshing(true);
-    window.setTimeout(() => {
-      setLastCheck(new Date());
-      setServices(current=>current.map(s=>({...s,checked:"Just now"})));
-      setRefreshing(false);
-      setNotice("Demo snapshot refreshed · no live monitoring connection");
-    },450);
+    setNotice("Live refresh unavailable · no monitoring backend is connected. The demo snapshot and last-check time are unchanged.");
   };
   const closePanel = () => setPanel(null);
   const showPanel = (kind:"service"|"metrics"|"logs"|"incidents"|"incident",id?:string) => setPanel({kind,id});
@@ -133,7 +126,7 @@ export function SystemHealthPage() {
   return <div className="system-health-page">
     <div className="sh-page-header">
       <div><div className="sh-eyebrow">INFRASTRUCTURE / CENTRAL PLATFORM</div><h1>System Health</h1><p>Monitor the health and performance of central control-plane services.</p></div>
-      <div className="sh-header-actions"><div className="sh-freshness"><span className="sh-live-dot"/>Demo snapshot · checked {lastCheckedLabel}</div><button className="sh-button sh-button-primary" onClick={refresh} disabled={refreshing}><RefreshCw size={15} className={refreshing?"sh-spin":""}/>{refreshing?"Refreshing…":"Refresh checks"}</button></div>
+      <div className="sh-header-actions"><div className="sh-freshness"><span className="sh-live-dot"/>Demo snapshot · checked {lastCheckedLabel}</div><button className="sh-button sh-button-primary" onClick={refresh}><RefreshCw size={15}/>Refresh checks</button></div>
     </div>
     <div className="sh-demo-note"><Info size={15}/><span><b>DEMO DATA</b> — All service metrics, incidents, charts and logs on this page are fictional examples. No production telemetry or health-check endpoint is connected.</span></div>
 
