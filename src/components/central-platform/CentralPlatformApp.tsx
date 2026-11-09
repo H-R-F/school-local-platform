@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import {
-  Activity, AlertCircle, AlertTriangle, Bell, Building2, Check, ChevronDown, ChevronRight,
-  Cloud, Command, CreditCard, Database, ExternalLink, FileClock, Gauge, KeyRound,
+  Activity, AlertCircle, AlertTriangle, ArrowUpDown, Bell, Building2, Check, ChevronDown, ChevronLeft, ChevronRight,
+  Cloud, Command, CreditCard, Database, ExternalLink, FileClock, Gauge, KeyRound, MapPin,
   LayoutDashboard, LifeBuoy, LogOut, MoreHorizontal, Package, PanelLeft,
   Plus, RefreshCw, Search, Settings, ShieldCheck, X,
 } from "lucide-react";
@@ -48,7 +48,7 @@ export default function CentralPlatformApp() {
     </aside>
     <main className="main"><header className="topbar"><div className="breadcrumbs"><span>Control Plane</span><ChevronRight size={14}/><b>{page}</b></div><div className="command-search" onClick={() => notify("Command search is ready") }><Search size={15}/><span>Search schools, pages...</span><kbd><Command size={11}/>K</kbd></div><div className="top-actions"><span className="demo-pill"><span />DEMO MODE</span><button className="icon-btn" onClick={() => notify("No new notifications")} aria-label="Notifications"><Bell size={18}/><i className="notification-dot" /></button><div className="top-avatar">AO</div></div></header>
       <div className="content">{banner && <div className="demo-banner"><div><ShieldCheck size={17}/><span><b>You are viewing a demo with mocked data.</b> No backend is connected. Actions are simulated.</span></div><button className="icon-btn" onClick={() => setBanner(false)} aria-label="Dismiss banner"><X size={16}/></button></div>}
-        {page === "Overview" ? <Dashboard setPage={setPage} notify={notify} setSearch={setSearch}/> : <DataPage page={page} schools={filtered} search={search} setSearch={setSearch} filter={filter} setFilter={setFilter} notify={notify} onCreate={() => setModal(page)}/>}</div>
+        {page === "Overview" ? <Dashboard setPage={setPage} notify={notify} setSearch={setSearch}/> : page === "Schools" ? <AllSchoolsPage setPage={setPage} setSearch={setSearch} notify={notify}/> : <DataPage page={page} schools={filtered} search={search} setSearch={setSearch} filter={filter} setFilter={setFilter} notify={notify} onCreate={() => setModal(page)}/>}</div>
     </main>{modal && <CreateModal page={modal} onClose={() => setModal(null)} onSave={() => { setModal(null); notify(`${modal} created in demo mode`) }} />}{toast && <div className="toast"><Check size={16}/>{toast}</div>}
   </div></div>;
 }
@@ -232,6 +232,80 @@ function Dashboard({ setPage, notify, setSearch }: { setPage: (page: PageKey) =>
       </div>
     </section>
   </div>;
+}
+
+
+type RegistryLicense = "Active" | "Pending" | "Suspended" | "Expired" | "Deactivated";
+type RegistryConnectivity = "Online" | "Offline" | "Unknown";
+type RegistrySchool = { name:string; code:string; city:string; plan:"Basic"|"Professional"|"Enterprise"; license:RegistryLicense; connectivity:RegistryConnectivity; heartbeat:string; heartbeatRank:number };
+const registrySeeds:RegistrySchool[] = [
+{name:"Atlas International School",code:"ATS-001",city:"Casablanca",plan:"Professional",license:"Active",connectivity:"Online",heartbeat:"2 min ago",heartbeatRank:2},
+{name:"Al Amal School",code:"AAS-002",city:"Rabat",plan:"Basic",license:"Active",connectivity:"Offline",heartbeat:"3 days ago",heartbeatRank:4320},
+{name:"Future Academy",code:"FAC-003",city:"Marrakech",plan:"Enterprise",license:"Suspended",connectivity:"Online",heartbeat:"1 min ago",heartbeatRank:1},
+{name:"Ibn Sina School",code:"ISS-004",city:"Fes",plan:"Professional",license:"Pending",connectivity:"Unknown",heartbeat:"Never",heartbeatRank:999999},
+{name:"Horizon School",code:"HZS-005",city:"Tangier",plan:"Basic",license:"Expired",connectivity:"Offline",heartbeat:"12 days ago",heartbeatRank:17280},
+{name:"Green Valley School",code:"GVS-006",city:"Agadir",plan:"Professional",license:"Active",connectivity:"Online",heartbeat:"5 min ago",heartbeatRank:5},
+{name:"Al Waha Institution",code:"AWI-007",city:"Meknes",plan:"Enterprise",license:"Active",connectivity:"Online",heartbeat:"8 min ago",heartbeatRank:8},
+{name:"Les Palmiers School",code:"LPS-008",city:"Kenitra",plan:"Basic",license:"Deactivated",connectivity:"Unknown",heartbeat:"Never",heartbeatRank:999999},
+{name:"Al Fajr Academy",code:"AFA-009",city:"Oujda",plan:"Professional",license:"Pending",connectivity:"Offline",heartbeat:"1 day ago",heartbeatRank:1440},
+{name:"Al Andalous School",code:"ADS-010",city:"El Jadida",plan:"Enterprise",license:"Active",connectivity:"Online",heartbeat:"3 min ago",heartbeatRank:3}
+];
+const registryCities=["Casablanca","Rabat","Marrakech","Fes","Tangier","Agadir","Meknes","Kenitra","Oujda","El Jadida"];
+const registryPlans:RegistrySchool["plan"][]=["Basic","Professional","Enterprise"];
+const registryLicenses:RegistryLicense[]=["Active","Active","Active","Pending","Suspended","Expired"];
+const registryConnectivity:RegistryConnectivity[]=["Online","Online","Offline","Unknown"];
+const registrySchools:RegistrySchool[]=[...registrySeeds,...Array.from({length:118},(_,index)=>{
+ const n=index+11,license=registryLicenses[(n*7)%registryLicenses.length],connectivity=registryConnectivity[(n*5)%registryConnectivity.length],minutes=(n*13)%180;
+ return {name:"Demo School "+String(n).padStart(3,"0"),code:"DMS-"+String(n).padStart(3,"0"),city:registryCities[n%10],plan:registryPlans[n%3],license,connectivity,heartbeat:connectivity==="Unknown"?"Never":connectivity==="Offline"?(n%2?"2 days ago":"6 hours ago"):(minutes||1)+" min ago",heartbeatRank:connectivity==="Unknown"?999999:connectivity==="Offline"?(n%2?2880:360):(minutes||1)};
+})];
+function registryTone(status:string){if(status==="Active"||status==="Online")return "success";if(status==="Pending")return "info";if(status==="Suspended")return "warning";if(status==="Expired"||status==="Offline")return "danger";return "neutral";}
+function AllSchoolsPage({setPage,setSearch,notify}:{setPage:(page:PageKey)=>void;setSearch:(value:string)=>void;notify:(message:string)=>void}){
+ const [query,setQuery]=useState(""),[license,setLicense]=useState("All"),[connectivity,setConnectivity]=useState("All"),[plan,setPlan]=useState("All"),[city,setCity]=useState("All");
+ const [page,setCurrentPage]=useState(1),[pageSize,setPageSize]=useState(10),[sortKey,setSortKey]=useState<keyof RegistrySchool>("name"),[sortDirection,setSortDirection]=useState<"asc"|"desc">("asc"),[openMenu,setOpenMenu]=useState<string|null>(null);
+ const hasFilters=Boolean(query||license!=="All"||connectivity!=="All"||plan!=="All"||city!=="All");
+ const filtered=useMemo(()=>registrySchools.filter(s=>(license==="All"||s.license===license)&&(connectivity==="All"||s.connectivity===connectivity)&&(plan==="All"||s.plan===plan)&&(city==="All"||s.city===city)&&(s.name+" "+s.code).toLowerCase().includes(query.trim().toLowerCase())).sort((a,b)=>{
+  const left=sortKey==="heartbeat"?a.heartbeatRank:String(a[sortKey]).toLowerCase(),right=sortKey==="heartbeat"?b.heartbeatRank:String(b[sortKey]).toLowerCase(),result=left<right?-1:left>right?1:0;
+  return sortDirection==="asc"?result:-result;
+ }),[query,license,connectivity,plan,city,sortKey,sortDirection]);
+ const pageCount=Math.max(1,Math.ceil(filtered.length/pageSize)),currentPage=Math.min(page,pageCount),rows=filtered.slice((currentPage-1)*pageSize,currentPage*pageSize);
+ const reset=()=>{setQuery("");setLicense("All");setConnectivity("All");setPlan("All");setCity("All");setCurrentPage(1);};
+ const sort=(key:keyof RegistrySchool)=>{if(sortKey===key)setSortDirection(v=>v==="asc"?"desc":"asc");else{setSortKey(key);setSortDirection("asc");}setCurrentPage(1);};
+ const context=(destination:PageKey,code:string)=>{setSearch(code);setPage(destination);setOpenMenu(null);};
+ const action=(label:string,school:RegistrySchool)=>{setOpenMenu(null);if(label==="View Infrastructure"){context("Installations",school.code);return;}if(label==="Manage Subscription"){context("Subscriptions",school.code);return;}if(label==="Manage License"){context("Licenses",school.code);return;}notify(label+" is not available in this demonstration workspace.");};
+ const SortHeading=({label,k}:{label:string;k:keyof RegistrySchool})=><button className="as-sort" onClick={()=>sort(k)}>{label}<ArrowUpDown size={12} className={sortKey===k?"is-active":""}/></button>;
+ return <div className="all-schools-page">
+  <div className="as-page-head"><div><span className="eyebrow">SCHOOLS / REGISTRY</span><h1>All Schools</h1><p>Manage registered schools, their subscriptions, licenses, and server connectivity.</p></div><button className="btn primary as-register" onClick={()=>notify("School registration workflow is not available in this demo workspace.")}><Plus size={15}/>Register School</button></div>
+  <div className="as-demo-note"><span className="as-demo-dot"/>DEMONSTRATION REGISTRY <span>Fictional records · no live school or heartbeat service is connected</span></div>
+  <section className="as-summary" aria-label="License summary"><div className="as-summary-total"><span>Total Schools</span><strong>128</strong></div><div><span>Active</span><strong>112</strong></div><div><span>Pending</span><strong>4</strong></div><div><span>Suspended</span><strong>6</strong></div><div><span>Expired</span><strong>6</strong></div><small>License lifecycle totals</small></section>
+  <section className="as-registry card" aria-labelledby="as-registry-title">
+   <div className="as-registry-head"><div><h2 id="as-registry-title">Schools</h2><p>Central registry · operational and commercial metadata only</p></div><span className="as-record-count">{filtered.length.toLocaleString()} records</span></div>
+   <div className="as-toolbar">
+    <label className="as-search"><Search size={15}/><input value={query} onChange={e=>{setQuery(e.target.value);setCurrentPage(1);}} placeholder="Search by school name or code..." aria-label="Search by school name or code"/></label>
+    <label className="as-filter"><span>License status</span><select value={license} onChange={e=>{setLicense(e.target.value);setCurrentPage(1);}}><option>All</option>{["Active","Pending","Suspended","Expired","Deactivated"].map(v=><option key={v}>{v}</option>)}</select></label>
+    <label className="as-filter"><span>Connectivity</span><select value={connectivity} onChange={e=>{setConnectivity(e.target.value);setCurrentPage(1);}}><option>All</option>{["Online","Offline","Unknown"].map(v=><option key={v}>{v}</option>)}</select></label>
+    <label className="as-filter"><span>Plan</span><select value={plan} onChange={e=>{setPlan(e.target.value);setCurrentPage(1);}}><option>All</option>{registryPlans.map(v=><option key={v}>{v}</option>)}</select></label>
+    <label className="as-filter as-city-filter"><span>City</span><select value={city} onChange={e=>{setCity(e.target.value);setCurrentPage(1);}}><option value="All">All cities</option>{registryCities.map(v=><option key={v}>{v}</option>)}</select></label>
+    <button className="as-clear" onClick={reset} disabled={!hasFilters}><X size={13}/>Clear filters</button>
+   </div>
+   <div className="as-table-scroll"><table className="as-table">
+    <thead><tr><th><SortHeading label="School Name" k="name"/></th><th><SortHeading label="School Code" k="code"/></th><th><SortHeading label="City" k="city"/></th><th><SortHeading label="Subscription Plan" k="plan"/></th><th><SortHeading label="License Status" k="license"/></th><th><SortHeading label="Connectivity" k="connectivity"/></th><th><SortHeading label="Last Heartbeat" k="heartbeat"/></th><th>Actions</th></tr></thead>
+    <tbody>{rows.map(school=><tr key={school.code}>
+     <td><div className="as-school-cell"><span className="as-school-mark">{school.name.split(" ").slice(0,2).map(w=>w[0]).join("").replace(/[ÉÈ]/g,"E")}</span><strong>{school.name}</strong></div></td>
+     <td><code className="as-code">{school.code}</code></td><td><span className="as-city"><MapPin size={12}/>{school.city}</span></td><td><span className="as-plan">{school.plan}</span></td>
+     <td><span className={"as-status "+registryTone(school.license)}><i/>{school.license}</span></td><td><span className={"as-status "+registryTone(school.connectivity)}><i/>{school.connectivity}</span></td>
+     <td><time className="as-heartbeat">{school.heartbeat}</time></td><td><div className="as-actions"><button className="as-menu-trigger" aria-label={"Actions for "+school.name} aria-expanded={openMenu===school.code} onClick={()=>setOpenMenu(openMenu===school.code?null:school.code)}><MoreHorizontal size={17}/></button>
+      {openMenu===school.code&&<div className="as-menu" role="menu">{["View Details","Edit School","View Infrastructure","Manage Subscription","Manage License"].map(label=><button key={label} role="menuitem" onClick={()=>action(label,school)}>{label}{(label==="View Details"||label==="Edit School")&&<span>Unavailable</span>}</button>)}</div>}
+     </div></td></tr>)}
+     {rows.length===0&&<tr><td colSpan={8}><div className="as-empty"><Search size={19}/><strong>No schools match these filters</strong><span>Try a different search or clear the selected filters.</span><button onClick={reset}>Clear filters</button></div></td></tr>}
+    </tbody>
+   </table></div>
+   <footer className="as-footer"><span>Showing <b>{filtered.length===0?0:(currentPage-1)*pageSize+1}–{Math.min(currentPage*pageSize,filtered.length)}</b> of <b>{filtered.length}</b> schools</span><div className="as-pagination">
+    <label>Rows per page<select value={pageSize} onChange={e=>{setPageSize(Number(e.target.value));setCurrentPage(1);}}><option value={10}>10</option><option value={25}>25</option><option value={50}>50</option></select></label>
+    <button aria-label="Previous page" disabled={currentPage<=1} onClick={()=>setCurrentPage(v=>Math.max(1,v-1))}><ChevronLeft size={15}/></button><span>Page <b>{currentPage}</b> of <b>{pageCount}</b></span><button aria-label="Next page" disabled={currentPage>=pageCount} onClick={()=>setCurrentPage(v=>Math.min(pageCount,v+1))}><ChevronRight size={15}/></button>
+   </div></footer>
+  </section>
+  <p className="as-integrity-note">License status and connectivity are independent. Heartbeat values are fictional demonstration data, not verified monitoring events.</p>
+ </div>;
 }
 
 function Attention({ icon: Icon, title, sub, tone: t, action, onClick }: { icon: typeof AlertCircle; title: string; sub: string; tone: string; action: string; onClick: () => void }) { return <div className="attention"><div className={`attention-icon ${t}`}><Icon size={16}/></div><div><b>{title}</b><small>{sub}</small></div><button className="link-btn" onClick={onClick}>{action}</button></div> }
