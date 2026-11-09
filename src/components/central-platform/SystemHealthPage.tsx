@@ -82,7 +82,7 @@ export function SystemHealthPage() {
   const [logSearch, setLogSearch] = useState("");
   const [severity, setSeverity] = useState("All levels");
   const [logTime, setLogTime] = useState("Last hour");
-  const [lastCheck, setLastCheck] = useState(new Date(Date.now()-30000));
+  const [lastCheck] = useState(new Date(Date.now()-30000));
   const [notice, setNotice] = useState("");
   const filtered = useMemo(() => {
     const result = services.filter(s =>
@@ -160,7 +160,7 @@ export function SystemHealthPage() {
     </section>
 
     <div className="sh-section-heading sh-performance-heading"><div><h2>Platform performance</h2><p>Illustrative central-platform telemetry across the selected period.</p></div><div className="sh-range-switch">{(Object.keys(chartSeries) as Array<keyof typeof chartSeries>).map(r=><button key={r} className={range===r?"active":""} onClick={()=>setRange(r)}>{r}</button>)}</div></div>
-    <div className="sh-chart-grid">{<MiniChart title="Central API response time" unit="Milliseconds (ms)" values={chart.latency} labels={chart.labels} color="#818cf8" suffix=" ms"/>}<MiniChart title="Request volume" unit="Requests per interval" values={chart.requests} labels={chart.labels} color="#38bdf8"/><MiniChart title="Error rate" unit="Percentage (%)" values={chart.errors} labels={chart.labels} color="#f59e0b" suffix="%"/></div>
+    <div className="sh-chart-grid">{<MiniChart title="Central API response time" unit="Milliseconds (ms)" values={chart.latency} labels={chart.labels} color="var(--ds-color-action-primary)" suffix=" ms"/>}<MiniChart title="Request volume" unit="Requests per interval" values={chart.requests} labels={chart.labels} color="var(--ds-color-info)"/><MiniChart title="Error rate" unit="Percentage (%)" values={chart.errors} labels={chart.labels} color="var(--ds-color-warning)" suffix="%"/></div>
 
     <div className="sh-section-heading sh-incident-heading"><div><h2>Incidents</h2><p>Service-level events affecting the central platform.</p></div><button className="sh-text-button" onClick={()=>showPanel("incidents")}>View incident history <ExternalLink size={13}/></button></div>
     <section className="sh-card sh-incidents">
