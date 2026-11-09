@@ -261,12 +261,14 @@ const registrySchools:RegistrySchool[]=[...registrySeeds,...Array.from({length:1
 function registryTone(status:string){if(status==="Active"||status==="Online")return "success";if(status==="Pending")return "info";if(status==="Suspended")return "warning";if(status==="Expired"||status==="Offline")return "danger";return "neutral";}
 function AllSchoolsPage({setPage,setSearch,notify}:{setPage:(page:PageKey)=>void;setSearch:(value:string)=>void;notify:(message:string)=>void}){
  const [query,setQuery]=useState(""),[license,setLicense]=useState("All"),[connectivity,setConnectivity]=useState("All"),[plan,setPlan]=useState("All"),[city,setCity]=useState("All");
+ const allSchools=useMemo(()=>[...registrySchools,...readLocalRegistrations()],[]);
+ const localCount=allSchools.length-registrySchools.length;
  const [page,setCurrentPage]=useState(1),[pageSize,setPageSize]=useState(10),[sortKey,setSortKey]=useState<keyof RegistrySchool>("name"),[sortDirection,setSortDirection]=useState<"asc"|"desc">("asc"),[openMenu,setOpenMenu]=useState<string|null>(null);
  const hasFilters=Boolean(query||license!=="All"||connectivity!=="All"||plan!=="All"||city!=="All");
- const filtered=useMemo(()=>registrySchools.filter(s=>(license==="All"||s.license===license)&&(connectivity==="All"||s.connectivity===connectivity)&&(plan==="All"||s.plan===plan)&&(city==="All"||s.city===city)&&(s.name+" "+s.code).toLowerCase().includes(query.trim().toLowerCase())).sort((a,b)=>{
+ const filtered=useMemo(()=>allSchools.filter(s=>(license==="All"||s.license===license)&&(connectivity==="All"||s.connectivity===connectivity)&&(plan==="All"||s.plan===plan)&&(city==="All"||s.city===city)&&(s.name+" "+s.code).toLowerCase().includes(query.trim().toLowerCase())).sort((a,b)=>{
   const left=sortKey==="heartbeat"?a.heartbeatRank:String(a[sortKey]).toLowerCase(),right=sortKey==="heartbeat"?b.heartbeatRank:String(b[sortKey]).toLowerCase(),result=left<right?-1:left>right?1:0;
   return sortDirection==="asc"?result:-result;
- }),[query,license,connectivity,plan,city,sortKey,sortDirection]);
+ }),[allSchools,query,license,connectivity,plan,city,sortKey,sortDirection]);
  const pageCount=Math.max(1,Math.ceil(filtered.length/pageSize)),currentPage=Math.min(page,pageCount),rows=filtered.slice((currentPage-1)*pageSize,currentPage*pageSize);
  const reset=()=>{setQuery("");setLicense("All");setConnectivity("All");setPlan("All");setCity("All");setCurrentPage(1);};
  const sort=(key:keyof RegistrySchool)=>{if(sortKey===key)setSortDirection(v=>v==="asc"?"desc":"asc");else{setSortKey(key);setSortDirection("asc");}setCurrentPage(1);};
@@ -276,7 +278,7 @@ function AllSchoolsPage({setPage,setSearch,notify}:{setPage:(page:PageKey)=>void
  return <div className="all-schools-page">
   <div className="as-page-head"><div><span className="eyebrow">SCHOOLS / REGISTRY</span><h1>All Schools</h1><p>Manage registered schools, their subscriptions, licenses, and server connectivity.</p></div><button className="btn primary as-register" onClick={()=>setPage("Register School")}><Plus size={15}/>Register School</button></div>
   <div className="as-demo-note"><span className="as-demo-dot"/>DEMONSTRATION REGISTRY <span>Fictional records · no live school or heartbeat service is connected</span></div>
-  <section className="as-summary" aria-label="License summary"><div className="as-summary-total"><span>Total Schools</span><strong>128</strong></div><div><span>Active</span><strong>112</strong></div><div><span>Pending</span><strong>4</strong></div><div><span>Suspended</span><strong>6</strong></div><div><span>Expired</span><strong>6</strong></div><small>License lifecycle totals</small></section>
+  <section className="as-summary" aria-label="License summary"><div className="as-summary-total"><span>Total Schools</span><strong>{128+localCount}</strong></div><div><span>Active</span><strong>112</strong></div><div><span>Pending</span><strong>{4+localCount}</strong></div><div><span>Suspended</span><strong>6</strong></div><div><span>Expired</span><strong>6</strong></div><small>License lifecycle totals</small></section>
   <section className="as-registry card" aria-labelledby="as-registry-title">
    <div className="as-registry-head"><div><h2 id="as-registry-title">Schools</h2><p>Central registry · operational and commercial metadata only</p></div><span className="as-record-count">{filtered.length.toLocaleString()} records</span></div>
    <div className="as-toolbar">
