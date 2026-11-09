@@ -209,6 +209,7 @@ export function SubscriptionsPage() {
         ["Cancelled",counts.Cancelled,"Historical agreements","muted"],
       ].map(([label,value,hint,tone])=><div className="subs-metric" key={String(label)}><span>{label}</span><strong>{Number(value).toLocaleString("en-US")}</strong><small><i className={"subs-metric-dot "+tone}/>{hint}</small></div>)}
     </section>
+    <div className="subs-metric-extra"><span>Other lifecycle states</span><b>Draft <strong>{counts.Draft}</strong></b><b>Expired <strong>{counts.Expired}</strong></b><small>Included in Total Subscriptions</small></div>
 
     <section className="subs-overview">
       <div className="subs-overview-head"><h2>Subscription Overview</h2><span>DEMO DATA · DERIVED FROM RECORDS</span></div>
