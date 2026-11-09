@@ -1,12 +1,12 @@
 import { useMemo, useState } from "react";
 import {
-  Activity, AlertCircle, AlertTriangle, ArrowUpDown, Bell, Building2, CalendarDays, Check, ChevronDown, ChevronLeft, ChevronRight, FileText, Mail, Phone, UserRound,
+  Activity, AlertCircle, AlertTriangle, ArrowUpDown, Bell, Building2, CalendarDays, Check, ChevronDown, ChevronLeft, ChevronRight, FileText, Mail, Phone, UserRound, Server, Network, HeartPulse, Layers, Receipt, Users, Shield, GitBranch,
   Cloud, Command, CreditCard, Database, ExternalLink, FileClock, Gauge, KeyRound, MapPin,
   LayoutDashboard, LifeBuoy, LogOut, MoreHorizontal, Package, PanelLeft,
   Plus, RefreshCw, Search, Settings, ShieldCheck, X,
 } from "lucide-react";
 
-type PageKey = "Overview" | "Schools" | "Register School" | "Installations" | "Endpoints" | "Subscriptions" | "Licenses" | "Monitoring" | "Releases" | "Notifications" | "Support Access" | "Audit Logs" | "Settings";
+type PageKey = "Overview" | "Schools" | "All Schools" | "Register School" | "Installations" | "Endpoints" | "Servers" | "Cloudflare Tunnels" | "Connectivity" | "System Health" | "Plans" | "Subscriptions" | "Payments" | "Licenses" | "Heartbeats" | "Errors" | "Monitoring" | "Releases" | "Versions" | "Update Status" | "Notifications" | "Administrators" | "Permissions" | "Support Access" | "Audit Logs" | "Settings";
 type School = { code: string; name: string; city: string; status: string; plan: string; health: string; license: string; version: string; heartbeat: string; endpoint: string };
 
 const schools: School[] = [
@@ -22,12 +22,27 @@ const schools: School[] = [
 
 const nav: { label: PageKey; icon: typeof LayoutDashboard; section: string; count?: number }[] = [
   { label: "Overview", icon: LayoutDashboard, section: "Overview" },
-  { label: "Schools", icon: Building2, section: "School Registry" },
-  { label: "Register School", icon: Plus, section: "School Registry" },
-  { label: "Installations", icon: Database, section: "Infrastructure" }, { label: "Endpoints", icon: Cloud, section: "Infrastructure" },
-  { label: "Subscriptions", icon: CreditCard, section: "Commercial" }, { label: "Licenses", icon: KeyRound, section: "Commercial" },
-  { label: "Monitoring", icon: Activity, section: "Operations", count: 3 }, { label: "Releases", icon: Package, section: "Operations" }, { label: "Notifications", icon: Bell, section: "Operations" },
-  { label: "Support Access", icon: LifeBuoy, section: "Governance", count: 2 }, { label: "Audit Logs", icon: FileClock, section: "Governance" }, { label: "Settings", icon: Settings, section: "System" },
+  { label: "All Schools", icon: Building2, section: "Schools" },
+  { label: "Register School", icon: Plus, section: "Schools" },
+  { label: "Installations", icon: Database, section: "Schools" },
+  { label: "Servers", icon: Server, section: "Infrastructure" },
+  { label: "Cloudflare Tunnels", icon: Network, section: "Infrastructure" },
+  { label: "Connectivity", icon: Gauge, section: "Infrastructure" },
+  { label: "System Health", icon: HeartPulse, section: "Infrastructure" },
+  { label: "Plans", icon: Layers, section: "Subscriptions & Billing" },
+  { label: "Subscriptions", icon: Receipt, section: "Subscriptions & Billing" },
+  { label: "Payments", icon: CreditCard, section: "Subscriptions & Billing" },
+  { label: "Licenses", icon: KeyRound, section: "Subscriptions & Billing" },
+  { label: "Heartbeats", icon: Activity, section: "Monitoring" },
+  { label: "Errors", icon: AlertTriangle, section: "Monitoring" },
+  { label: "Audit Logs", icon: FileClock, section: "Monitoring" },
+  { label: "Releases", icon: ShieldCheck, section: "Software" },
+  { label: "Versions", icon: GitBranch, section: "Software" },
+  { label: "Update Status", icon: RefreshCw, section: "Software" },
+  { label: "Notifications", icon: Bell, section: "System" },
+  { label: "Administrators", icon: Users, section: "System" },
+  { label: "Permissions", icon: Shield, section: "System" },
+  { label: "Settings", icon: Settings, section: "System" },
 ];
 
 function Badge({ children, tone = "neutral" }: { children: React.ReactNode; tone?: string }) { return <span className={`badge badge-${tone}`}><span className="badge-dot" />{children}</span>; }
@@ -50,7 +65,7 @@ export default function CentralPlatformApp() {
     </aside>
     <main className="main"><header className="topbar"><div className="breadcrumbs"><span>Control Plane</span><ChevronRight size={14}/><b>{page}</b></div><div className="command-search" onClick={() => notify("Command search is ready") }><Search size={15}/><span>Search schools, pages...</span><kbd><Command size={11}/>K</kbd></div><div className="top-actions"><span className="demo-pill"><span />DEMO MODE</span><button className="icon-btn" onClick={() => notify("No new notifications")} aria-label="Notifications"><Bell size={18}/><i className="notification-dot" /></button><div className="top-avatar">AO</div></div></header>
       <div className="content">{banner && <div className="demo-banner"><div><ShieldCheck size={17}/><span><b>You are viewing a demo with mocked data.</b> No backend is connected. Actions are simulated.</span></div><button className="icon-btn" onClick={() => setBanner(false)} aria-label="Dismiss banner"><X size={16}/></button></div>}
-        {page === "Overview" ? <Dashboard setPage={setPage} notify={notify} setSearch={setSearch}/> : page === "Schools" ? <AllSchoolsPage setPage={setPage} setSearch={setSearch} notify={notify}/> : page === "Register School" ? <RegisterSchoolPage setPage={setPage} notify={notify}/> : <DataPage page={page} schools={filtered} search={search} setSearch={setSearch} filter={filter} setFilter={setFilter} notify={notify} onCreate={() => setModal(page)}/>}</div>
+        {page === "Overview" ? <Dashboard setPage={setPage} notify={notify} setSearch={setSearch}/> : (page === "Schools" || page === "All Schools") ? <AllSchoolsPage setPage={setPage} setSearch={setSearch} notify={notify}/> : page === "Register School" ? <RegisterSchoolPage setPage={setPage} notify={notify}/> : <DataPage page={page} schools={filtered} search={search} setSearch={setSearch} filter={filter} setFilter={setFilter} notify={notify} onCreate={() => setModal(page)}/>}</div>
     </main>{modal && <CreateModal page={modal} onClose={() => setModal(null)} onSave={() => { setModal(null); notify(`${modal} created in demo mode`) }} />}{toast && <div className="toast"><Check size={16}/>{toast}</div>}
   </div></div>;
 }
