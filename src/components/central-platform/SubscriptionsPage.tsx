@@ -132,6 +132,7 @@ export function SubscriptionsPage() {
       if(!form.renewal)errors.renewal="Next renewal date is required.";
       else if(form.renewal<=form.start)errors.renewal="Renewal date must be after the start date.";
       if(form.trial&&!form.trialEnd)errors.trialEnd="Trial end date is required.";
+      else if(form.trial&&form.trialEnd<=form.start)errors.trialEnd="Trial end date must be after the start date.";
     }
     setFormErrors(errors);return Object.keys(errors).length===0;
   };
