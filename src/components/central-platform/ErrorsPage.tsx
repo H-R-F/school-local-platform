@@ -97,7 +97,7 @@ export function ErrorsPage(){
  const pageSize=10,pageCount=Math.max(1,Math.ceil(sorted.length/pageSize)),visible=sorted.slice(page*pageSize,(page+1)*pageSize);
  const openCount=filtered.filter(r=>r.status==="Open").length,criticalCount=filtered.filter(r=>r.severity==="Critical").length;
  const resolved24=rows.filter(r=>r.status==="Resolved"&&r.updated>=now-day).length;
- const priorities=rows.filter(r=>r.status==="Open"||r.status==="Investigating").filter(r=>r.severity==="Critical"||r.severity==="High").sort((a,b)=>severityRank(b.severity)-severityRank(a.severity)||b.last-a.last).slice(0,3);
+ const priorities=rows.filter(r=>r.last>=cutoff&&r.last<=end&&(r.status==="Open"||r.status==="Investigating")&&(r.severity==="Critical"||r.severity==="High")).sort((a,b)=>severityRank(b.severity)-severityRank(a.severity)||b.last-a.last).slice(0,3);
  const clear=()=>{setQuery("");setSeverity("All");setStatus("All");setCategory("All");setSource("All");setRange("Last 30 Days");setFrom("");setTo("");setPage(0);};
  const sortBy=(key:string)=>{setSort(s=>({key,dir:s.key===key?(s.dir==="asc"?"desc":"asc"):"desc"}));setPage(0);};
  const update=(id:string,patch:Partial<ErrorRecord>,event:string)=>{setRows(old=>old.map(r=>r.id===id?{...r,...patch,updated:now,lastActor:"Amina Ops (demo session)",notes:event? [...r.notes,{id:"NOTE-"+Date.now(),text:event,actor:"Amina Ops (demo session)",at:now,kind:"Activity"}]:r.notes}:r));setNotice(event);};
