@@ -84,8 +84,8 @@ export function ReleasesPage() {
     const item: Release = { id: "REL-" + String(Date.now()).slice(-5), version: "", name: "", channel: "Stable", status: "Draft", publishedAt: "—", createdAt: "10 Nov 2026", author: "Amina Ops", packageName: "Not uploaded", packageSize: "—", checksum: "Not generated", signature: "Pending", minAgent: "1.4.0", minServer: "Ubuntu 22.04", notes: [""], schools: [] };
     setDraft(item); setPanel("create"); setErrors({});
   };
-  const openEdit = (item: Release) => { setDraft({ ...item, notes: [...item.notes] }); setPanel("edit"); setErrors({}); setDirty(false); setMenuId(null); };
-  const closePanel = () => { setPanel(null); setDraft(null); setDirty(false); setErrors({}); };
+  const openEdit = (item: Release) => { setDraft({ ...item, notes: [...item.notes] }); setPanel("edit"); setErrors({});  setMenuId(null); };
+  const closePanel = () => { setPanel(null); setDraft(null);  setErrors({}); };
   const updateDraft = (patch: Partial<Release>) => { setDraft(current => current ? { ...current, ...patch } : current); };
   const validate = () => {
     if (!draft) return false;
@@ -126,7 +126,7 @@ export function ReleasesPage() {
   };
   const duplicate = (item: Release) => {
     const copy = { ...item, id: "REL-" + String(Date.now()).slice(-5), version: "", name: item.name + " (copy)", status: "Draft" as ReleaseStatus, publishedAt: "—", createdAt: "10 Nov 2026", packageName: "Not uploaded", packageSize: "—", checksum: "Not generated", signature: "Pending" as const, schools: [], notes: [...item.notes] };
-    setDraft(copy); setPanel("create"); setDirty(true); setErrors({}); setMenuId(null);
+    setDraft(copy); setPanel("create");  setErrors({}); setMenuId(null);
   };
   const deprecate = (item: Release) => {
     setReleases(current => current.map(r => r.id === item.id ? { ...r, status: "Deprecated" as ReleaseStatus } : r));
