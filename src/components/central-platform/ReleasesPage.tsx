@@ -1,9 +1,10 @@
 import { useMemo, useState } from "react";
 import {
   Archive, Check, ChevronRight, CircleAlert, Clock3, Copy, Download,
-  FileArchive, FileCheck2, GitBranch, MoreHorizontal, Package, Plus,
-  Rocket, Search, ShieldCheck, X, Zap,
+  FileArchive, FileCheck2, GitBranch, HardDrive, LoaderCircle, MoreHorizontal, Package, Plus,
+  Rocket, Search, ShieldCheck, Upload, X, Zap,
 } from "lucide-react";
+import { uploadReleaseArtifact } from "../../services/release-artifacts";
 import "./releases-page.css";
 
 type ReleaseStatus = "Draft" | "Testing" | "Published" | "Deprecated";
@@ -12,6 +13,7 @@ type Release = {
   id: string; version: string; name: string; channel: "Stable" | "Beta";
   status: ReleaseStatus; publishedAt: string; createdAt: string; author: string;
   packageName: string; packageSize: string; checksum: string; signature: "Verified" | "Pending";
+  objectKey?: string;
   minAgent: string; minServer: string; notes: string[]; schools: SchoolRollout[];
 };
 
@@ -72,6 +74,9 @@ export function ReleasesPage() {
   const [confirm, setConfirm] = useState<Release | null>(null);
   const [toast, setToast] = useState("");
   const [errors, setErrors] = useState<Record<string,string>>({});
+  const [artifactFile, setArtifactFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
 
   const notify = (message: string) => { setToast(message); window.setTimeout(() => setToast(""), 3000); };
   const visible = useMemo(() => releases.filter(r =>
@@ -85,8 +90,34 @@ export function ReleasesPage() {
     setDraft(item); setPanel("create"); setErrors({});
   };
   const openEdit = (item: Release) => { setDraft({ ...item, notes: [...item.notes] }); setPanel("edit"); setErrors({});  setMenuId(null); };
-  const closePanel = () => { setPanel(null); setDraft(null);  setErrors({}); };
+  const closePanel = () => { setPanel(null); setDraft(null); setErrors({}); setArtifactFile(null); setUploadError(""); };
   const updateDraft = (patch: Partial<Release>) => { setDraft(current => current ? { ...current, ...patch } : current); };
+  const uploadArtifact = async () => {
+    if (!draft || !artifactFile) return;
+    if (!/^\d+\.\d+\.\d+(-[a-zA-Z0-9.-]+)?$/.test(draft.version.trim())) {
+      setErrors(current => ({ ...current, version: "Enter a valid version before uploading the package." }));
+      return;
+    }
+    if (!/\.(tar\.gz|tgz|zip)$/i.test(artifactFile.name)) { setUploadError("Use a .tar.gz, .tgz or .zip release package."); return; }
+    if (artifactFile.size > 1024 * 1024 * 1024) { setUploadError("The package exceeds the 1 GB upload limit."); return; }
+    setUploading(true); setUploadError("");
+    try {
+      const result = await uploadReleaseArtifact({ file: artifactFile, releaseId: draft.id, version: draft.version.trim() });
+      updateDraft({
+        packageName: artifactFile.name,
+        packageSize: \`\${(artifactFile.size / (1024 * 1024)).toFixed(1)} MB\`,
+        checksum: result.checksum ? \`sha256: \${result.checksum}\` : "Pending server verification",
+        signature: result.signatureStatus === "Verified" ? "Verified" : "Pending",
+        objectKey: result.objectKey,
+      });
+      setArtifactFile(null);
+      notify("Package uploaded to R2 and registered by the release API.");
+    } catch (error) {
+      setUploadError(error instanceof Error ? error.message : "Package upload failed.");
+    } finally {
+      setUploading(false);
+    }
+  };
   const validate = () => {
     if (!draft) return false;
     const next: Record<string,string> = {};
@@ -145,7 +176,8 @@ export function ReleasesPage() {
       <div><div className="rel-eyebrow">SOFTWARE DELIVERY / RELEASE MANAGEMENT</div><h1>Releases</h1><p>Prepare, validate and publish application packages for your school fleet.</p></div>
       <button className="rel-primary" onClick={openCreate}><Plus size={16}/>Create release</button>
     </header>
-    <div className="rel-demo"><span/>DEMO DATA <i>Fictional releases and rollout records. Changes stay in this browser session; no package is actually distributed.</i></div>
+    <div className="rel-demo"><span/>DEMO RECORDS <i>Release registry and rollout figures are sample data. Package uploads require the secured R2 API; no R2 credentials are exposed in this browser.</i></div>
+    <div className="rel-storage-banner"><div className="rel-storage-icon"><HardDrive size={17}/></div><div><strong>Artifact storage · Cloudflare R2 integration</strong><span>Private bucket · Short-lived signed upload URLs · Server-side checksum and signature verification</span></div><span className="rel-storage-state"><i/>API integration required</span></div>
 
     <section className="rel-metrics">
       <div><span>Total releases</span><strong>{releases.length}</strong><small>All release records</small></div>
@@ -213,17 +245,23 @@ export function ReleasesPage() {
     {editing && draft && <div className="rel-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget)closePanel();}}><aside className="rel-drawer" role="dialog" aria-modal="true" aria-label={panel==="create"?"Create release":"Edit release"}>
       <header className="rel-drawer-head"><div><span className="rel-eyebrow">SOFTWARE DELIVERY / CONFIGURATION</span><h2>{panel==="create"?"Create release":"Edit draft release"}</h2><p>Define release metadata before validation and publication.</p></div><button className="rel-icon-btn" onClick={closePanel} aria-label="Close"><X size={18}/></button></header>
       <form className="rel-drawer-body rel-form" onSubmit={e=>{e.preventDefault();saveDraft();}}>
-        <div className="rel-form-note"><CircleAlert size={15}/> Demo only. A real release requires a build pipeline to upload and sign the artifact.</div>
+        <div className="rel-form-note"><CircleAlert size={15}/> Release metadata remains local demo data in this build. The upload control calls the secured backend contract; the backend must authenticate the operator and issue a short-lived R2 upload URL.</div>
         <section className="rel-detail-section"><h3>01 / Release identity</h3>
           <label>Version <input value={draft.version} onChange={e=>updateDraft({version:e.target.value})} placeholder="2.9.0" aria-invalid={!!errors.version}/>{errors.version&&<small className="rel-error">{errors.version}</small>}<small>Use semantic versioning: MAJOR.MINOR.PATCH.</small></label>
           <label>Release name <input value={draft.name} onChange={e=>updateDraft({name:e.target.value})} placeholder="e.g. Academic year workflow" aria-invalid={!!errors.name}/>{errors.name&&<small className="rel-error">{errors.name}</small>}</label>
           <label>Release channel <select value={draft.channel} onChange={e=>updateDraft({channel:e.target.value as Release["channel"]})}><option>Stable</option><option>Beta</option></select></label>
         </section>
-        <section className="rel-detail-section"><h3>02 / Artifact metadata</h3>
-          <label>Package filename <input value={draft.packageName} onChange={e=>updateDraft({packageName:e.target.value})} placeholder="school-platform-2.9.0-linux-amd64.tar.gz"/></label>
-          <div className="rel-form-grid"><label>Package size <input value={draft.packageSize} onChange={e=>updateDraft({packageSize:e.target.value})} placeholder="190 MB"/></label><label>Checksum (SHA-256) <input value={draft.checksum} onChange={e=>updateDraft({checksum:e.target.value})} placeholder="sha256:…"/></label></div>
-          <label>Signature status <select value={draft.signature} onChange={e=>updateDraft({signature:e.target.value as Release["signature"]})}><option>Pending</option><option>Verified</option></select></label>
-          <p className="rel-help">In production, package upload, checksum generation and signing must be handled by a trusted CI/CD pipeline, not manually asserted in this form.</p>
+        <section className="rel-detail-section"><h3>02 / Release artifact</h3>
+          <div className="rel-upload-card">
+            <div className="rel-upload-heading"><div><b><Upload size={15}/> Upload release package</b><small>Accepted: .tar.gz, .tgz, .zip · Maximum 1 GB</small></div><span>R2 STORAGE</span></div>
+            <label className="rel-file-picker"><input type="file" accept=".tar.gz,.tgz,.zip,application/gzip,application/zip" disabled={uploading} onChange={e=>{setArtifactFile(e.target.files?.[0] || null);setUploadError("");}}/><span><Upload size={17}/><b>{artifactFile ? artifactFile.name : "Choose a package file"}</b><small>{artifactFile ? \`\${(artifactFile.size / (1024 * 1024)).toFixed(1)} MB selected\` : "Select the build artifact from your computer"}</small></span></label>
+            {artifactFile && <div className="rel-upload-selected"><FileArchive size={15}/><span>{artifactFile.name}</span><button type="button" onClick={()=>setArtifactFile(null)} disabled={uploading} aria-label="Remove selected package"><X size={14}/></button></div>}
+            {uploadError && <p className="rel-upload-error"><CircleAlert size={14}/>{uploadError}</p>}
+            <button type="button" className="rel-primary rel-upload-button" onClick={uploadArtifact} disabled={!artifactFile || uploading || !draft.version.trim()}>{uploading ? <><LoaderCircle size={14} className="rel-spin"/>Uploading to R2…</> : <><Upload size={14}/>Upload package to R2</>}</button>
+            <p className="rel-help">The browser receives a temporary upload URL only. R2 credentials stay on the backend. The backend must verify the uploaded object and register its checksum and signature before validation can pass.</p>
+          </div>
+          <div className="rel-detail-grid rel-artifact-metadata"><div><small>Artifact</small><b>{draft.packageName}</b></div><div><small>Package size</small><b>{draft.packageSize}</b></div><div><small>SHA-256 checksum</small><b>{draft.checksum}</b></div><div><small>Digital signature</small><b className={draft.signature==="Verified"?"rel-good":"rel-pending"}>{draft.signature} · backend verified</b></div></div>
+          {draft.objectKey && <p className="rel-object-key"><HardDrive size={13}/>R2 object key: <code>{draft.objectKey}</code></p>}
         </section>
         <section className="rel-detail-section"><h3>03 / Compatibility requirements</h3>
           <div className="rel-form-grid"><label>Minimum agent version <input value={draft.minAgent} onChange={e=>updateDraft({minAgent:e.target.value})}/></label><label>Supported server OS <input value={draft.minServer} onChange={e=>updateDraft({minServer:e.target.value})}/></label></div>
