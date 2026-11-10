@@ -98,12 +98,11 @@ export function ErrorsPage(){
  const openCount=filtered.filter(r=>r.status==="Open").length,criticalCount=filtered.filter(r=>r.severity==="Critical").length;
  const resolved24=rows.filter(r=>r.status==="Resolved"&&r.updated>=now-day).length;
  const priorities=rows.filter(r=>r.status==="Open"||r.status==="Investigating").filter(r=>r.severity==="Critical"||r.severity==="High").sort((a,b)=>severityRank(b.severity)-severityRank(a.severity)||b.last-a.last).slice(0,3);
- const clear=()=>{setQuery("");setSeverity("All");setStatus("All");setCategory("All");setSource("All");setRange("Last 24 Hours");setFrom("");setTo("");setPage(0);};
+ const clear=()=>{setQuery("");setSeverity("All");setStatus("All");setCategory("All");setSource("All");setRange("Last 30 Days");setFrom("");setTo("");setPage(0);};
  const sortBy=(key:string)=>{setSort(s=>({key,dir:s.key===key?(s.dir==="asc"?"desc":"asc"):"desc"}));setPage(0);};
  const update=(id:string,patch:Partial<ErrorRecord>,event:string)=>{setRows(old=>old.map(r=>r.id===id?{...r,...patch,updated:now,lastActor:"Amina Ops (demo session)",notes:event? [...r.notes,{id:"NOTE-"+Date.now(),text:event,actor:"Amina Ops (demo session)",at:now,kind:"Activity"}]:r.notes}:r));setNotice(event);};
  const refresh=()=>{setRefreshing(true);window.setTimeout(()=>{setRefreshing(false);setNotice("Local demonstration records refreshed. No monitoring service was contacted.");},450);};
  const addNote=()=>{if(!selected||!note.trim())return;const entry={id:"NOTE-"+Date.now(),text:note.trim(),actor:"Amina Ops (demo session)",at:now,kind:"Investigation note"};setRows(old=>old.map(r=>r.id===selected.id?{...r,notes:[...r.notes,entry],updated:now,lastActor:entry.actor}:r));setNote("");setNotice("Investigation note added to this local demo record.");};
- const assign=()=>{if(!selected)return;update(selected.id,{assignee},"Assigned to "+assignee+".");};
  const confirmAction=()=>{if(!confirm)return;const r=rows.find(x=>x.id===confirm.id);if(!r)return;
   if(confirm.kind==="resolve"){if(!resolution.trim())return;update(r.id,{status:"Resolved",resolution:resolution.trim()},"Resolved: "+resolution.trim());setResolution("");}
   if(confirm.kind==="ignore"){update(r.id,{status:"Ignored"},"Ignored"+(ignoreReason.trim()?": "+ignoreReason.trim():"."));setIgnoreReason("");}
