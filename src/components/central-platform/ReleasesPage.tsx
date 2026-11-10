@@ -114,8 +114,8 @@ export function ReleasesPage() {
       const result = await uploadReleaseArtifact({ file: artifactFile, releaseId: draft.id, version: draft.version.trim() });
       updateDraft({
         packageName: artifactFile.name,
-        packageSize: \`\${(artifactFile.size / (1024 * 1024)).toFixed(1)} MB\`,
-        checksum: result.checksum ? \`sha256: \${result.checksum}\` : "Pending server verification",
+        packageSize: `${(artifactFile.size / (1024 * 1024)).toFixed(1)} MB`,
+        checksum: result.checksum ? `sha256: ${result.checksum}` : "Pending server verification",
         signature: result.signatureStatus === "Verified" ? "Verified" : "Pending",
         objectKey: result.objectKey,
       });
