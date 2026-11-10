@@ -78,7 +78,7 @@ export function ReleasesPage() {
     (r.version.toLowerCase().includes(query.toLowerCase()) || r.name.toLowerCase().includes(query.toLowerCase()) || r.id.toLowerCase().includes(query.toLowerCase())) &&
     (statusFilter === "All" || r.status === statusFilter) &&
     (channelFilter === "All" || r.channel === channelFilter)
-  ).sort((a,b) => b.createdAt.localeCompare(a.createdAt)), [releases, query, statusFilter, channelFilter]);
+  ), [releases, query, statusFilter, channelFilter]);
 
   const openCreate = () => {
     const item: Release = { id: "REL-" + String(Date.now()).slice(-5), version: "", name: "", channel: "Stable", status: "Draft", publishedAt: "—", createdAt: "10 Nov 2026", author: "Amina Ops", packageName: "Not uploaded", packageSize: "—", checksum: "Not generated", signature: "Pending", minAgent: "1.4.0", minServer: "Ubuntu 22.04", notes: [""], schools: [] };
@@ -103,23 +103,33 @@ export function ReleasesPage() {
   };
   const runValidation = (item: Release) => {
     if (item.status !== "Draft") return;
-    setReleases(current => current.map(r => r.id === item.id ? { ...r, status: "Testing" } : r));
-    setSelected(null); setPanel(null); notify("Demo validation passed. Release moved to Testing; no package was executed.");
+    const missing: string[] = [];
+    if (item.packageName === "Not uploaded" || !item.packageName.trim()) missing.push("package artifact");
+    if (item.checksum === "Not generated" || !item.checksum.trim()) missing.push("checksum");
+    if (item.signature !== "Verified") missing.push("verified digital signature");
+    if (!item.notes.some(note => note.trim())) missing.push("release notes");
+    if (missing.length) {
+      notify("Validation blocked. Missing: " + missing.join(", ") + ".");
+      return;
+    }
+    setReleases(current => current.map(r => r.id === item.id ? { ...r, status: "Testing" as ReleaseStatus } : r));
+    setMenuId(null); setSelected(null); setPanel(null);
+    notify("Demo validation checks passed. Release moved to Testing; no package was executed.");
   };
   const publish = (item: Release) => {
     if (item.status !== "Testing" || item.signature !== "Verified" || item.packageName === "Not uploaded") {
       notify("Cannot publish: package and verified signature are required, and release must pass Testing.");
       return;
     }
-    setReleases(current => current.map(r => r.id === item.id ? { ...r, status: "Published", publishedAt: "10 Nov 2026 · just now" } : r));
-    setSelected(null); setPanel(null); notify("Release published in this demo only. No school servers were updated.");
+    setReleases(current => current.map(r => r.id === item.id ? { ...r, status: "Published" as ReleaseStatus, publishedAt: "10 Nov 2026 · just now" } : r));
+    setMenuId(null); setSelected(null); setPanel(null); notify("Release published in this demo only. No school servers were updated.");
   };
   const duplicate = (item: Release) => {
     const copy = { ...item, id: "REL-" + String(Date.now()).slice(-5), version: "", name: item.name + " (copy)", status: "Draft" as ReleaseStatus, publishedAt: "—", createdAt: "10 Nov 2026", packageName: "Not uploaded", packageSize: "—", checksum: "Not generated", signature: "Pending" as const, schools: [], notes: [...item.notes] };
     setDraft(copy); setPanel("create"); setDirty(true); setErrors({}); setMenuId(null);
   };
   const deprecate = (item: Release) => {
-    setReleases(current => current.map(r => r.id === item.id ? { ...r, status: "Deprecated" } : r));
+    setReleases(current => current.map(r => r.id === item.id ? { ...r, status: "Deprecated" as ReleaseStatus } : r));
     setConfirm(null); setMenuId(null); setSelected(null); setPanel(null); notify("Release marked as deprecated in demo data. Existing school installs are unchanged.");
   };
   const clearFilters = () => { setQuery(""); setStatusFilter("All"); setChannelFilter("All"); };
