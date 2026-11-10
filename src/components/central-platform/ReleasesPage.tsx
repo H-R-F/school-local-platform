@@ -130,7 +130,7 @@ export function ReleasesPage() {
   const validate = () => {
     if (!draft) return false;
     const next: Record<string,string> = {};
-    if (!/^\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9.-]+)?$/.test(draft.version.trim())) next.version = "Use semantic versioning, for example 2.9.0.";
+    if (!/^\d+\.\d+\.\d+(-[a-zA-Z0-9.-]+)?$/.test(draft.version.trim())) next.version = "Use semantic versioning, for example 2.9.0.";
     if (!draft.name.trim()) next.name = "Release name is required.";
     if (releases.some(r => r.version === draft.version.trim() && r.id !== draft.id)) next.version = "This version already exists.";
     setErrors(next); return Object.keys(next).length === 0;
