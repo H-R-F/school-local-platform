@@ -14,6 +14,7 @@ import { PaymentsPage } from "./PaymentsPage";
 import { LicensesPage } from "./LicensesPage";
 import { HeartbeatsPage } from "./HeartbeatsPage";
 import { ErrorsPage } from "./ErrorsPage";
+import { InstallationsPage } from "./InstallationsPage";
 import "../connectivity-page.css";
 import "../cloudflare-tunnels.css";
 
@@ -457,7 +458,7 @@ const INSTALL_SEED:InstallRecord[]=[
  {school:"Horizon School",code:"HZS-005",id:"INS-2026-005",status:"In Progress",stage:2,started:"Nov 09, 2026 · 08:40",updated:"Nov 09, 2026 · 09:02"},
 ];
 function installationTone(status:string){return status==="Completed"?"success":status==="In Progress"?"info":status==="Failed"?"danger":"neutral";}
-function InstallationsPage({notify}:{notify:(message:string)=>void}){
+function LegacyInstallationsPage({notify}:{notify:(message:string)=>void}){
  const [records,setRecords]=useState<InstallRecord[]>(INSTALL_SEED);
  const [query,setQuery]=useState(""),[status,setStatus]=useState("All"),[stage,setStage]=useState("All"),[from,setFrom]=useState(""),[to,setTo]=useState("");
  const [selected,setSelected]=useState<string|null>(null),[menu,setMenu]=useState<string|null>(null),[showStart,setShowStart]=useState(false),[school,setSchool]=useState(""),[confirm,setConfirm]=useState<{id:string;action:"restart"|"cancel"}|null>(null),[logs,setLogs]=useState(false),[refreshing,setRefreshing]=useState(false);
