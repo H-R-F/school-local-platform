@@ -14,3 +14,5 @@
 @media(max-width:1150px){.cx-summary{grid-template-columns:repeat(3,minmax(0,1fr))}.cx-bottom-grid{grid-template-columns:1fr}.cx-architecture{grid-template-columns:1fr}.cx-architecture>svg{transform:rotate(90deg);justify-self:center}.cx-architecture-step{padding:3px 0}}
 @media(max-width:760px){.cx-header{align-items:flex-start;flex-direction:column}.cx-header-actions{width:100%;justify-content:space-between;flex-wrap:wrap}.cx-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.cx-health-layout{grid-template-columns:1fr}.cx-table-footer{flex-direction:column}.cx-filter-row{flex-direction:column}.cx-demo{align-items:flex-start;flex-wrap:wrap}.cx-drawer{width:100%}}
 @media(max-width:480px){.cx-summary{grid-template-columns:1fr 1fr}.cx-stat{padding:9px;gap:7px}.cx-stat strong{font-size:18px}.cx-updated{white-space:normal}.cx-detail-grid{grid-template-columns:1fr 1fr}.cx-drawer-footer{flex-wrap:wrap}.cx-drawer-footer .cx-btn{flex:1}}
+
+.cx-ack-btn{border:0;background:none;color:var(--accent);font-size:8px;font-weight:700;cursor:pointer;white-space:nowrap}.cx-ack-btn:hover{text-decoration:underline}
