@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Activity, AlertCircle, ArrowRight, ArrowUpRight, BookOpen, CalendarDays,
-  FileCheck2, GraduationCap, RefreshCw, ShieldAlert, Users, Wallet,
-  UserRoundCheck, ClipboardList, CalendarCheck, Bus, Package, TrendingUp,
+  FileCheck2, GraduationCap, RefreshCw, ShieldAlert, Users, ClipboardList, CalendarCheck, Bus, Package,
 } from "lucide-react";
 import { studentsRepository, type StudentsData } from "../../services/students";
 import { teachersRepository, type TeachersData } from "../../services/teachers";

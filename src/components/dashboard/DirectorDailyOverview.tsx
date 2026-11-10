@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import {
   AlertTriangle, ArrowRight, BadgeCheck, BookOpen, Building2, CheckCircle2,
   CircleAlert, ClipboardCheck, FileWarning, GraduationCap, Info, ShieldCheck,
-  UserRoundCheck, Users, Wallet,
+  UserRoundCheck, Users,
 } from "lucide-react";
 import type { AuthenticatedSidebarUser } from "../../types/navigation";
 import type { StudentsData } from "../../services/students";
@@ -142,10 +142,10 @@ export function DirectorDailyOverview({ user, yearId, students, teachers, employ
     {dataErrors.length > 0 && <div className="director-home-error" role="alert"><AlertTriangle size={16}/><span>{dataErrors.map(item => item.message).join(" ")}</span></div>}
 
     <section className="director-home-kpis" aria-label="Indicateurs de pilotage">
-      <Stat label="Élèves actifs" value={sourceReady ? number(activeStudents.length) : "—"} detail={year?.name ?? "Année non définie"} icon={GraduationCap} tone="blue" onClick={() => onNavigate("/students")}/>
-      <Stat label="Inscriptions à traiter" value={sourceReady ? number(pendingEnrollments + suspendedEnrollments) : "—"} detail={`${number(pendingEnrollments)} en attente · ${number(suspendedEnrollments)} suspendues`} icon={ClipboardCheck} tone="amber" onClick={() => onNavigate("/students")}/>
-      <Stat label="Documents élèves à revoir" value={sourceReady ? number(studentDocumentsToReview) : "—"} detail="Pièces manquantes ou à vérifier" icon={FileWarning} tone="violet" onClick={() => onNavigate("/documents")}/>
-      <Stat label="Personnel actif" value={teacherData && employeeData ? number(totalStaff) : "—"} detail={`${number(activeTeachers.length)} enseignants · ${number(activeEmployees.length)} employés`} icon={Users} tone="green" onClick={() => onNavigate("/teachers")}/>
+      {allowed("people.students.view") && <Stat label="Élèves actifs" value={sourceReady ? number(activeStudents.length) : "—"} detail={year?.name ?? "Année non définie"} icon={GraduationCap} tone="blue" onClick={() => onNavigate("/students")}/>}
+      {allowed("people.students.view") && <Stat label="Inscriptions à traiter" value={sourceReady ? number(pendingEnrollments + suspendedEnrollments) : "—"} detail={`${number(pendingEnrollments)} en attente · ${number(suspendedEnrollments)} suspendues`} icon={ClipboardCheck} tone="amber" onClick={() => onNavigate("/students")}/>}
+      {(allowed("documents.view") || allowed("people.students.view")) && <Stat label="Documents élèves à revoir" value={sourceReady ? number(studentDocumentsToReview) : "—"} detail="Pièces manquantes ou à vérifier" icon={FileWarning} tone="violet" onClick={() => onNavigate(allowed("documents.view") ? "/documents" : "/students")}/>}
+      {(allowed("people.teachers.view") || allowed("people.employees.view")) && <Stat label="Personnel actif" value={teacherData && employeeData ? number(totalStaff) : "—"} detail={`${number(activeTeachers.length)} enseignants · ${number(activeEmployees.length)} employés`} icon={Users} tone="green" onClick={() => onNavigate(allowed("people.teachers.view") ? "/teachers" : "/employees")}/>}
     </section>
 
     <section className="director-home-grid">
@@ -186,7 +186,7 @@ export function DirectorDailyOverview({ user, yearId, students, teachers, employ
             {allowed("people.employees.view") && <button type="button" onClick={() => onNavigate("/employees")}>Employés <ArrowRight size={13}/></button>}
             {allowed("staff.attendance.view") && <button type="button" onClick={() => onNavigate("/staff-attendance")}>Présence du personnel <ArrowRight size={13}/></button>}
           </div>
-        </> : <div className="director-home-empty">Chargement des dossiers du personnel…</div>}
+        </> : <div className="director-home-empty">{teachers.status === "error" || employees.status === "error" ? "Les dossiers du personnel sont indisponibles ou non autorisés." : "Chargement des dossiers du personnel…"}</div>}
       </article>
 
       <article className="director-home-panel">
