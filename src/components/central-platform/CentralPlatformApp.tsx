@@ -36,26 +36,7 @@ const schools: School[] = [
 ];
 
 const nav: { label: PageKey; icon: typeof LayoutDashboard; section: string; count?: number }[] = [
-  { label: "Overview", icon: LayoutDashboard, section: "Overview" },
-  { label: "All Schools", icon: Building2, section: "Schools" },
-  { label: "Register School", icon: Plus, section: "Schools" },
-  { label: "Installations", icon: Database, section: "Schools" },
   { label: "Servers", icon: Server, section: "Infrastructure" },
-  { label: "Cloudflare Tunnels", icon: Network, section: "Infrastructure" },
-  { label: "Connectivity", icon: Gauge, section: "Infrastructure" },
-  { label: "Plans", icon: Layers, section: "Subscriptions & Billing" },
-  { label: "Subscriptions", icon: Receipt, section: "Subscriptions & Billing" },
-  { label: "Payments", icon: CreditCard, section: "Subscriptions & Billing" },
-  { label: "Licenses", icon: KeyRound, section: "Subscriptions & Billing" },
-  { label: "Errors", icon: AlertTriangle, section: "Monitoring" },
-  { label: "Audit Logs", icon: FileClock, section: "Monitoring" },
-  { label: "Releases", icon: ShieldCheck, section: "Software" },
-  { label: "Versions", icon: GitBranch, section: "Software" },
-  { label: "Update Status", icon: RefreshCw, section: "Software" },
-  { label: "Notifications", icon: Bell, section: "System" },
-  { label: "Administrators", icon: Users, section: "System" },
-  { label: "Permissions", icon: Shield, section: "System" },
-  { label: "Settings", icon: Settings, section: "System" },
 ];
 
 function Badge({ children, tone = "neutral" }: { children: React.ReactNode; tone?: string }) { return <span className={`badge badge-${tone}`}><span className="badge-dot" />{children}</span>; }
@@ -65,7 +46,7 @@ function Sparkline() { return <div className="connectivity-summary"><div classNa
 function Donut() { return <div className="donut-wrap"><div className="donut"><div><strong>8</strong><span>schools</span></div></div><div className="legend"><span><i className="dot green" />Healthy <b>5</b></span><span><i className="dot amber" />Degraded <b>1</b></span><span><i className="dot red" />Offline <b>2</b></span></div></div> }
 
 export default function CentralPlatformApp() {
-  const [page, setPage] = useState<PageKey>("Overview"); const [schoolWorkspace, setSchoolWorkspace] = useState<{school:string;serverId:string}|null>(null); const [search, setSearch] = useState(""); const [banner, setBanner] = useState(true); const [toast, setToast] = useState(""); const [sidebar, setSidebar] = useState(true); const [filter, setFilter] = useState("All"); const [modal, setModal] = useState<PageKey | null>(null);
+  const [page, setPage] = useState<PageKey>("Servers"); const [schoolWorkspace, setSchoolWorkspace] = useState<{school:string;serverId:string}|null>(null); const [search, setSearch] = useState(""); const [banner, setBanner] = useState(true); const [toast, setToast] = useState(""); const [sidebar, setSidebar] = useState(true); const [filter, setFilter] = useState("All"); const [modal, setModal] = useState<PageKey | null>(null);
   const notify = (message: string) => { setToast(message); window.setTimeout(() => setToast(""), 2400); };
   const filtered = useMemo(() => schools.filter(s => (filter === "All" || s.health === filter) && `${s.name} ${s.code} ${s.city}`.toLowerCase().includes(search.toLowerCase())), [filter, search]);
   const sections = [...new Set(nav.map(n => n.section))];
