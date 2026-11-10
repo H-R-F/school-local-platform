@@ -83,7 +83,7 @@
 .director-home-reliability{padding-bottom:13px}
 .director-home-modules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 18px}
 .director-home-module{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:9px;padding:11px 0;border-top:1px solid var(--ds-color-border-default)}
-.director-home-module-state{padding:4px 6px;border-radius:5px;background:var(--ds-color-warning-subtle);color:var(--ds-color-warning);font-size:8px;font-weight:750}
+.director-home-module-state{padding:4px 6px;border-radius:5px;background:var(--ds-color-warning-subtle);color:var(--ds-color-warning);font-size:8px;font-weight:750}.director-home-module-state.is-unavailable{background:var(--ds-color-error-subtle);color:var(--ds-color-error)}.director-home-module-state.is-local{background:var(--ds-color-info-subtle);color:var(--ds-color-info)}
 .director-home-module>div{display:flex;flex-direction:column;gap:3px;min-width:0}
 .director-home-module strong{color:var(--ds-color-text-primary);font-size:10px}
 .director-home-module small{color:var(--ds-color-text-secondary);font-size:9px;line-height:1.45}
