@@ -1,9 +1,8 @@
 import { useMemo, useState } from "react";
 import {
-  AlertCircle, AlertTriangle, ArrowDown, ArrowUp, Check, CheckCircle2,
-  ChevronLeft, ChevronRight, Clock3, Copy, ExternalLink, Filter, MoreHorizontal,
-  RefreshCw, Search, ShieldAlert, UserRound, X, FileText, MessageSquare,
-  RotateCcw, Ban, CircleDot, Database, Code2
+  AlertTriangle, ArrowDown, Check, ChevronLeft, ChevronRight, Clock3, Copy,
+  ExternalLink, Filter, MoreHorizontal, RefreshCw, Search, ShieldAlert, X,
+  MessageSquare, RotateCcw, Ban
 } from "lucide-react";
 import "./errors-page.css";
 
@@ -44,14 +43,13 @@ const extraTitles = [
  ["Unexpected null response","Application","School Local API"]
 ];
 const schools = ["Atlas International School","Future Academy","Al Amal School","Green Valley School","Ibn Sina School","Horizon School","Not applicable"];
-const sources = ["Central API","Central Database Service","Authentication Service","License Validation Service","Monitoring Service","Notification Worker","Configuration Service","School Local API"];
 const records:ErrorRecord[] = [];
 for(let i=0;i<248;i++){
  const base=seed[i] || null;
  const extra=extraTitles[(i-seed.length+extraTitles.length)%extraTitles.length];
- const status:ErrorStatus = i<32 ? "Open" : i<56 ? "Investigating" : i<206 ? "Resolved" : "Ignored";
- const severity:Severity = i<5 ? "Critical" : base?.severity || (i%4===0?"High":i%4===1?"Medium":i%4===2?"Low":"High");
- const ageMinutes = i<seed.length ? base!.age : (i%46===0 ? 20+(i%12)*30 : 30+(i*37)%42000);
+ const status:ErrorStatus = base?.status || (i<38 ? "Open" : i<60 ? "Investigating" : i<207 ? "Resolved" : "Ignored");
+ const severity:Severity = base?.severity || (i<14 ? "Critical" : (i%4===0?"High":i%4===1?"Medium":i%4===2?"Low":"High"));
+ const ageMinutes = i<seed.length ? base!.age : (i>=60&&i<=102 ? 20+(i-60)*30 : 2000+(i*37)%40000);
  const last = now-ageMinutes*60000;
  const first = last-(Math.max(0,(base?.occurrences||2)-1)*hour);
  const title=base?.title || extra[0];
@@ -85,11 +83,11 @@ type ConfirmAction={kind:"resolve"|"ignore"|"reopen";id:string};
 export function ErrorsPage(){
  const [rows,setRows]=useState(records);
  const [query,setQuery]=useState(""),[severity,setSeverity]=useState("All"),[status,setStatus]=useState("All"),[category,setCategory]=useState("All"),[source,setSource]=useState("All");
- const [range,setRange]=useState("Last 24 Hours"),[from,setFrom]=useState(""),[to,setTo]=useState("");
+ const [range,setRange]=useState("Last 30 Days"),[from,setFrom]=useState(""),[to,setTo]=useState("");
  const [sort,setSort]=useState<{key:string;dir:"asc"|"desc"}>({key:"last",dir:"desc"});
  const [page,setPage]=useState(0),[selectedId,setSelectedId]=useState<string|null>(null),[menu,setMenu]=useState<string|null>(null);
  const [refreshing,setRefreshing]=useState(false),[notice,setNotice]=useState(""),[confirm,setConfirm]=useState<ConfirmAction|null>(null);
- const [note,setNote]=useState(""),[resolution,setResolution]=useState(""),[ignoreReason,setIgnoreReason]=useState(""),[assignee,setAssignee]=useState(admins[0]);
+ const [note,setNote]=useState(""),[resolution,setResolution]=useState(""),[ignoreReason,setIgnoreReason]=useState("");
  const [stackExpanded,setStackExpanded]=useState(false),[historyExpanded,setHistoryExpanded]=useState(false);
  const selected=rows.find(r=>r.id===selectedId)||null;
  const cutoff=range==="Last Hour"?now-hour:range==="Last 24 Hours"?now-day:range==="Last 7 Days"?now-7*day:range==="Last 30 Days"?now-30*day:from?new Date(from+"T00:00:00").getTime():0;
@@ -101,7 +99,6 @@ export function ErrorsPage(){
  const resolved24=rows.filter(r=>r.status==="Resolved"&&r.updated>=now-day).length;
  const priorities=rows.filter(r=>r.status==="Open"||r.status==="Investigating").filter(r=>r.severity==="Critical"||r.severity==="High").sort((a,b)=>severityRank(b.severity)-severityRank(a.severity)||b.last-a.last).slice(0,3);
  const clear=()=>{setQuery("");setSeverity("All");setStatus("All");setCategory("All");setSource("All");setRange("Last 24 Hours");setFrom("");setTo("");setPage(0);};
- const setFilter=(key:string,value:string)=>{if(key==="severity")setSeverity(value);if(key==="status")setStatus(value);setPage(0);};
  const sortBy=(key:string)=>{setSort(s=>({key,dir:s.key===key?(s.dir==="asc"?"desc":"asc"):"desc"}));setPage(0);};
  const update=(id:string,patch:Partial<ErrorRecord>,event:string)=>{setRows(old=>old.map(r=>r.id===id?{...r,...patch,updated:now,lastActor:"Amina Ops (demo session)",notes:event? [...r.notes,{id:"NOTE-"+Date.now(),text:event,actor:"Amina Ops (demo session)",at:now,kind:"Activity"}]:r.notes}:r));setNotice(event);};
  const refresh=()=>{setRefreshing(true);window.setTimeout(()=>{setRefreshing(false);setNotice("Local demonstration records refreshed. No monitoring service was contacted.");},450);};
@@ -110,11 +107,11 @@ export function ErrorsPage(){
  const confirmAction=()=>{if(!confirm)return;const r=rows.find(x=>x.id===confirm.id);if(!r)return;
   if(confirm.kind==="resolve"){if(!resolution.trim())return;update(r.id,{status:"Resolved",resolution:resolution.trim()},"Resolved: "+resolution.trim());setResolution("");}
   if(confirm.kind==="ignore"){update(r.id,{status:"Ignored"},"Ignored"+(ignoreReason.trim()?": "+ignoreReason.trim():"."));setIgnoreReason("");}
-  if(confirm.kind==="reopen"){update(r.id,{status:"Open",resolution:""},"Reopened for further investigation.");}
+  if(confirm.kind==="reopen"){update(r.id,{status:"Open"},"Reopened for further investigation. Previous resolution retained.");}
   setConfirm(null);
  };
  const copy=(value:string)=>{if(navigator.clipboard?.writeText){navigator.clipboard.writeText(value).then(()=>setNotice("Copied safe identifier to clipboard.")).catch(()=>setNotice("Clipboard access is unavailable in this browser."));}else setNotice("Clipboard access is unavailable in this browser.");};
- const metricFilter=(kind:string)=>{setPage(0);if(kind==="all"){setSeverity("All");setStatus("All");}if(kind==="open")setStatus("Open");if(kind==="critical")setSeverity("Critical");if(kind==="resolved")setStatus("Resolved");};
+ const metricFilter=(kind:string)=>{setPage(0);if(kind==="all"){clear();}if(kind==="open")setStatus("Open");if(kind==="critical")setSeverity("Critical");if(kind==="resolved")setStatus("Resolved");};
  const rowAction=(id:string,action:"investigate"|"resolve"|"ignore"|"reopen")=>{setSelectedId(id);setMenu(null);if(action==="investigate")update(id,{status:"Investigating"},"Marked as investigating.");else setConfirm({id,kind:action});};
  return <div className="errors-page">
   <header className="er-header"><div><span className="er-eyebrow">MONITORING / INVESTIGATION</span><h1>Errors</h1><p>Investigate application errors and track their resolution across the platform.</p></div><div className="er-head-actions"><label className="er-range"><Clock3 size={14}/><select value={range} onChange={e=>{setRange(e.target.value);setPage(0);}}><option>Last Hour</option><option>Last 24 Hours</option><option>Last 7 Days</option><option>Last 30 Days</option><option>Custom Range</option></select></label><button className="er-btn" onClick={refresh} disabled={refreshing}><RefreshCw size={14} className={refreshing?"er-spin":""}/>{refreshing?"Refreshing…":"Refresh"}</button></div></header>
@@ -149,7 +146,7 @@ export function ErrorsPage(){
     <section className="er-detail-section"><h3>Technical Context <small>REDACTED DEMO DIAGNOSTICS</small></h3><div className="er-diagnostic"><p>{selected.message}</p><div className="er-safe-line"><span>Trace ID</span><code>{selected.trace}</code><button onClick={()=>copy(selected.trace)} aria-label="Copy trace ID"><Copy size={12}/></button></div><div className="er-safe-line"><span>Request ID</span><code>{selected.request}</code><button onClick={()=>copy(selected.request)} aria-label="Copy request ID"><Copy size={12}/></button></div><div className="er-detail-grid compact">{[["HTTP Method",selected.method],["Endpoint",selected.endpoint],["Application Version",selected.version],["Environment",selected.environment],["Error Timestamp",fmt(selected.last)]] .map(([a,b])=><div key={a}><small>{a}</small><b>{b}</b></div>)}</div></div><div className="er-stack-head"><b>Redacted stack trace</b><button onClick={()=>setStackExpanded(v=>!v)}>{stackExpanded?"Collapse":"Expand"}</button><button onClick={()=>copy(selected.stack)}><Copy size={12}/>Copy safe trace</button></div><pre className={stackExpanded?"expanded":""}>{selected.stack}</pre><p className="er-redaction-note">Sensitive hosts, credentials, tokens, headers and personal data are represented as [REDACTED]. No raw request payloads are shown.</p></section>
     <section className="er-detail-section"><h3>Occurrence Timeline <small>{selected.occurrences} OCCURRENCES</small></h3><div className="er-timeline">{(historyExpanded?selected.timeline:[selected.timeline[0],selected.timeline[selected.timeline.length-1]]).map((ts,i)=><div key={ts}><i className={i===0?"first":i===(historyExpanded?selected.timeline.length-1:1)?"latest":""}/><span><b>{i===0?"First occurrence":ts===selected.last?"Latest occurrence":"Repeated occurrence"}</b><small>{fmt(ts)} · {selected.source}</small></span><em>{selected.severity}</em></div>)}</div>{selected.occurrences>2&&<button className="er-link" onClick={()=>setHistoryExpanded(v=>!v)}>{historyExpanded?"Show key occurrences":"Inspect occurrence history"}</button>}</section>
     <section className="er-detail-section"><h3>Related Events</h3><div className="er-no-related">No related events identified. No verified correlation identifier is available in this demonstration record.</div></section>
-    <section className="er-detail-section"><h3>Investigation</h3><div className="er-detail-grid"><div><small>Assigned Administrator</small><b>{selected.assignee}</b></div><div><small>Last Updated By</small><b>{selected.lastActor}</b></div><div><small>Created</small><b>{fmt(selected.created)}</b></div><div><small>Updated</small><b>{fmt(selected.updated)}</b></div><div className="er-assignment"><small>Assign to administrator</small><select value={selected.assignee} onChange={e=>{setAssignee(e.target.value);update(selected.id,{assignee:e.target.value},"Assigned to "+e.target.value+".");}}>{admins.map(a=><option key={a}>{a}</option>)}</select></div></div>
+    <section className="er-detail-section"><h3>Investigation</h3><div className="er-detail-grid"><div><small>Assigned Administrator</small><b>{selected.assignee}</b></div><div><small>Last Updated By</small><b>{selected.lastActor}</b></div><div><small>Created</small><b>{fmt(selected.created)}</b></div><div><small>Updated</small><b>{fmt(selected.updated)}</b></div><div className="er-assignment"><small>Assign to administrator</small><select value={selected.assignee} onChange={e=>update(selected.id,{assignee:e.target.value},"Assigned to "+e.target.value+".")}>{admins.map(a=><option key={a}>{a}</option>)}</select></div></div>
      <div className="er-note-form"><label htmlFor="er-note">Add internal investigation note</label><textarea id="er-note" value={note} onChange={e=>setNote(e.target.value)} placeholder="Record investigation findings for authorized administrators…"/><button className="er-btn primary" disabled={!note.trim()} onClick={addNote}><MessageSquare size={14}/>Add note</button></div>
      <div className="er-activity"><h4>Investigation activity</h4>{selected.notes.length===0?<p>No administrative activity recorded yet.</p>: [...selected.notes].reverse().map(n=><article key={n.id}><i/><div><b>{n.kind}</b><p>{n.text}</p><small>{n.actor} · {fmt(n.at)}</small></div></article>)}{selected.resolution&&<article><i className="resolved"/><div><b>Previous resolution</b><p>{selected.resolution}</p><small>Preserved resolution summary</small></div></article>}</div>
     </section>
