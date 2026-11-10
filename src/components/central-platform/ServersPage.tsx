@@ -1,9 +1,8 @@
 import { useMemo, useState } from "react";
 import {
-  Activity, AlertCircle, AlertTriangle, ArrowDownUp, CheckCircle2, ChevronRight,
-  Clock3, Cpu, Database, HardDrive, MoreHorizontal, Plus, RefreshCw, Search,
-  Server as ServerIcon, ShieldCheck, X, Wifi, Zap, Building2, CalendarClock,
-  CircleHelp, ExternalLink, Pencil, Power, History, BellRing
+  Activity, AlertCircle, AlertTriangle, CheckCircle2, ChevronRight, Clock3,
+  MoreHorizontal, Plus, RefreshCw, Search, Server as ServerIcon, ShieldCheck,
+  X, CircleHelp, Pencil, Power, BellRing
 } from "lucide-react";
 import "./servers-page.css";
 
