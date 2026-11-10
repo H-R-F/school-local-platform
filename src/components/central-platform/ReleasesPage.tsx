@@ -72,7 +72,6 @@ export function ReleasesPage() {
   const [confirm, setConfirm] = useState<Release | null>(null);
   const [toast, setToast] = useState("");
   const [errors, setErrors] = useState<Record<string,string>>({});
-  const [dirty, setDirty] = useState(false);
 
   const notify = (message: string) => { setToast(message); window.setTimeout(() => setToast(""), 3000); };
   const visible = useMemo(() => releases.filter(r =>
@@ -83,11 +82,11 @@ export function ReleasesPage() {
 
   const openCreate = () => {
     const item: Release = { id: "REL-" + String(Date.now()).slice(-5), version: "", name: "", channel: "Stable", status: "Draft", publishedAt: "—", createdAt: "10 Nov 2026", author: "Amina Ops", packageName: "Not uploaded", packageSize: "—", checksum: "Not generated", signature: "Pending", minAgent: "1.4.0", minServer: "Ubuntu 22.04", notes: [""], schools: [] };
-    setDraft(item); setPanel("create"); setErrors({}); setDirty(false);
+    setDraft(item); setPanel("create"); setErrors({});
   };
   const openEdit = (item: Release) => { setDraft({ ...item, notes: [...item.notes] }); setPanel("edit"); setErrors({}); setDirty(false); setMenuId(null); };
   const closePanel = () => { setPanel(null); setDraft(null); setDirty(false); setErrors({}); };
-  const updateDraft = (patch: Partial<Release>) => { setDraft(current => current ? { ...current, ...patch } : current); setDirty(true); };
+  const updateDraft = (patch: Partial<Release>) => { setDraft(current => current ? { ...current, ...patch } : current); };
   const validate = () => {
     if (!draft) return false;
     const next: Record<string,string> = {};
