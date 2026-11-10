@@ -74,7 +74,6 @@ function EventTimeline({ items }: { items: typeof eventSeed }) {
 
 export function CloudflareTunnelsPage({ notify }: { notify: (message: string) => void }) {
   const [tunnels, setTunnels] = useState(initialTunnels);
-  const [events, setEvents] = useState(eventSeed);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("All");
   const [school, setSchool] = useState("All");
@@ -87,7 +86,6 @@ export function CloudflareTunnelsPage({ notify }: { notify: (message: string) =>
   const [refreshing, setRefreshing] = useState(false);
   const [form, setForm] = useState({name:"",school:"",server:"",hostname:"",description:""});
   const [formError, setFormError] = useState("");
-  const [pageSize, setPageSize] = useState("10");
 
   const activeTunnels = useMemo(() => tunnels.filter(t => t.active), [tunnels]);
   const stats = useMemo(() => ({
@@ -108,7 +106,7 @@ export function CloudflareTunnelsPage({ notify }: { notify: (message: string) =>
   ), [activeTunnels,status,school,region,originFilter,search]);
   const regions = [...new Set(activeTunnels.map(t=>t.region).filter((r):r is string=>Boolean(r)))];
   const schoolNames = [...new Set(activeTunnels.map(t=>t.school))];
-  const selectedEvents = selected ? events.filter(e=>e.tunnelId===selected.id) : [];
+  const selectedEvents = selected ? eventSeed.filter(e=>e.tunnelId===selected.id) : [];
 
   const openDrawer = (tunnel: Tunnel, mode: "details"|"history"|"events"|"edit"|"server") => {
     setSelected(tunnel); setDrawer(mode); setMenu(null);
