@@ -39,7 +39,7 @@ const seed: Release[] = [
     packageName: "school-platform-2.9.0-rc1-linux-amd64.tar.gz", packageSize: "191.2 MB",
     checksum: "sha256: 2bd1…9a80", signature: "Verified", minAgent: "1.5.0", minServer: "Ubuntu 22.04",
     notes: ["New academic year preparation workflow.", "Updated student promotion rules.", "Added staged database migration checks."],
-    schools: schoolRollout.map((s,i) => ({ ...s, status: i < 2 ? "Up to date" : "Update available" })),
+    schools: [],
   },
   {
     id: "REL-0274", version: "2.7.4", name: "Previous stable release", channel: "Stable",
