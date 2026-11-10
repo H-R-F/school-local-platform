@@ -172,7 +172,7 @@ export function DirectorOverviewPage({user,onNavigate}:Props) {
           <article className="director-executive-block">
             <div className="director-executive-title"><BookOpen size={17}/><h3>Équipe & capacité pédagogique</h3></div>
             <div className="director-executive-stat"><strong>{teacherCount===null?"—":fmt(teacherCount)}</strong><span>enseignants actifs</span></div>
-            <div className="director-executive-pairs"><span><b>{fmt(staffStatusCounts.onLeave)}</b> absences/congés du personnel</span><span><b>{fmt(assignedTeachers)}</b> avec affectation</span></div>
+            <div className="director-executive-pairs"><span><b>{fmt(staffStatusCounts.onLeave)}</b> personnel en congé</span><span><b>{fmt(assignedTeachers)}</b> avec affectation</span></div>
             <div className="director-executive-pairs"><span><b>{fmt(weeklyTeachingHours)} h</b> affectées / semaine</span><span><b>{fmt(staffDocsToReview)}</b> documents à vérifier</span></div>
             <p>Contrôler la couverture des cours, les remplacements, les charges horaires et les dossiers RH incomplets.</p>
             {allowed("people.teachers.view")&&<button type="button" onClick={()=>onNavigate("/teachers")}>Suivre les enseignants <ArrowRight size={13}/></button>}
@@ -214,8 +214,8 @@ export function DirectorOverviewPage({user,onNavigate}:Props) {
           </div>
           <div className="director-quick-actions">
             {allowed("activity.history.view")&&<button type="button" onClick={()=>onNavigate("/activity-history")}><Activity size={15}/>Historique des opérations<ArrowRight size={13}/></button>}
-            {allowed("access-control.view")&&<button type="button" onClick={()=>onNavigate("/access-control")}><ShieldAlert size={15}/>Contrôler les accès<ArrowRight size={13}/></button>}
-            {allowed("reports.analytics.view")&&<button type="button" onClick={()=>onNavigate("/reports-analytics")}><TrendingUp size={15}/>Rapports consolidés<ArrowRight size={13}/></button>}
+            {allowed("access.manage")&&<button type="button" onClick={()=>onNavigate("/access-control")}><ShieldAlert size={15}/>Contrôler les accès<ArrowRight size={13}/></button>}
+            {allowed("reports.view")&&<button type="button" onClick={()=>onNavigate("/reports-analytics")}><TrendingUp size={15}/>Rapports consolidés<ArrowRight size={13}/></button>}
           </div>
         </article>
       </section>
