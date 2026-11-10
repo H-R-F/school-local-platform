@@ -147,6 +147,78 @@ export function DirectorOverviewPage({user,onNavigate}:Props) {
         <article className="director-panel"><Heading eyebrow="STRUCTURE SCOLAIRE · DONNÉES LOCALES" title="Aperçu des élèves" action="Voir les élèves" onClick={()=>onNavigate("/students")}/>{students.status==="loading"?<div className="director-loading">Chargement des effectifs…</div>:students.status==="error"?<div className="director-error-inline">{students.message}</div>:<><div className="director-student-total"><strong>{fmt(totalStudents)}</strong><span>élèves inscrits actifs</span></div><div className="director-bars">{cycles.map(c=><Bar key={c.name} label={c.name} value={c.count} max={Math.max(...cycles.map(x=>x.count),1)} caption={fmt(c.count)+" élèves"}/>)}</div><div className="director-gender"><span>Garçons <strong>{gender.boys}</strong></span><span>Filles <strong>{gender.girls}</strong></span><span>Non renseigné <strong>{gender.unknown}</strong></span></div></>}<div className="director-risk-count"><ShieldAlert size={16}/><span><strong>{DEMO.risk.length}</strong> suivis fictifs</span><button type="button" onClick={()=>onNavigate("/student-risk")}>Consulter<ArrowRight size={13}/></button></div></article>
       </section>
       <section className="director-panel"><Heading eyebrow="LECTURE RAPIDE" title="Points à surveiller"/><div className="director-insight-grid"><Insight title="Présence des élèves" description={`${DEMO.attendance.absent} absences et ${DEMO.attendance.late} retards illustrés dans les données de démonstration.`} action="Suivre les présences" tone="warning" onClick={()=>onNavigate("/student-attendance")}/><Insight title="Suivi pédagogique" description={`${DEMO.risk.length} dossiers fictifs sont signalés pour examen humain.`} action="Consulter les suivis" tone="danger" onClick={()=>onNavigate("/student-risk")}/><Insight title="Recouvrement" description={canFinance?`${dh(DEMO.finance.outstanding)} restent à recouvrer dans le scénario financier.`:"Les chiffres financiers sont masqués selon vos autorisations."} action={canFinance?"Voir les soldes":"Accès restreint"} onClick={()=>canFinance&&onNavigate("/student-balances")}/></div></section>
+
+      <section className="director-panel director-executive">
+        <div className="director-executive-heading"><div><span>PILOTAGE QUOTIDIEN · DIRECTION</span><h2>Les indicateurs à suivre de près</h2><p>Une lecture transversale des points qui peuvent nécessiter une décision ou une action cette semaine.</p></div><span className="director-executive-label">Synthèse de direction</span></div>
+        <div className="director-executive-grid">
+          <article className="director-executive-block">
+            <div className="director-executive-title"><UserRoundCheck size={17}/><h3>Présence & discipline</h3></div>
+            <div className="director-executive-stat"><strong>{fmt(DEMO.attendance.present)}</strong><span>présents sur {fmt(DEMO.attendance.expected)}</span></div>
+            <div className="director-executive-track"><i style={{width:`${attendanceRate}%`}}/></div>
+            <div className="director-executive-pairs"><span><b>{fmt(DEMO.attendance.absent)}</b> absences</span><span><b>{fmt(DEMO.attendance.late)}</b> retards</span></div>
+            <p>Indicateurs illustratifs : suivre les absences répétées, les retards par classe et les justifications non reçues.</p>
+            {allowed("student.attendance.view")&&<button type="button" onClick={()=>onNavigate("/student-attendance")}>Ouvrir les présences <ArrowRight size={13}/></button>}
+          </article>
+          <article className="director-executive-block">
+            <div className="director-executive-title"><GraduationCap size={17}/><h3>Inscriptions & dossiers</h3></div>
+            {students.status==="ready"?<>
+              <div className="director-executive-stat"><strong>{fmt(enrollmentStats.active)}</strong><span>inscriptions actives</span></div>
+              <div className="director-executive-pairs"><span><b>{fmt(enrollmentStats.pending)}</b> en attente</span><span><b>{fmt(enrollmentStats.suspended)}</b> suspendues</span></div>
+              <div className="director-executive-pairs"><span><b>{fmt(studentDocumentStats.toReview)}</b> documents à revoir</span><span><b>{fmt(guardianCoverage)}</b> dossiers avec parent lié</span></div>
+              <p>Vérifier les dossiers incomplets, les pièces refusées et les inscriptions qui attendent une décision.</p>
+            </>:<p>{students.status==="loading"?"Chargement des données élèves…":"Les indicateurs élèves sont indisponibles pour le moment."}</p>}
+            {allowed("people.students.view")&&<button type="button" onClick={()=>onNavigate("/students")}>Gérer les inscriptions <ArrowRight size={13}/></button>}
+          </article>
+          <article className="director-executive-block">
+            <div className="director-executive-title"><BookOpen size={17}/><h3>Équipe & capacité pédagogique</h3></div>
+            <div className="director-executive-stat"><strong>{teacherCount===null?"—":fmt(teacherCount)}</strong><span>enseignants actifs</span></div>
+            <div className="director-executive-pairs"><span><b>{fmt(staffStatusCounts.onLeave)}</b> absences/congés du personnel</span><span><b>{fmt(assignedTeachers)}</b> avec affectation</span></div>
+            <div className="director-executive-pairs"><span><b>{fmt(weeklyTeachingHours)} h</b> affectées / semaine</span><span><b>{fmt(staffDocsToReview)}</b> documents à vérifier</span></div>
+            <p>Contrôler la couverture des cours, les remplacements, les charges horaires et les dossiers RH incomplets.</p>
+            {allowed("people.teachers.view")&&<button type="button" onClick={()=>onNavigate("/teachers")}>Suivre les enseignants <ArrowRight size={13}/></button>}
+          </article>
+          <article className="director-executive-block">
+            <div className="director-executive-title"><TrendingUp size={17}/><h3>Résultats & réussite</h3></div>
+            <div className="director-executive-stat"><strong>{DEMO.academic.average.toFixed(1).replace(".",",")}/20</strong><span>moyenne générale · démo</span></div>
+            <div className="director-executive-pairs"><span><b>{DEMO.academic.validated}</b> résultats validés</span><span><b>{DEMO.academic.eligible-DEMO.academic.validated}</b> en attente</span></div>
+            <p>Repérer les classes en baisse, les élèves en difficulté et les retards de saisie ou de validation des notes.</p>
+            {allowed("pedagogy.reports.view")&&<button type="button" onClick={()=>onNavigate("/pedagogical-reports")}>Analyser les résultats <ArrowRight size={13}/></button>}
+          </article>
+          {canFinance&&<article className="director-executive-block">
+            <div className="director-executive-title"><Wallet size={17}/><h3>Trésorerie & recouvrement</h3></div>
+            <div className="director-executive-stat"><strong>{dh(DEMO.finance.outstanding)}</strong><span>reste à recouvrer · démo</span></div>
+            <div className="director-executive-pairs"><span><b>{fmt(DEMO.finance.debtors)}</b> dossiers débiteurs</span><span><b>{dh(DEMO.finance.collected)}</b> encaissés</span></div>
+            <p>Suivre les échéances proches, l'ancienneté des créances, les remboursements et les dépenses à approuver.</p>
+            {allowed("finance.balances.view")&&<button type="button" onClick={()=>onNavigate("/student-balances")}>Suivre les impayés <ArrowRight size={13}/></button>}
+          </article>}
+          <article className="director-executive-block">
+            <div className="director-executive-title"><ClipboardList size={17}/><h3>Décisions & validations</h3></div>
+            <div className="director-executive-stat"><strong>{approvalRows.reduce((sum,item)=>sum+item.count,0)}</strong><span>éléments à examiner · démo</span></div>
+            {approvalRows.length?approvalRows.map(item=><button className="director-executive-queue" key={item.id} type="button" onClick={()=>onNavigate(item.route)}><span>{item.title}</span><b>{item.count}</b><ArrowRight size={12}/></button>):<p>Aucune file de validation accessible avec vos autorisations.</p>}
+          </article>
+        </div>
+      </section>
+      <section className="director-grid director-grid--two">
+        <article className="director-panel">
+          <Heading eyebrow="AGENDA DE LA DIRECTION · DÉMONSTRATION" title="Les prochaines échéances" action="Voir le calendrier" onClick={()=>onNavigate("/events")}/>
+          <div className="director-upcoming">{upcoming.map(item=><button key={item.id} type="button" onClick={()=>onNavigate(item.route)}><span className="director-upcoming-date">{new Intl.DateTimeFormat("fr-FR",{day:"2-digit",month:"short"}).format(new Date(item.date))}</span><span><strong>{item.title}</strong><small>{item.detail}</small></span><em>{item.tag}</em><ArrowRight size={13}/></button>)}</div>
+          <p className="director-footnote">Dates de démonstration : remplacer par l'agenda réel de l'établissement.</p>
+        </article>
+        <article className="director-panel">
+          <Heading eyebrow="GOUVERNANCE & CONTINUITÉ" title="Contrôles essentiels"/>
+          <div className="director-governance-list">
+            <div><span className="director-governance-icon"><ShieldAlert size={15}/></span><span><strong>Protection des dossiers élèves</strong><small>Limiter les accès, vérifier les pièces sensibles et les comptes inactifs.</small></span></div>
+            <div><span className="director-governance-icon"><FileCheck2 size={15}/></span><span><strong>Traçabilité des décisions</strong><small>Conserver l'auteur, la date et le motif des validations et modifications.</small></span></div>
+            <div><span className="director-governance-icon"><Activity size={15}/></span><span><strong>Continuité de service</strong><small>Vérifier les sauvegardes locales, l'état du serveur et la dernière sauvegarde vérifiée.</small></span></div>
+            <div><span className="director-governance-icon"><CalendarCheck size={15}/></span><span><strong>Préparation des échéances</strong><small>Anticiper conseils, examens, réunions, clôtures et remises de bulletins.</small></span></div>
+          </div>
+          <div className="director-quick-actions">
+            {allowed("activity.history.view")&&<button type="button" onClick={()=>onNavigate("/activity-history")}><Activity size={15}/>Historique des opérations<ArrowRight size={13}/></button>}
+            {allowed("access-control.view")&&<button type="button" onClick={()=>onNavigate("/access-control")}><ShieldAlert size={15}/>Contrôler les accès<ArrowRight size={13}/></button>}
+            {allowed("reports.analytics.view")&&<button type="button" onClick={()=>onNavigate("/reports-analytics")}><TrendingUp size={15}/>Rapports consolidés<ArrowRight size={13}/></button>}
+          </div>
+        </article>
+      </section>
     </div>}
     {activeTab==="academic"&&<div className="director-tab-content" role="tabpanel" id={`director-panel-${activeTab}`} aria-labelledby={`director-tab-${activeTab}`} tabIndex={0}>
       <section className="director-grid director-grid--two">
