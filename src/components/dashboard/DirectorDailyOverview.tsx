@@ -70,14 +70,15 @@ export function DirectorDailyOverview({ user, yearId, students, teachers, employ
     [studentData, yearId],
   );
   const activeStudents = yearRows.filter(item => item.enrollment?.status === "Actif");
+  const studentsToComplete = yearRows.filter(item => item.enrollment?.status === "Actif" || item.enrollment?.status === "En attente");
   const pendingEnrollments = yearRows.filter(item => item.enrollment?.status === "En attente").length;
   const suspendedEnrollments = yearRows.filter(item => item.enrollment?.status === "Suspendu").length;
-  const studentDocumentsToReview = activeStudents.reduce(
+  const studentDocumentsToReview = studentsToComplete.reduce(
     (total, student) => total + student.documents.filter(doc =>
       doc.status === "À fournir" || doc.status === "En attente de vérification" || doc.status === "Refusé"
     ).length, 0,
   );
-  const studentsWithoutGuardian = activeStudents.filter(item => item.guardiansResolved.length === 0).length;
+  const studentsWithoutGuardian = studentsToComplete.filter(item => item.guardiansResolved.length === 0).length;
   const studentAccountsToReview = activeStudents.filter(item => item.accountStatus !== "Actif").length;
   const activeTeachers = teacherData?.teachers.filter(item => item.employmentStatus === "Actif") ?? [];
   const activeEmployees = employeeData?.employees.filter(item => item.employmentStatus === "Actif") ?? [];
@@ -195,7 +196,7 @@ export function DirectorDailyOverview({ user, yearId, students, teachers, employ
           <div className="director-home-control-list">
             <div><span><Building2 size={15}/> Année scolaire</span><strong>{year?.name ?? "Aucune année sélectionnée"}</strong><small>{year?.status ?? "Vérifier la configuration de l'année"}</small></div>
             <div><span><GraduationCap size={15}/> Dossiers élèves</span><strong>{number(yearRows.length)} dossiers</strong><small>{number(activeStudents.length)} actifs · {number(pendingEnrollments)} en attente · {number(suspendedEnrollments)} suspendus</small></div>
-            <div><span><UserRoundCheck size={15}/> Familles renseignées</span><strong>{number(activeStudents.length - studentsWithoutGuardian)} / {number(activeStudents.length)}</strong><small>{number(studentsWithoutGuardian)} élève(s) sans parent lié</small></div>
+            <div><span><UserRoundCheck size={15}/> Familles renseignées</span><strong>{number(studentsToComplete.length - studentsWithoutGuardian)} / {number(studentsToComplete.length)}</strong><small>{number(studentsWithoutGuardian)} élève(s) actif(s) ou en attente sans parent lié</small></div>
             <div><span><BadgeCheck size={15}/> Affectations professeurs</span><strong>{teacherData ? number(activeAssignments) + " affectations" : "Indisponible"}</strong><small>{teacherData ? number(teachersWithoutAssignment) + " enseignant(s) actif(s) sans affectation sur cette année" : "Données des enseignants indisponibles"}</small></div>
           </div>
         </> : <div className="director-home-empty">Les données élèves et structurelles ne sont pas disponibles.</div>}
