@@ -126,7 +126,8 @@ export function DirectorDailyOverview({ user, yearId, students, teachers, employ
     if (staffOnLeave && (allowed("people.teachers.view") || allowed("people.employees.view"))) items.push({ id: "staff-leave", title: "Personnel déclaré en congé", detail: "À prendre en compte dans l'organisation des cours et services.", count: staffOnLeave, tone: "info", route: allowed("people.teachers.view") ? "/teachers" : "/employees", action: "Consulter" });
     if (staffAccountsToReview && allowed("access.manage")) items.push({ id: "staff-accounts", title: "Comptes du personnel à vérifier", detail: "Comptes non activés ou gelés dans les dossiers locaux.", count: staffAccountsToReview, tone: "info", route: "/access-control", action: "Contrôler" });
     if (studentAccountsToReview && allowed("people.students.view")) items.push({ id: "student-accounts", title: "Comptes élèves non actifs", detail: "Comptes gelés ou non activés parmi les inscriptions actives.", count: studentAccountsToReview, tone: "info", route: "/students", action: "Examiner" });
-    return items.sort((a, b) => ({ danger: 0, warning: 1, info: 2 }[a.tone] - ({ danger: 0, warning: 1, info: 2 }[b.tone]) || b.count - a.count);
+    const toneOrder = { danger: 0, warning: 1, info: 2 } as const;
+    return items.sort((a, b) => toneOrder[a.tone] - toneOrder[b.tone] || b.count - a.count);
   }, [pendingEnrollments, studentDocumentsToReview, suspendedEnrollments, studentsWithoutGuardian, teachersWithoutAssignment, staffDocumentsToReview, classesNearCapacity.length, staffOnLeave, staffAccountsToReview, studentAccountsToReview, user.permissions]);
 
   const dataLoading = students.status === "loading" || teachers.status === "loading" || employees.status === "loading";
