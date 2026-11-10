@@ -1,9 +1,8 @@
 import { useMemo, useState } from "react";
 import {
-  Activity, AlertCircle, AlertTriangle, ArrowDownRight, ArrowUpRight, CheckCircle2,
-  ChevronDown, ChevronRight, Clock3, Download, ExternalLink, Filter, Globe2,
-  History, Info, MoreHorizontal, Network, RefreshCw, Search, Server, ShieldCheck,
-  Signal, Timer, Wifi, X, Zap,
+  Activity, AlertCircle, AlertTriangle, CheckCircle2, ChevronDown, ChevronRight,
+  Clock3, Filter, Globe2, History, Info, MoreHorizontal, Network, RefreshCw,
+  Search, Server, ShieldCheck, Signal, Wifi, X,
 } from "lucide-react";
 
 type ConnectivityState = "Online" | "Degraded" | "Offline" | "Unknown";
