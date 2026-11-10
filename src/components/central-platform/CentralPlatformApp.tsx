@@ -16,6 +16,7 @@ import { HeartbeatsPage } from "./HeartbeatsPage";
 import { ErrorsPage } from "./ErrorsPage";
 import { InstallationsPage } from "./InstallationsPage";
 import { ServersPage } from "./ServersPage";
+import { SchoolWorkspacePage } from "./SchoolWorkspacePage";
 import "../connectivity-page.css";
 import "../cloudflare-tunnels.css";
 
@@ -42,12 +43,10 @@ const nav: { label: PageKey; icon: typeof LayoutDashboard; section: string; coun
   { label: "Servers", icon: Server, section: "Infrastructure" },
   { label: "Cloudflare Tunnels", icon: Network, section: "Infrastructure" },
   { label: "Connectivity", icon: Gauge, section: "Infrastructure" },
-  { label: "System Health", icon: HeartPulse, section: "Infrastructure" },
   { label: "Plans", icon: Layers, section: "Subscriptions & Billing" },
   { label: "Subscriptions", icon: Receipt, section: "Subscriptions & Billing" },
   { label: "Payments", icon: CreditCard, section: "Subscriptions & Billing" },
   { label: "Licenses", icon: KeyRound, section: "Subscriptions & Billing" },
-  { label: "Heartbeats", icon: Activity, section: "Monitoring" },
   { label: "Errors", icon: AlertTriangle, section: "Monitoring" },
   { label: "Audit Logs", icon: FileClock, section: "Monitoring" },
   { label: "Releases", icon: ShieldCheck, section: "Software" },
@@ -66,7 +65,7 @@ function Sparkline() { return <div className="connectivity-summary"><div classNa
 function Donut() { return <div className="donut-wrap"><div className="donut"><div><strong>8</strong><span>schools</span></div></div><div className="legend"><span><i className="dot green" />Healthy <b>5</b></span><span><i className="dot amber" />Degraded <b>1</b></span><span><i className="dot red" />Offline <b>2</b></span></div></div> }
 
 export default function CentralPlatformApp() {
-  const [page, setPage] = useState<PageKey>("Overview"); const [search, setSearch] = useState(""); const [banner, setBanner] = useState(true); const [toast, setToast] = useState(""); const [sidebar, setSidebar] = useState(true); const [filter, setFilter] = useState("All"); const [modal, setModal] = useState<PageKey | null>(null);
+  const [page, setPage] = useState<PageKey>("Overview"); const [schoolWorkspace, setSchoolWorkspace] = useState<{school:string;serverId:string}|null>(null); const [search, setSearch] = useState(""); const [banner, setBanner] = useState(true); const [toast, setToast] = useState(""); const [sidebar, setSidebar] = useState(true); const [filter, setFilter] = useState("All"); const [modal, setModal] = useState<PageKey | null>(null);
   const notify = (message: string) => { setToast(message); window.setTimeout(() => setToast(""), 2400); };
   const filtered = useMemo(() => schools.filter(s => (filter === "All" || s.health === filter) && `${s.name} ${s.code} ${s.city}`.toLowerCase().includes(search.toLowerCase())), [filter, search]);
   const sections = [...new Set(nav.map(n => n.section))];
@@ -74,12 +73,12 @@ export default function CentralPlatformApp() {
     <aside className={`sidebar ${sidebar ? "" : "collapsed"}`}><div className="brand"><div className="brand-mark">CF</div>{sidebar && <div><strong>Central School SaaS</strong><small>OPERATIONS CONTROL PLANE</small></div>}<button className="icon-btn sidebar-toggle" onClick={() => setSidebar(!sidebar)} aria-label="Toggle sidebar"><PanelLeft size={17} /></button></div>
       <div className="workspace"><div className="workspace-avatar">HR</div>{sidebar && <div><b>H-R-F Education</b><small>Demo workspace</small></div>}<ChevronDown size={14} /></div>
       <a className="workspace-switch-link" href="/overview" title="Open Local School App"><Building2 size={15}/>{sidebar && <span>Open School App</span>}</a>
-      <nav>{sections.map(section => <div className="nav-section" key={section}>{sidebar && <span className="nav-heading">{section}</span>}{nav.filter(n => n.section === section).map(item => { const Icon = item.icon; return <button key={item.label} className={`nav-item ${page === item.label ? "active" : ""}`} onClick={() => setPage(item.label)} title={item.label}><Icon size={17} />{sidebar && <span>{item.label}</span>}{sidebar && item.count && <em>{item.count}</em>}</button> })}</div>)}</nav>
+      <nav>{sections.map(section => <div className="nav-section" key={section}>{sidebar && <span className="nav-heading">{section}</span>}{nav.filter(n => n.section === section).map(item => { const Icon = item.icon; return <button key={item.label} className={`nav-item ${page === item.label ? "active" : ""}`} onClick={() => { setPage(item.label); setSchoolWorkspace(null); }} title={item.label}><Icon size={17} />{sidebar && <span>{item.label}</span>}{sidebar && item.count && <em>{item.count}</em>}</button> })}</div>)}</nav>
       {sidebar && <div className="sidebar-footer"><div className="user-avatar">AO</div><div><b>Amina Ops</b><small>Platform Admin</small></div><button className="icon-btn" onClick={() => notify("Signed out of demo mode") }><LogOut size={15}/></button></div>}
     </aside>
     <main className="main"><header className="topbar"><div className="breadcrumbs"><span>Control Plane</span><ChevronRight size={14}/><b>{page}</b></div><div className="command-search" onClick={() => notify("Command search is ready") }><Search size={15}/><span>Search schools, pages...</span><kbd><Command size={11}/>K</kbd></div><div className="top-actions"><span className="demo-pill"><span />DEMO MODE</span><button className="icon-btn" onClick={() => notify("No new notifications")} aria-label="Notifications"><Bell size={18}/><i className="notification-dot" /></button><div className="top-avatar">AO</div></div></header>
       <div className="content">{banner && <div className="demo-banner"><div><ShieldCheck size={17}/><span><b>You are viewing a demo with mocked data.</b> No backend is connected. Actions are simulated.</span></div><button className="icon-btn" onClick={() => setBanner(false)} aria-label="Dismiss banner"><X size={16}/></button></div>}
-        {page === "Overview" ? <Dashboard setPage={setPage} notify={notify} setSearch={setSearch}/> : (page === "Schools" || page === "All Schools") ? <AllSchoolsPage setPage={setPage} setSearch={setSearch} notify={notify}/> : page === "Register School" ? <RegisterSchoolPage setPage={setPage} notify={notify}/> : page === "Installations" ? <InstallationsPage notify={notify}/> : page === "Servers" ? <ServersPage notify={notify}/> : page === "Connectivity" ? <ConnectivityPage notify={notify}/> : page === "Cloudflare Tunnels" ? <CloudflareTunnelsPage notify={notify}/> : page === "System Health" ? <SystemHealthPage/> : page === "Plans" ? <PlansPage/> : page === "Subscriptions" ? <SubscriptionsPage/> : page === "Payments" ? <PaymentsPage/> : page === "Licenses" ? <LicensesPage/> : page === "Heartbeats" ? <HeartbeatsPage/> : page === "Errors" ? <ErrorsPage/> : <DataPage page={page} schools={filtered} search={search} setSearch={setSearch} filter={filter} setFilter={setFilter} notify={notify} onCreate={() => setModal(page)}/>}</div>
+        {page === "Overview" ? <Dashboard setPage={setPage} notify={notify} setSearch={setSearch}/> : (page === "Schools" || page === "All Schools") ? <AllSchoolsPage setPage={setPage} setSearch={setSearch} notify={notify}/> : page === "Register School" ? <RegisterSchoolPage setPage={setPage} notify={notify}/> : page === "Installations" ? <InstallationsPage notify={notify}/> : page === "Servers" ? (schoolWorkspace ? <SchoolWorkspacePage school={schoolWorkspace.school} serverId={schoolWorkspace.serverId} notify={notify} onBack={()=>setSchoolWorkspace(null)}/> : <ServersPage notify={notify} onOpenSchoolWorkspace={(school,serverId)=>setSchoolWorkspace({school,serverId})}/>) : page === "Connectivity" ? <ConnectivityPage notify={notify}/> : page === "Cloudflare Tunnels" ? <CloudflareTunnelsPage notify={notify}/> : page === "System Health" ? <SystemHealthPage/> : page === "Plans" ? <PlansPage/> : page === "Subscriptions" ? <SubscriptionsPage/> : page === "Payments" ? <PaymentsPage/> : page === "Licenses" ? <LicensesPage/> : page === "Heartbeats" ? <HeartbeatsPage/> : page === "Errors" ? <ErrorsPage/> : <DataPage page={page} schools={filtered} search={search} setSearch={setSearch} filter={filter} setFilter={setFilter} notify={notify} onCreate={() => setModal(page)}/>}</div>
     </main>{modal && <CreateModal page={modal} onClose={() => setModal(null)} onSave={() => { setModal(null); notify(`${modal} created in demo mode`) }} />}{toast && <div className="toast"><Check size={16}/>{toast}</div>}
   </div></div>;
 }
