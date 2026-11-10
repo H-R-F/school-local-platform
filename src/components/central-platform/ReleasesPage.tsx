@@ -4,7 +4,7 @@ import {
   FileArchive, FileCheck2, GitBranch, HardDrive, LoaderCircle, MoreHorizontal, Package, Plus,
   Rocket, Search, ShieldCheck, Upload, X, Zap,
 } from "lucide-react";
-import { uploadReleaseArtifact } from "../../services/release-artifacts";
+import { getReleaseDownloadUrl, uploadReleaseArtifact } from "../../services/release-artifacts";
 import "./releases-page.css";
 
 type ReleaseStatus = "Draft" | "Testing" | "Published" | "Deprecated";
@@ -92,6 +92,15 @@ export function ReleasesPage() {
   const openEdit = (item: Release) => { setDraft({ ...item, notes: [...item.notes] }); setPanel("edit"); setErrors({});  setMenuId(null); };
   const closePanel = () => { setPanel(null); setDraft(null); setErrors({}); setArtifactFile(null); setUploadError(""); };
   const updateDraft = (patch: Partial<Release>) => { setDraft(current => current ? { ...current, ...patch } : current); };
+  const downloadArtifact = async (item: Release) => {
+    if (!item.objectKey) { notify("This sample artifact has no linked R2 object."); return; }
+    try {
+      const url = await getReleaseDownloadUrl(item.objectKey);
+      window.open(url, "_blank", "noopener,noreferrer");
+    } catch (error) {
+      notify(error instanceof Error ? error.message : "Could not create a secure download link.");
+    }
+  };
   const uploadArtifact = async () => {
     if (!draft || !artifactFile) return;
     if (!/^\d+\.\d+\.\d+(-[a-zA-Z0-9.-]+)?$/.test(draft.version.trim())) {
@@ -237,7 +246,7 @@ export function ReleasesPage() {
         <section className="rel-detail-section"><h3><Clock3 size={15}/>Release history</h3><div className="rel-history"><p><b>Created</b><span>{selectedRelease.createdAt} · {selectedRelease.author}</span></p><p><b>Published</b><span>{selectedRelease.publishedAt}</span></p></div></section>
       </div>
       <footer className="rel-drawer-footer">
-        <button className="rel-secondary" onClick={()=>notify("Artifact download is unavailable in demo mode.")}><Download size={14}/>Download package</button>
+        <button className="rel-secondary" onClick={()=>void downloadArtifact(selectedRelease)} disabled={!selectedRelease.objectKey}><Download size={14}/>Download package</button>
         <div>{selectedRelease.status==="Draft"&&<button className="rel-primary" onClick={()=>runValidation(selectedRelease)}><FileCheck2 size={14}/>Run validation</button>}{selectedRelease.status==="Testing"&&<button className="rel-primary" onClick={()=>publish(selectedRelease)}><Rocket size={14}/>Publish release</button>}</div>
       </footer>
     </aside></div>}
