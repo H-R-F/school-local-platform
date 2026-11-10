@@ -12,3 +12,24 @@
 .cft-confirm-backdrop{z-index:70;align-items:center;justify-content:center;padding:20px}.cft-confirm{width:min(430px,100%);padding:22px;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:0 24px 80px #0007}.cft-confirm-icon{display:grid;place-items:center;width:37px;height:37px;border-radius:8px;background:#413522;color:#f1b960}.cft-confirm h2{margin:14px 0 8px;font-size:16px}.cft-confirm p{color:var(--muted);font-size:11px;line-height:1.65}.cft-confirm p strong{color:var(--text)}.cft-confirm>div:last-child{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}.cft-danger-button{background:#9e3e4a!important;border-color:#9e3e4a!important}
 @media(max-width:1100px){.cft-table{min-width:1250px}.cft-toolbar{align-items:stretch}.cft-search{flex-basis:100%}.cft-metrics{grid-template-columns:repeat(5,minmax(120px,1fr));overflow-x:auto}.cft-metric{padding:12px}}
 @media(max-width:700px){.cft-head .head-actions{width:100%}.cft-metrics{grid-template-columns:repeat(2,minmax(0,1fr));overflow:visible}.cft-metric:nth-child(2n){border-right:0}.cft-metric:last-child{grid-column:1/-1;border-top:1px solid var(--border)}.cft-toolbar>*{flex:1 1 100%}.cft-select{justify-content:space-between}.cft-select select{max-width:65%}.cft-clear{flex:0 0 auto;align-self:flex-start}.cft-legend{gap:10px}.cft-legend small{flex-basis:100%;margin:3px 0 0}.cft-table-footer{align-items:flex-start;flex-direction:column}.cft-drawer-head,.cft-drawer-body{padding-left:15px;padding-right:15px}.cft-drawer-footer{padding-left:15px;padding-right:15px}.cft-facts{grid-template-columns:1fr 1fr}}
+
+
+/* Cloudflare Tunnels — fleet health and origin-health distinction */
+.cft-origin-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 7px;border:1px solid var(--border);border-radius:4px;font-size:9px;font-weight:650;white-space:nowrap}
+.cft-origin-badge i{width:6px;height:6px;border-radius:50%;background:#75849a}
+.cft-origin-healthy{color:#54ca93;background:#17382e}.cft-origin-healthy i{background:#48c58e}
+.cft-origin-unhealthy{color:#f1b960;background:#413522}.cft-origin-unhealthy i{background:#f0b65b}
+.cft-origin-unknown{color:#a1adbd;background:#293448}
+.cft-secondary-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px;padding-top:13px;border-top:1px solid var(--border)}
+.cft-secondary-metrics>div{display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:0}
+.cft-secondary-metrics span{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:10px}
+.cft-secondary-metrics span svg{color:var(--faint);flex:0 0 auto}
+.cft-secondary-metrics b{font:600 13px "JetBrains Mono",monospace;color:var(--text);font-variant-numeric:tabular-nums}
+.cft-warning-text{color:#f1b960!important}
+.cft-boundary-note{display:flex;align-items:flex-start;gap:9px;padding:11px 13px;border:1px solid var(--border);border-radius:8px;background:var(--surface-2);color:var(--muted);font-size:10px;line-height:1.6}
+.cft-boundary-note>svg{flex:0 0 auto;color:var(--accent);margin-top:1px}
+.cft-boundary-note b{color:var(--text)}
+.cft-no-events{padding:18px;border:1px dashed var(--border);border-radius:7px;color:var(--muted);font-size:10px;text-align:center}
+.cft-page-indicator{color:var(--faint);font-size:9px}
+@media(max-width:900px){.cft-secondary-metrics{grid-template-columns:1fr}.cft-secondary-metrics>div{padding:2px 0}}
+@media(max-width:700px){.cft-secondary-metrics{gap:8px}.cft-secondary-metrics>div{align-items:flex-start}.cft-table-footer{gap:8px}.cft-boundary-note{align-items:flex-start}}
