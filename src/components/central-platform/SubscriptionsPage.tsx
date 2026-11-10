@@ -141,12 +141,12 @@ export function SubscriptionsPage() {
   const saveForm=(draftOnly:boolean)=>{
     if(busy||!validate(draftOnly))return;
     setBusy(true);
-    const status:Status=current?current.status:draftOnly?"Draft":form.trial?"Trial":form.status;
-    const school=schools.find(s=>s.code===form.schoolCode)!;
-    const id=panel?.mode==="edit"&&"id" in panel?panel.id:"SUB-DEMO-"+String(Date.now()).slice(-6);
+    const id: string = (panel?.mode === "edit" && "id" in panel && panel.id) ? panel.id : ("SUB-DEMO-" + String(Date.now()).slice(-6));
     const current=records.find(r=>r.id===id);
+    const status:Status=current?current.status:draftOnly?"Draft":form.trial?"Trial":form.status;
+    const school=schools.find(s=>s.code===form.schoolCode);
     const next:Subscription={
-      id,school:school.name,code:school.code,planId:form.planId,cycle:form.cycle,status,
+      id,school:school?.name || form.schoolCode || "École inconnue",code:school?.code || form.schoolCode || id,planId:form.planId,cycle:form.cycle,status,
       start:form.start,renewal:form.renewal,amount:form.amount===""?null:Number(form.amount),currency:form.currency,
       billingContact:current?.billingContact||"—",created:current?.created||today,
       trialEnd:form.trial?form.trialEnd:undefined,cancelledAt:current?.cancelledAt,
