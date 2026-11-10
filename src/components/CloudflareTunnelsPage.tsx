@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react";
 import {
-  Activity, AlertTriangle, Check, ChevronRight, CircleHelp, Cloud,
+  AlertTriangle, Check, CircleHelp, Cloud,
   Eye, FileClock, Filter, History, MoreHorizontal, Plus, RefreshCw,
   Search, Server, Shield, X, XCircle, Pencil, Power, Globe2,
-  Gauge, Radio, ArrowUpRight, Clock3, Route, RotateCw,
+  Radio, RotateCw,
 } from "lucide-react";
 
 type TunnelState = "Connected" | "Disconnected" | "Degraded" | "Unknown";
@@ -204,7 +204,7 @@ export function CloudflareTunnelsPage({ notify }: { notify: (message: string) =>
         </tr>)}</tbody></table>
         {filtered.length===0&&<div className="cft-empty"><Filter size={22}/><strong>No tunnels match these filters</strong><span>Try another search or clear the selected filters.</span><button className="btn secondary small" onClick={clearFilters}>Clear filters</button></div>}
       </div>
-      <div className="cft-table-footer"><span>Showing {filtered.length} of {activeTunnels.length} active records <em>· demo inventory</em></span><div><label>Rows per page <select value={pageSize} onChange={e=>setPageSize(e.target.value)}><option>10</option><option>25</option><option>50</option></select></label><span className="cft-page-indicator">Page 1</span></div></div>
+      <div className="cft-table-footer"><span>Showing {filtered.length} of {activeTunnels.length} active records <em>· demo inventory</em></span><div className="cft-page-indicator">All active records shown</div></div>
     </section>
 
     <div className="cft-boundary-note"><Shield size={16}/><span><b>Operational boundary:</b> a Connected tunnel does not guarantee that the school application is healthy. Tunnel connection status and origin service health must be checked independently. This page currently displays mock data only.</span></div>
