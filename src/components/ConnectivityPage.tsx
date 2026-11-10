@@ -57,15 +57,14 @@ export function ConnectivityPage({notify}:{notify:(message:string)=>void}) {
   const [activeTab,setActiveTab]=useState<"overview"|"diagnostics"|"events">("overview");
   const [refreshing,setRefreshing]=useState(false);
   const [runningCheck,setRunningCheck]=useState(false);
-  const [eventFilter,setEventFilter]=useState("All");
   const [showFilters,setShowFilters]=useState(false);
+  const [showAllEvents,setShowAllEvents]=useState(false);
 
   const counts=useMemo(()=>({total:records.length,online:records.filter(r=>r.state==="Online").length,degraded:records.filter(r=>r.state==="Degraded").length,offline:records.filter(r=>r.state==="Offline").length,unknown:records.filter(r=>r.state==="Unknown").length}),[records]);
   const filtered=useMemo(()=>{
     const rows=records.filter(r=>(stateFilter==="All"||r.state===stateFilter)&&(signalFilter==="All"||[r.internet,r.dns,r.tunnel,r.api].includes(signalFilter as SignalState))&&`${r.school} ${r.code} ${r.city} ${r.hostname}`.toLowerCase().includes(query.toLowerCase()));
     return rows.sort((a,b)=>sort==="name"?a.school.localeCompare(b.school):sort==="latency"?(b.latency??-1)-(a.latency??-1):({Offline:0,Degraded:1,Unknown:2,Online:3}[a.state]-({Offline:0,Degraded:1,Unknown:2,Online:3}[b.state])));
   },[records,stateFilter,signalFilter,query,sort]);
-  const visibleEvents=events.filter(e=>eventFilter==="All"||e.severity===eventFilter);
   const clearFilters=()=>{setQuery("");setStateFilter("All");setSignalFilter("All");setSort("attention");};
   const refresh=()=>{setRefreshing(true);window.setTimeout(()=>{setRefreshing(false);notify("Demo connectivity data refreshed. No live network checks were performed.");},700);};
   const openRecord=(record:SchoolRecord,tab:"overview"|"diagnostics"|"events"="overview")=>{setSelected(record);setActiveTab(tab);};
@@ -112,7 +111,7 @@ export function ConnectivityPage({notify}:{notify:(message:string)=>void}) {
       <footer className="cx-table-footer"><span>Showing {filtered.length} demonstration records</span><span>Connectivity state is calculated from independent signal checks</span></footer>
     </section>
 
-    <div className="cx-bottom-grid"><section className="cx-events-panel"><div className="cx-panel-heading"><div><h2>Recent connectivity events</h2><p>Incidents and noteworthy changes across the fleet.</p></div><button className="cx-text-btn" onClick={()=>{setSelected(null);setActiveTab("events");notify("Use the event list below to review and acknowledge events.");}}>Event log <ChevronRight size={13}/></button></div><div className="cx-event-list">{events.slice(0,4).map(ev=><div className="cx-event-row" key={ev.id}><span className={`cx-event-icon ${ev.severity.toLowerCase()}`}>{ev.severity==="Critical"?<AlertCircle size={15}/>:ev.severity==="Warning"?<AlertTriangle size={15}/>:<CheckCircle2 size={15}/>}</span><div><b>{ev.title}</b><small>{schoolName(ev.schoolCode)} · {ev.time}</small></div><StatePill value={ev.acknowledged?"Acknowledged":ev.severity}/></div>)}</div></section>
+    <div className="cx-bottom-grid"><section className="cx-events-panel"><div className="cx-panel-heading"><div><h2>Recent connectivity events</h2><p>Incidents and noteworthy changes across the fleet.</p></div><button className="cx-text-btn" onClick={()=>setShowAllEvents(value=>!value)}>{showAllEvents?"Show recent":"View all events"} <ChevronRight size={13}/></button></div><div className="cx-event-list">{events.slice(0,showAllEvents?events.length:4).map(ev=><div className="cx-event-row" key={ev.id}><span className={`cx-event-icon ${ev.severity.toLowerCase()}`}>{ev.severity==="Critical"?<AlertCircle size={15}/>:ev.severity==="Warning"?<AlertTriangle size={15}/>:<CheckCircle2 size={15}/>}</span><div><b>{ev.title}</b><small>{schoolName(ev.schoolCode)} · {ev.time}</small></div><StatePill value={ev.acknowledged?"Acknowledged":ev.severity}/>{!ev.acknowledged&&<button className="cx-ack-btn" onClick={()=>acknowledge(ev.id)}>Acknowledge</button>}</div>)}</div></section>
       <section className="cx-ops-panel"><div className="cx-panel-heading"><div><h2>How to read this page</h2><p>Keep the operational signals separate.</p></div><Info size={16}/></div><div className="cx-ops-item"><Wifi size={15}/><div><b>Internet</b><small>External reachability from the school environment.</small></div></div><div className="cx-ops-item"><Network size={15}/><div><b>Tunnel</b><small>Cloudflare connector status; see Tunnels for connector details.</small></div></div><div className="cx-ops-item"><Activity size={15}/><div><b>API</b><small>Application health check; a healthy tunnel does not guarantee a healthy API.</small></div></div><div className="cx-ops-item"><Clock3 size={15}/><div><b>Heartbeat</b><small>Last report received. Old data is marked stale, not treated as live.</small></div></div></section></div>
 
     {selected&&<div className="cx-overlay" onMouseDown={()=>setSelected(null)}><aside className="cx-drawer" role="dialog" aria-modal="true" aria-label="School connectivity details" onMouseDown={e=>e.stopPropagation()}>
