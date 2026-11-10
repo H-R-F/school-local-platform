@@ -87,7 +87,7 @@ export function InstallationsPage() {
     const date = record.startedAt === "—" ? "" : record.startedAt.slice(0, 12);
     const from = dateFrom ? new Date(dateFrom + "T00:00:00").getTime() : 0;
     const to = dateTo ? new Date(dateTo + "T23:59:59").getTime() : Number.MAX_SAFE_INTEGER;
-    const parsed = date ? new Date(date.replace(",", " 2026")).getTime() : 0;
+    const parsed = record.startedAt === "—" ? 0 : new Date(record.startedAt.replace(" · ", " ")).getTime();
     return matchesSearch && matchesStatus && matchesStage && matchesEnvironment && (!dateFrom && !dateTo || (parsed >= from && parsed <= to));
   }), [records, search, statusFilter, stageFilter, environmentFilter, dateFrom, dateTo]);
 
