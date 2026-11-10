@@ -49,11 +49,11 @@ function PriorityRow({ item, onNavigate }: { item: Priority; onNavigate: (route:
   </div>;
 }
 
-function ModuleRow({ title, detail, route, label, onNavigate }: {
-  title: string; detail: string; route: string; label: string; onNavigate: (route: string) => void;
+function ModuleRow({ title, detail, route, label, state = "Démo", onNavigate }: {
+  title: string; detail: string; route: string; label: string; state?: "Démo" | "Démo local" | "Non disponible"; onNavigate: (route: string) => void;
 }) {
   return <div className="director-home-module">
-    <span className="director-home-module-state">Démo</span>
+    <span className={"director-home-module-state " + (state === "Non disponible" ? "is-unavailable" : state === "Démo local" ? "is-local" : "")}>{state}</span>
     <div><strong>{title}</strong><small>{detail}</small></div>
     <button type="button" onClick={() => onNavigate(route)}>{label}<ArrowRight size={13}/></button>
   </div>;
@@ -145,7 +145,7 @@ export function DirectorDailyOverview({ user, yearId, students, teachers, employ
       {allowed("people.students.view") && <Stat label="Élèves actifs" value={sourceReady ? number(activeStudents.length) : "—"} detail={year?.name ?? "Année non définie"} icon={GraduationCap} tone="blue" onClick={() => onNavigate("/students")}/>}
       {allowed("people.students.view") && <Stat label="Inscriptions à traiter" value={sourceReady ? number(pendingEnrollments + suspendedEnrollments) : "—"} detail={`${number(pendingEnrollments)} en attente · ${number(suspendedEnrollments)} suspendues`} icon={ClipboardCheck} tone="amber" onClick={() => onNavigate("/students")}/>}
       {(allowed("documents.view") || allowed("people.students.view")) && <Stat label="Documents élèves à revoir" value={sourceReady ? number(studentDocumentsToReview) : "—"} detail="Pièces manquantes ou à vérifier" icon={FileWarning} tone="violet" onClick={() => onNavigate(allowed("documents.view") ? "/documents" : "/students")}/>}
-      {(allowed("people.teachers.view") || allowed("people.employees.view")) && <Stat label="Personnel actif" value={teacherData && employeeData ? number(totalStaff) : "—"} detail={`${number(activeTeachers.length)} enseignants · ${number(activeEmployees.length)} employés`} icon={Users} tone="green" onClick={() => onNavigate(allowed("people.teachers.view") ? "/teachers" : "/employees")}/>}
+      {(allowed("people.teachers.view") || allowed("people.employees.view")) && <Stat label="Personnel actif" value={teacherData && employeeData ? number(totalStaff) : "—"} detail={teacherData && employeeData ? `${number(activeTeachers.length)} enseignants · ${number(activeEmployees.length)} employés` : "Données du personnel indisponibles"} icon={Users} tone="green" onClick={() => onNavigate(allowed("people.teachers.view") ? "/teachers" : "/employees")}/>}
     </section>
 
     <section className="director-home-grid">
@@ -196,7 +196,7 @@ export function DirectorDailyOverview({ user, yearId, students, teachers, employ
             <div><span><Building2 size={15}/> Année scolaire</span><strong>{year?.name ?? "Aucune année sélectionnée"}</strong><small>{year?.status ?? "Vérifier la configuration de l'année"}</small></div>
             <div><span><GraduationCap size={15}/> Dossiers élèves</span><strong>{number(yearRows.length)} dossiers</strong><small>{number(activeStudents.length)} actifs · {number(pendingEnrollments)} en attente · {number(suspendedEnrollments)} suspendus</small></div>
             <div><span><UserRoundCheck size={15}/> Familles renseignées</span><strong>{number(activeStudents.length - studentsWithoutGuardian)} / {number(activeStudents.length)}</strong><small>{number(studentsWithoutGuardian)} élève(s) sans parent lié</small></div>
-            <div><span><BadgeCheck size={15}/> Affectations professeurs</span><strong>{number(activeAssignments)} affectations</strong><small>{number(teachersWithoutAssignment)} enseignant(s) actif(s) sans affectation sur cette année</small></div>
+            <div><span><BadgeCheck size={15}/> Affectations professeurs</span><strong>{teacherData ? number(activeAssignments) + " affectations" : "Indisponible"}</strong><small>{teacherData ? number(teachersWithoutAssignment) + " enseignant(s) actif(s) sans affectation sur cette année" : "Données des enseignants indisponibles"}</small></div>
           </div>
         </> : <div className="director-home-empty">Les données élèves et structurelles ne sont pas disponibles.</div>}
         <div className="director-home-links">
@@ -210,10 +210,16 @@ export function DirectorDailyOverview({ user, yearId, students, teachers, employ
     <section className="director-home-panel director-home-reliability">
       <header className="director-home-panel-head"><div><span>LIMITES ACTUELLES DU PROJET</span><h2>Suivis quotidiens à fiabiliser</h2><p>Ces écrans existent, mais leurs chiffres ne doivent pas encore être utilisés comme indicateurs réels de l'établissement.</p></div><span className="director-home-demo-key">Données de démonstration</span></header>
       <div className="director-home-modules">
-        {allowed("student.attendance.view") && <ModuleRow title="Présence des élèves" detail="Le relevé est généré à partir des inscriptions ; aucun registre de présence persistant n'est disponible." route="/student-attendance" label="Ouvrir" onNavigate={onNavigate}/>}
+        {allowed("student.attendance.view") && <ModuleRow title="Présence des élèves" state="Non disponible" detail="Le relevé est calculé à partir des inscriptions ; aucun pointage quotidien persistant n'existe." route="/student-attendance" label="Ouvrir" onNavigate={onNavigate}/>}
+        {allowed("staff.attendance.view") && <ModuleRow title="Présence du personnel" state="Non disponible" detail="Aucun horaire attendu, pointage, absence ou justificatif n'est enregistré." route="/staff-attendance" label="Ouvrir" onNavigate={onNavigate}/>}
+        {allowed("student.analytics.view") && <ModuleRow title="Élèves à risque & incidents" detail="Les alertes pédagogiques et incidents présentés sont des exemples statiques, pas des dossiers calculés." route="/student-risk" label="Ouvrir" onNavigate={onNavigate}/>}
         {allowed("pedagogy.grades.view") && <ModuleRow title="Notes & validations" detail="Les soumissions et notes sont des exemples de démonstration, sans registre de notes réel." route="/grades-validation" label="Ouvrir" onNavigate={onNavigate}/>}
+        {allowed("pedagogy.exams.view") && <ModuleRow title="Examens" detail="Sessions, salles et épreuves sont des données de démonstration à confirmer." route="/examinations" label="Ouvrir" onNavigate={onNavigate}/>}
         {allowed("finance.reports.view") && <ModuleRow title="Paiements & soldes" detail="Les chiffres financiers affichés dans les modules sont statiques et ne proviennent pas d'un service financier." route="/financial-reports" label="Ouvrir" onNavigate={onNavigate}/>}
         {allowed("pedagogy.schedule.view") && <ModuleRow title="Emplois du temps" detail="Les séances sont des exemples temporaires en mémoire, non enregistrés durablement." route="/timetables" label="Ouvrir" onNavigate={onNavigate}/>}
+        {allowed("logistics.transport.manage") && <ModuleRow title="Transport scolaire" state="Démo local" detail="Véhicules et circuits sont préremplis avec des données fictives ; les modifications restent dans le navigateur." route="/transport" label="Ouvrir" onNavigate={onNavigate}/>}
+        {allowed("logistics.inventory.manage") && <ModuleRow title="Stocks & équipements" state="Démo local" detail="Le stock initial est fictif ; les mouvements sont conservés localement sur cet appareil." route="/inventory" label="Ouvrir" onNavigate={onNavigate}/>}
+        {allowed("logistics.incidents.manage") && <ModuleRow title="Incidents de l'établissement" state="Démo local" detail="Les incidents initiaux sont fictifs et les suivis ne constituent pas un registre officiel." route="/accidents-incidents" label="Ouvrir" onNavigate={onNavigate}/>}
         {allowed("communication.view") && <ModuleRow title="Événements & notifications" detail="Les contenus et statuts sont simulés localement ; aucun envoi réel n'est effectué." route="/events" label="Ouvrir" onNavigate={onNavigate}/>}
         {allowed("activity.history.view") && <ModuleRow title="Historique des opérations" detail="Le journal est fictif et ne constitue pas une piste d'audit fiable." route="/activity-history" label="Ouvrir" onNavigate={onNavigate}/>}
       </div>
