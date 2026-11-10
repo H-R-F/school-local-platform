@@ -130,7 +130,7 @@ export function CloudflareTunnelsPage({ notify }: { notify: (message: string) =>
     if (!/^(?=.{1,253}$)([a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$/i.test(hostname)) { setFormError("Enter a valid public hostname, for example api.school-domain.ma."); return; }
     if (tunnels.some(t=>t.hostname.toLowerCase()===hostname && t.id!==selected?.id)) { setFormError("This hostname is already assigned to another tunnel."); return; }
     if (drawer==="edit" && selected) {
-      const next={...selected,name:form.name.trim(),hostname,server:form.server,description:form.description,updated:"Just now"};
+      const next={...selected,name:form.name.trim(),school:form.school,code:schoolRecord.code,hostname,server:form.server,description:form.description,updated:"Just now"};
       setTunnels(prev=>prev.map(t=>t.id===selected.id?next:t)); setSelected(next);
       notify("Tunnel metadata updated in this demo session.");
     } else {
