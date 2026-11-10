@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { CSSProperties } from "react";
-import { Cloud, LogOut, PanelLeftClose, PanelLeftOpen, Search } from "lucide-react";
+import { LogOut, PanelLeftClose, PanelLeftOpen, Search } from "lucide-react";
 import { navigation } from "../data/navigation";
 import type { AuthenticatedSidebarUser, NavigationGroup, SchoolBranding } from "../types/navigation";
 import { SidebarBrand } from "./sidebar/SidebarBrand";
@@ -52,7 +52,6 @@ export function AppSidebar({user,school,currentPath,onNavigate,onExit,collapsed:
         {collapsed?<PanelLeftOpen size={17}/>:<PanelLeftClose size={17}/>}
       </button>
     </div>
-    <a className="workspace-switch-link" href="/platform" title="Open Central Platform" aria-label="Open Central Platform"><Cloud size={16}/>{!collapsed&&<span>Central Platform</span>}</a>
     {!collapsed&&<div className="sidebar-search">
       <Search size={15} aria-hidden="true"/>
       <input type="search" value={search} onChange={event=>setSearch(event.target.value)} placeholder="Rechercher dans le menu" aria-label="Rechercher dans le menu"/>

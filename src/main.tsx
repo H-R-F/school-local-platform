@@ -13,6 +13,7 @@ import "./styles/theme.css";
 import "./styles/tokens.css";
 import "./index.css";
 import "./design-system.css";
+import "./styles/school-app-foundation.css";
 import "./components/shell/shell.css";
 import "./styles/form-drawers.css";
 import "./styles/form-system.css";
