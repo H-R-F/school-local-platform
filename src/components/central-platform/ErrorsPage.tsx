@@ -71,7 +71,7 @@ for(let i=0;i<248;i++){
   created:first,updated:last,lastActor:"System (demo)"
  });
 }
-const fmt=(ts:number)=>new Date(ts).toLocaleString("en-GB",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit",hour12:false})+" UTC";
+const fmt=(ts:number)=>new Date(ts).toLocaleString("en-GB",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit",hour12:false,timeZone:"UTC"})+" UTC";
 const ago=(ts:number)=>{const m=Math.max(0,Math.floor((now-ts)/60000));return m<60?m+" min ago":m<1440?Math.floor(m/60)+" hr ago":Math.floor(m/1440)+" days ago";};
 const severityRank=(s:Severity)=>({Critical:4,High:3,Medium:2,Low:1}[s]);
 const severityTone=(s:Severity)=>s.toLowerCase();
