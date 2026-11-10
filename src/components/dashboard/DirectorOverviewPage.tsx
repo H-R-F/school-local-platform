@@ -48,9 +48,6 @@ const DEMO = {
 function Heading({eyebrow,title,action,onClick}:{eyebrow:string;title:string;action?:string;onClick?:()=>void}) {
   return <div className="director-section-heading"><div><span>{eyebrow}</span><h2>{title}</h2></div>{action&&onClick&&<button type="button" onClick={onClick}>{action}<ArrowRight size={14}/></button>}</div>;
 }
-function Metric({label,value,detail,icon:Icon,tone,onClick}:{label:string;value:string;detail:string;icon:typeof Users;tone:string;onClick:()=>void}) {
-  return <button type="button" className="director-metric" onClick={onClick}><span className={`director-metric-icon director-tone--${tone}`}><Icon size={18}/></span><span className="director-metric-copy"><span>{label}</span><strong>{value}</strong><small>{detail}</small></span><ArrowRight size={14} className="director-metric-arrow"/></button>;
-}
 function Empty({children}:{children:string}) { return <div className="director-empty-state">{children}</div>; }
 function InfoCard({label,value,detail,tone="neutral"}:{label:string;value:string;detail:string;tone?:string}) {
   return <div className="director-info-card"><span className={`director-info-indicator director-info-indicator--${tone}`}/><div><span>{label}</span><strong>{value}</strong><small>{detail}</small></div></div>;
@@ -87,7 +84,6 @@ export function DirectorOverviewPage({user,onNavigate}:Props) {
   const yearRows = useMemo(()=>studentData?.students.filter(s=>s.enrollment?.academicYearId===yearId)??[],[studentData,yearId]);
   const activeStudents = yearRows.filter(s=>s.enrollment?.status==="Actif");
   const teacherCount = teachers.status==="ready" ? teachers.data.teachers.filter(t=>t.employmentStatus==="Actif").length : null;
-  const employeeCount = employees.status==="ready" ? employees.data.employees.filter(e=>e.employmentStatus==="Actif").length : null;
   const cycles = useMemo(()=>{const map=new Map<string,number>();activeStudents.forEach(s=>{const k=s.cycleName||s.levelName||"Niveau non renseigné";map.set(k,(map.get(k)||0)+1);});return [...map].map(([name,count])=>({name,count}));},[activeStudents]);
   const gender = useMemo(()=>({boys:activeStudents.filter(s=>s.gender==="Masculin").length,girls:activeStudents.filter(s=>s.gender==="Féminin").length,unknown:activeStudents.filter(s=>s.gender==="Non renseigné").length}),[activeStudents]);
   const isDirector = user.role==="director" && allowed("overview.view");
