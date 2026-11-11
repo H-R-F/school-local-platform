@@ -849,7 +849,7 @@
   left:254px;
   right:0;
   width:auto;
-  height:68px;
+  height:76px;
   min-width:0;
   display:flex;
   z-index:9;
@@ -865,7 +865,7 @@
   width:100%;
   max-width:none;
   margin:0;
-  padding-top:98px;
+  padding-top:106px;
 }
 .central-platform-root .content .page-head,
 .central-platform-root .content .ov-page-head,
@@ -893,7 +893,7 @@
   .central-platform-root .content{
     padding-left:16px;
     padding-right:16px;
-    padding-top:90px;
+    padding-top:98px;
   }
   .central-platform-root .content .page-head,
   .central-platform-root .content .ov-page-head,
