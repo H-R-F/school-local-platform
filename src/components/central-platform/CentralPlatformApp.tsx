@@ -186,18 +186,22 @@ function Dashboard({ setPage, notify, setSearch }: { setPage: (page: PageKey) =>
       </div>
     </div>
     {refreshNote&&<div className="ov-refresh-note" role="status">{refreshNote}</div>}
-    <div className="ov-metrics" aria-label="Key school network metrics">
-      <div className="ov-primary-metric"><span>Total Schools</span><strong>128</strong><small>Registered school installations</small></div>
-      <div className="ov-primary-metric"><span>Active Subscriptions</span><strong>112</strong><small>Schools with active subscriptions</small></div>
-      <div className="ov-connectivity-metrics">
-        <div><span><i className="ov-dot online"/>Schools Online</span><strong>103</strong><small>Currently reporting online</small></div>
-        <div><span><i className="ov-dot offline"/>Schools Offline</span><strong>25</strong><small>Not reporting online</small></div>
+    <section className="ov-kpi-grid" aria-label="Platform key performance indicators">
+      <article className="ov-kpi"><span className="ov-kpi-label">Registered schools</span><strong>128</strong><small><Building2 size={12}/> Total school tenants</small></article>
+      <article className="ov-kpi"><span className="ov-kpi-label">Online schools</span><strong className="positive">103</strong><small><i className="ov-dot online"/> 80.5% of registered schools</small></article>
+      <article className="ov-kpi"><span className="ov-kpi-label">Offline schools</span><strong className="negative">25</strong><small><i className="ov-dot offline"/> Require connectivity checks</small></article>
+      <article className="ov-kpi"><span className="ov-kpi-label">Active subscriptions</span><strong>112</strong><small><CreditCard size={12}/> 87.5% of school tenants</small></article>
+      <article className="ov-kpi"><span className="ov-kpi-label">Suspended licenses</span><strong>6</strong><small><KeyRound size={12}/> Access may be restricted</small></article>
+      <article className="ov-kpi attention"><span className="ov-kpi-label">Open incidents</span><strong>4</strong><small><AlertTriangle size={12}/> Need operational attention</small></article>
+    </section>
+    <section className="ov-services" aria-labelledby="ov-services-title">
+      <div className="ov-services-heading"><div><h2 id="ov-services-title">Central platform services</h2><p>Control-plane components · illustrative demo status</p></div><span className="ov-demo-tag">DEMO DATA</span></div>
+      <div className="ov-service-grid">
+        <article className="ov-service"><span className="ov-service-icon api"><Activity size={16}/></span><div><b>Backend API</b><small>Request handling and school directory</small></div><span className="ov-service-state healthy"><i/>Operational</span></article>
+        <article className="ov-service"><span className="ov-service-icon database"><Database size={16}/></span><div><b>PostgreSQL</b><small>Central registry and operational records</small></div><span className="ov-service-state healthy"><i/>Healthy</span></article>
+        <article className="ov-service"><span className="ov-service-icon jobs"><GitBranch size={16}/></span><div><b>Background jobs</b><small>Notifications and scheduled processing</small></div><span className="ov-service-state warning"><i/>Delayed</span></article>
       </div>
-      <div className="ov-compact-metrics">
-        <div><span>Suspended Licenses</span><strong>6</strong><small>Licenses currently suspended</small></div>
-        <div><span>Infrastructure Alerts</span><strong>4</strong><small>Requiring operational attention</small></div>
-      </div>
-    </div>
+    </section>
     <div className="ov-top-grid">
       <section className="ov-panel ov-connectivity-panel" aria-labelledby="ov-connectivity-title">
         <div className="ov-section-head"><div><h2 id="ov-connectivity-title">School Connectivity</h2><p>Network reachability across 128 registered schools <span className="ov-demo-tag">DEMO DATA</span></p></div><button className="ov-text-action" onClick={()=>setPage("Monitoring")}>Open monitoring <ChevronRight size={14}/></button></div>
