@@ -1,164 +1,83 @@
 import { useMemo, useState } from "react";
 import {
-  Activity, AlertCircle, AlertTriangle, ArrowDownUp, Check, CheckCircle2, ChevronRight,
-  Clock3, Cloud, Copy, ExternalLink, Globe2, Info, KeyRound, Laptop, Lock, MoreHorizontal,
-  Network, Plus, RefreshCw, Search, Server, Shield, ShieldCheck, Smartphone, ToggleLeft,
-  ToggleRight, X, Zap
+  Activity, ArrowDownRight, ArrowUpRight, BarChart3, Clock3, Download,
+  Globe2, Monitor, RefreshCw, Search, Smartphone, Users, X
 } from "lucide-react";
 import "./school-access-directory.css";
 
-type EndpointState = "Online" | "Degraded" | "Offline" | "Disabled" | "Not verified";
-type Environment = "Production" | "Staging";
-type AccessTab = "Overview" | "Routing" | "Access policy" | "Activity";
-type EndpointRecord = {
-  id: string; school: string; code: string; city: string; hostname: string; environment: Environment;
-  state: EndpointState; tunnelId: string; tunnelName: string; origin: string; lastCheck: string;
-  latency: number | null; mobile: boolean; web: boolean; external: boolean; rateLimit: number;
-  clients: string[]; tls: string; created: string; updated: string; notes: string;
-};
-type EndpointForm = {
-  school: string; code: string; city: string; hostname: string; environment: Environment;
-  tunnelId: string; tunnelName: string; origin: string; mobile: boolean; web: boolean;
-  external: boolean; rateLimit: string; notes: string;
+type SchoolTraffic = {
+  id: string; school: string; code: string; city: string; requests: number;
+  users: number; bandwidth: number; latency: number; errors: number;
+  mobile: number; web: number; status: "Healthy" | "Degraded" | "Offline";
+  hourly: number[]; endpoints: { path: string; method: string; requests: number; latency: number; errors: number }[];
 };
 
-const seed: EndpointRecord[] = [
-  {id:"EP-ATS-001",school:"Atlas International School",code:"ATS-001",city:"Rabat",hostname:"atlas-api.schools.example.com",environment:"Production",state:"Online",tunnelId:"cf-tun-a81f2",tunnelName:"atlas-prod-tunnel",origin:"http://127.0.0.1:8080",lastCheck:"1 min ago",latency:84,mobile:true,web:true,external:true,rateLimit:120,clients:["Parent & Student App","Teacher App","Director Portal"],tls:"Valid · managed edge certificate",created:"14 Sep 2026",updated:"09 Nov 2026 · 14:20 UTC",notes:"Primary production endpoint"},
-  {id:"EP-AMAL-002",school:"Groupe Scolaire Al Amal",code:"AMAL-002",city:"Fès",hostname:"amal-api.schools.example.com",environment:"Production",state:"Degraded",tunnelId:"cf-tun-b42c9",tunnelName:"amal-prod-tunnel",origin:"http://127.0.0.1:8080",lastCheck:"3 min ago",latency:684,mobile:true,web:true,external:true,rateLimit:100,clients:["Parent & Student App","Teacher App","Director Portal"],tls:"Valid · managed edge certificate",created:"02 Oct 2026",updated:"09 Nov 2026 · 14:18 UTC",notes:"Origin API responding slowly"},
-  {id:"EP-HZN-003",school:"École Horizon",code:"HZN-003",city:"Casablanca",hostname:"horizon-api.schools.example.com",environment:"Production",state:"Online",tunnelId:"cf-tun-c11d0",tunnelName:"horizon-prod-tunnel",origin:"http://127.0.0.1:8080",lastCheck:"2 min ago",latency:112,mobile:true,web:true,external:true,rateLimit:150,clients:["Parent & Student App","Teacher App","Director Portal"],tls:"Valid · managed edge certificate",created:"03 Aug 2026",updated:"09 Nov 2026 · 14:19 UTC",notes:"Primary production endpoint"},
-  {id:"EP-IBS-004",school:"Collège Ibn Sina",code:"IBS-004",city:"Tanger",hostname:"ibnsina-api.schools.example.com",environment:"Production",state:"Offline",tunnelId:"cf-tun-d08e4",tunnelName:"ibnsina-prod-tunnel",origin:"http://127.0.0.1:8080",lastCheck:"36 hours ago",latency:null,mobile:true,web:true,external:true,rateLimit:100,clients:["Parent & Student App","Teacher App","Director Portal"],tls:"Valid · managed edge certificate",created:"18 Aug 2026",updated:"08 Nov 2026 · 02:10 UTC",notes:"No recent successful endpoint check"},
-  {id:"EP-OLV-005",school:"École Les Oliviers",code:"OLV-005",city:"Marrakech",hostname:"oliviers-api.schools.example.com",environment:"Production",state:"Not verified",tunnelId:"cf-tun-e91a7",tunnelName:"oliviers-prod-tunnel",origin:"http://127.0.0.1:8080",lastCheck:"Never",latency:null,mobile:false,web:true,external:false,rateLimit:60,clients:["Director Portal"],tls:"Pending first verification",created:"09 Nov 2026",updated:"09 Nov 2026 · 09:30 UTC",notes:"Onboarding endpoint; external access held until verification"},
-  {id:"EP-PLM-006",school:"Académie La Plume",code:"PLM-006",city:"Agadir",hostname:"staging-laplume-api.schools.example.com",environment:"Staging",state:"Online",tunnelId:"cf-tun-f26b1",tunnelName:"laplume-staging-tunnel",origin:"http://127.0.0.1:8081",lastCheck:"5 min ago",latency:96,mobile:false,web:true,external:true,rateLimit:40,clients:["Internal QA Web"],tls:"Valid · managed edge certificate",created:"28 Oct 2026",updated:"09 Nov 2026 · 14:15 UTC",notes:"Pre-release validation only"},
-  {id:"EP-QAL-007",school:"École Al Qalam",code:"QAL-007",city:"Meknès",hostname:"alqalam-api.schools.example.com",environment:"Production",state:"Disabled",tunnelId:"cf-tun-g71d3",tunnelName:"alqalam-prod-tunnel",origin:"http://127.0.0.1:8080",lastCheck:"12 days ago",latency:null,mobile:false,web:false,external:false,rateLimit:60,clients:[],tls:"Not evaluated while disabled",created:"11 Jul 2026",updated:"28 Oct 2026 · 11:05 UTC",notes:"School access suspended by platform operator"}
+const seed: SchoolTraffic[] = [
+  {id:"TR-001",school:"Atlas International School",code:"ATS-001",city:"Rabat",requests:82450,users:1248,bandwidth:18.4,latency:142,errors:0.8,mobile:54800,web:27650,status:"Healthy",hourly:[18,22,30,42,56,62,72,86,92,78,68,75,88,94,82,76,69,58,44,36,28,22,16,12],endpoints:[{path:"/api/v1/attendance",method:"GET",requests:18320,latency:96,errors:0.3},{path:"/api/v1/grades",method:"GET",requests:14750,latency:128,errors:0.5},{path:"/api/v1/timetable",method:"GET",requests:12600,latency:84,errors:0.2},{path:"/api/v1/auth/login",method:"POST",requests:8420,latency:184,errors:1.2},{path:"/api/v1/announcements",method:"GET",requests:7100,latency:112,errors:0.4}]},
+  {id:"TR-002",school:"Groupe Scolaire Al Amal",code:"AMAL-002",city:"Fès",requests:61280,users:986,bandwidth:13.2,latency:684,errors:4.8,mobile:38200,web:23080,status:"Degraded",hourly:[10,14,18,26,38,48,60,74,80,72,66,72,78,86,82,72,62,54,42,32,24,18,12,8],endpoints:[{path:"/api/v1/grades",method:"GET",requests:15200,latency:740,errors:6.2},{path:"/api/v1/attendance",method:"GET",requests:12100,latency:620,errors:4.1},{path:"/api/v1/timetable",method:"GET",requests:9800,latency:580,errors:3.4},{path:"/api/v1/auth/login",method:"POST",requests:6200,latency:810,errors:5.8}]},
+  {id:"TR-003",school:"École Horizon",code:"HZN-003",city:"Casablanca",requests:48320,users:754,bandwidth:10.8,latency:118,errors:0.5,mobile:31200,web:17120,status:"Healthy",hourly:[8,10,14,20,32,42,58,72,80,76,70,74,82,90,84,78,66,52,40,30,22,16,12,8],endpoints:[{path:"/api/v1/attendance",method:"GET",requests:11200,latency:82,errors:0.2},{path:"/api/v1/timetable",method:"GET",requests:9200,latency:96,errors:0.3},{path:"/api/v1/grades",method:"GET",requests:8400,latency:132,errors:0.6},{path:"/api/v1/announcements",method:"GET",requests:6100,latency:104,errors:0.4}]},
+  {id:"TR-004",school:"Collège Ibn Sina",code:"IBS-004",city:"Tanger",requests:0,users:0,bandwidth:0,latency:0,errors:0,mobile:0,web:0,status:"Offline",hourly:Array(24).fill(0),endpoints:[]},
+  {id:"TR-005",school:"École Les Oliviers",code:"OLV-005",city:"Marrakech",requests:32140,users:492,bandwidth:7.6,latency:206,errors:1.4,mobile:19800,web:12340,status:"Healthy",hourly:[5,8,12,18,26,38,48,58,64,60,56,62,70,76,72,64,54,44,34,26,18,12,8,5],endpoints:[{path:"/api/v1/attendance",method:"GET",requests:7800,latency:142,errors:0.8},{path:"/api/v1/grades",method:"GET",requests:6200,latency:188,errors:1.2},{path:"/api/v1/auth/login",method:"POST",requests:4100,latency:220,errors:1.8}]},
+  {id:"TR-006",school:"Académie La Plume",code:"PLM-006",city:"Agadir",requests:27860,users:418,bandwidth:6.1,latency:164,errors:0.9,mobile:16400,web:11460,status:"Healthy",hourly:[4,7,10,14,20,30,42,52,60,56,52,58,66,72,68,60,50,40,30,22,16,10,7,4],endpoints:[{path:"/api/v1/timetable",method:"GET",requests:6800,latency:104,errors:0.4},{path:"/api/v1/attendance",method:"GET",requests:6100,latency:128,errors:0.6},{path:"/api/v1/grades",method:"GET",requests:4800,latency:196,errors:1.1}]}
 ];
 
-const blankForm: EndpointForm = {school:"",code:"",city:"",hostname:"",environment:"Production",tunnelId:"",tunnelName:"",origin:"http://127.0.0.1:8080",mobile:true,web:true,external:false,rateLimit:"100",notes:""};
-
-function stateTone(state: EndpointState) {
-  if (state === "Online") return "good";
-  if (state === "Degraded" || state === "Not verified") return "warn";
-  if (state === "Offline" || state === "Disabled") return "bad";
-  return "neutral";
+const fmt = (n:number) => new Intl.NumberFormat("en-US").format(n);
+const rangeFactor = (range:string) => range==="24h"?1:range==="7d"?6.4:range==="30d"?25.8:77;
+function Metric({label,value,detail,icon:Icon,trend,tone=""}:{label:string;value:string;detail:string;icon:typeof Activity;trend?:string;tone?:string}) {
+  return <article className="sta-metric"><span className={"sta-metric-icon "+tone}><Icon size={18}/></span><div className="sta-metric-copy"><small>{label}</small><strong>{value}</strong><span>{trend&&<em><ArrowUpRight size={12}/>{trend}</em>}{detail}</span></div></article>;
 }
-function StateBadge({state}:{state:EndpointState}) {
-  return <span className={`sad-state ${stateTone(state)}`}><i/>{state}</span>;
+function Status({value}:{value:SchoolTraffic["status"]}) {
+  return <span className={"sta-status "+value.toLowerCase()}><i/>{value}</span>;
 }
-function Metric({label,value,detail,icon:Icon,tone="blue"}:{label:string;value:string;detail:string;icon:typeof Globe2;tone?:string}) {
-  return <div className="sad-metric"><span className={`sad-metric-icon ${tone}`}><Icon size={17}/></span><div><small>{label}</small><strong>{value}</strong><em>{detail}</em></div></div>;
+function TrafficChart({rows,range}:{rows:SchoolTraffic[];range:string}) {
+  const points = useMemo(()=>{
+    const totals=Array.from({length:24},(_,i)=>rows.reduce((sum,r)=>sum+(r.hourly[i]||0),0));
+    const max=Math.max(1,...totals);
+    return totals.map((v,i)=>({x:20+i*34,y:116-(v/max)*92,value:v}));
+  },[rows]);
+  const path=points.map((p,i)=>(i===0?"M":"L")+p.x+" "+p.y).join(" ");
+  const area=path+" L 802 120 L 20 120 Z";
+  return <div className="sta-chart-wrap"><svg className="sta-chart" viewBox="0 0 822 150" role="img" aria-label="Illustrative hourly request volume chart"><defs><linearGradient id="traffic-fill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stopColor="#5571d8" stopOpacity=".22"/><stop offset="100%" stopColor="#5571d8" stopOpacity="0"/></linearGradient></defs>{[24,54,84,114].map(y=><line key={y} x1="20" x2="802" y1={y} y2={y} className="sta-gridline"/>)}<path d={area} fill="url(#traffic-fill)"/><path d={path} className="sta-line"/>{points.filter((_,i)=>i%3===0).map(p=><circle key={p.x} cx={p.x} cy={p.y} r="2.8" className="sta-point"/> )}</svg><div className="sta-chart-labels"><span>12 AM</span><span>3 AM</span><span>6 AM</span><span>9 AM</span><span>12 PM</span><span>3 PM</span><span>6 PM</span><span>9 PM</span><span>Now</span></div><p className="sta-chart-caption">Aggregated request volume · {range==="24h"?"last 24 hours":range==="7d"?"last 7 days":range==="30d"?"last 30 days":"last 90 days"} · demo sample</p></div>;
 }
 
 export function SchoolAccessDirectoryPage({notify}:{notify:(message:string)=>void}) {
-  const [rows,setRows] = useState<EndpointRecord[]>(seed);
-  const [query,setQuery] = useState("");
-  const [filter,setFilter] = useState<"All"|EndpointState>("All");
-  const [environment,setEnvironment] = useState<"All"|Environment>("All");
-  const [sort,setSort] = useState("attention");
-  const [selected,setSelected] = useState<EndpointRecord|null>(null);
-  const [tab,setTab] = useState<AccessTab>("Overview");
-  const [formOpen,setFormOpen] = useState(false);
-  const [editing,setEditing] = useState(false);
-  const [form,setForm] = useState<EndpointForm>(blankForm);
-  const [checking,setChecking] = useState<string|null>(null);
-  const [events,setEvents] = useState<{id:string;school:string;action:string;detail:string;time:string;level:string}[]>([
-    {id:"EV-901",school:"Atlas International School",action:"Endpoint health check passed",detail:"HTTP readiness probe returned 200 · 84 ms",time:"09 Nov 2026 · 14:20 UTC",level:"success"},
-    {id:"EV-900",school:"Groupe Scolaire Al Amal",action:"Endpoint latency elevated",detail:"Origin API responded in 684 ms",time:"09 Nov 2026 · 14:18 UTC",level:"warning"},
-    {id:"EV-899",school:"École Les Oliviers",action:"Endpoint registered",detail:"External access remains disabled pending verification",time:"09 Nov 2026 · 09:30 UTC",level:"info"},
-    {id:"EV-898",school:"École Al Qalam",action:"External access disabled",detail:"Access suspended by platform operator",time:"28 Oct 2026 · 11:05 UTC",level:"warning"}
-  ]);
-
-  const counts = useMemo(()=>({
-    total:rows.length,online:rows.filter(r=>r.state==="Online").length,
-    attention:rows.filter(r=>r.state==="Degraded"||r.state==="Offline"||r.state==="Not verified").length,
-    disabled:rows.filter(r=>r.state==="Disabled"||!r.external).length,
-    public:rows.filter(r=>r.external&&r.state!=="Disabled").length
-  }),[rows]);
-  const filtered = useMemo(()=>rows.filter(r=>(filter==="All"||r.state===filter)&&(environment==="All"||r.environment===environment)&&`${r.school} ${r.code} ${r.hostname} ${r.tunnelName}`.toLowerCase().includes(query.toLowerCase())).sort((a,b)=>{
-    if(sort==="school")return a.school.localeCompare(b.school);
-    if(sort==="latency")return (b.latency??-1)-(a.latency??-1);
-    const rank=(s:EndpointState)=>s==="Offline"?0:s==="Degraded"?1:s==="Not verified"?2:s==="Disabled"?3:s==="Online"?4:5;
-    return rank(a.state)-rank(b.state);
-  }),[rows,filter,environment,query,sort]);
-
-  const logEvent=(school:string,action:string,detail:string,level="info")=>{
-    const now=new Date().toLocaleString("en-GB",{dateStyle:"medium",timeStyle:"short"});
-    setEvents(old=>[{id:`EV-${Date.now()}`,school,action,detail,time:now+" · local demo",level},...old]);
+  const [rows]=useState<SchoolTraffic[]>(seed);
+  const [query,setQuery]=useState("");
+  const [range,setRange]=useState("24h");
+  const [sort,setSort]=useState("requests");
+  const [selected,setSelected]=useState<SchoolTraffic|null>(null);
+  const [refreshing,setRefreshing]=useState(false);
+  const factor=rangeFactor(range);
+  const visible=useMemo(()=>rows.filter(r=>(r.school+" "+r.code+" "+r.city).toLowerCase().includes(query.toLowerCase())).sort((a,b)=>sort==="latency"?b.latency-a.latency:sort==="errors"?b.errors-a.errors:sort==="users"?b.users-a.users:b.requests-a.requests),[rows,query,sort]);
+  const totals=useMemo(()=>rows.reduce((a,r)=>({requests:a.requests+r.requests,users:a.users+r.users,bandwidth:a.bandwidth+r.bandwidth,errors:a.errors+r.errors,latency:a.latency+(r.requests?r.latency:0),active:a.active+(r.requests?1:0)}),{requests:0,users:0,bandwidth:0,errors:0,latency:0,active:0}),[rows]);
+  const requests=Math.round(totals.requests*factor);
+  const bandwidth=totals.bandwidth*factor;
+  const averageLatency=totals.active?Math.round(totals.latency/totals.active):0;
+  const successful=Math.max(0,100-totals.errors/rows.length);
+  const refresh=()=>{setRefreshing(true);window.setTimeout(()=>{setRefreshing(false);notify("Demo analytics refreshed locally. No live traffic source is connected.");},450);};
+  const exportCsv=()=>{
+    const header="School,School Code,Requests,Unique Users,Bandwidth GB,Average Latency ms,Error Rate,Status";
+    const body=visible.map(r=>[r.school,r.code,Math.round(r.requests*factor),r.users,r.bandwidth*factor,r.latency,r.errors,r.status].map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(",")).join("\n");
+    const blob=new Blob([header+"\n"+body],{type:"text/csv;charset=utf-8;"});
+    const url=URL.createObjectURL(blob);const link=document.createElement("a");link.href=url;link.download="school-traffic-demo.csv";link.click();URL.revokeObjectURL(url);
+    notify("Demo traffic CSV exported.");
   };
-  const openCreate=()=>{setForm(blankForm);setEditing(false);setFormOpen(true);};
-  const openEdit=(r:EndpointRecord)=>{
-    setForm({school:r.school,code:r.code,city:r.city,hostname:r.hostname,environment:r.environment,tunnelId:r.tunnelId,tunnelName:r.tunnelName,origin:r.origin,mobile:r.mobile,web:r.web,external:r.external,rateLimit:String(r.rateLimit),notes:r.notes});
-    setEditing(true);setFormOpen(true);
-  };
-  const saveEndpoint=()=>{
-    if(!form.school.trim()||!form.code.trim()||!form.hostname.trim()||!form.tunnelId.trim())return;
-    const existing=rows.find(r=>r.code.toLowerCase()===form.code.trim().toLowerCase()&&r.environment===form.environment&&(!editing||r.id!==selected?.id));
-    if(existing){notify("That school already has an endpoint for this environment.");return;}
-    if(form.external&&(!editing||selected?.state!=="Online")){notify("External access can only be enabled after a successful endpoint health check.");return;}
-    if(editing&&selected){
-      const updated={...selected,...form,clients:[...(form.mobile?["Parent & Student App"]:[]),...(form.web?["Teacher & Director Web"]:[])],rateLimit:Math.max(1,Number(form.rateLimit)||100),updated:"Just now · local demo"};
-      setRows(old=>old.map(r=>r.id===selected.id?updated:r));setSelected(updated);
-      logEvent(updated.school,"Endpoint configuration updated","Hostname, routing or access policy changed in local demo");
-      notify("Endpoint configuration updated in this demo.");
-    }else{
-      const created:EndpointRecord={...form,external:false,id:`EP-DEMO-${String(rows.length+1).padStart(3,"0")}`,rateLimit:Math.max(1,Number(form.rateLimit)||100),state:"Not verified",lastCheck:"Never",latency:null,tls:"Pending first verification",clients:[...(form.mobile?["Parent & Student App"]:[]),...(form.web?["Teacher & Director Web"]:[])],created:"Just now",updated:"Just now · local demo"};
-      setRows(old=>[created,...old]);setSelected(created);setTab("Overview");
-      logEvent(created.school,"Endpoint registered","New endpoint created; health verification is still required");
-      notify("Endpoint registered locally. Run a health check before enabling external access.");
-    }
-    setFormOpen(false);
-  };
-  const toggleExternal=(r:EndpointRecord)=>{
-    const next=!r.external;
-    if(next&&r.state!=="Online"){notify("External access can only be enabled after a successful endpoint health check.");return;}
-    const updated={...r,external:next,updated:"Just now · local demo"};
-    setRows(old=>old.map(x=>x.id===r.id?updated:x));setSelected(updated);
-    logEvent(r.school,next?"External access enabled":"External access disabled",next?"Endpoint is eligible for directory resolution in this demo":"Directory resolution is blocked in this demo",next?"success":"warning");
-    notify(next?"External access enabled in demo mode.":"External access disabled in demo mode.");
-  };
-  const runCheck=(r:EndpointRecord)=>{
-    setChecking(r.id);
-    window.setTimeout(()=>{
-      const nextState:EndpointState=r.state==="Disabled"?"Disabled":r.id==="EP-AMAL-002"?"Degraded":r.id==="EP-IBS-004"?"Offline":"Online";
-      const nextLatency=nextState==="Online"?Math.round(70+Math.random()*90):nextState==="Degraded"?684:null;
-      const updated={...r,state:nextState,lastCheck:"Just now · simulated",latency:nextLatency,tls:nextState==="Online"?"Valid · managed edge certificate":r.tls,updated:"Just now · local demo"};
-      setRows(old=>old.map(x=>x.id===r.id?updated:x));setSelected(old=>old?.id===r.id?updated:old);
-      logEvent(r.school,"Endpoint health check completed",nextState==="Online"?`Readiness check passed · ${nextLatency} ms`:nextState==="Degraded"?"Origin responded above latency threshold":"No successful response received",nextState==="Online"?"success":"warning");
-      setChecking(null);notify(`Simulated endpoint check: ${nextState}.`);
-    },650);
-  };
-  const refresh=()=>{notify("Directory snapshot refreshed locally. No live endpoints were contacted.");};
-  const copyValue=(value:string)=>{if(navigator.clipboard?.writeText)navigator.clipboard.writeText(value).then(()=>notify("Copied to clipboard.")).catch(()=>notify(value));else notify(value);};
-
-  return <div className="sad-page">
-    <header className="sad-header"><div><span className="sad-eyebrow">ACCESS & ROUTING / TENANT DISCOVERY</span><h1>School Access & Directory</h1><p>Manage how mobile and web applications discover and reach each school's private API endpoint.</p></div><div className="sad-header-actions"><button className="sad-btn secondary" onClick={refresh}><RefreshCw size={15}/>Refresh snapshot</button><button className="sad-btn primary" onClick={openCreate}><Plus size={15}/>Register endpoint</button></div></header>
-    <div className="sad-demo"><ShieldCheck size={16}/><span><b>DEMONSTRATION DATA</b> — Fictional school endpoints and access policies. Health checks, configuration changes and audit events are local simulations; no Cloudflare API or school server is contacted.</span></div>
-    <section className="sad-metrics">
-      <Metric label="Registered endpoints" value={String(counts.total)} detail="Across all environments" icon={Globe2}/>
-      <Metric label="Online" value={String(counts.online)} detail="Last simulated check passed" icon={CheckCircle2} tone="green"/>
-      <Metric label="Needs attention" value={String(counts.attention)} detail="Degraded, offline or unverified" icon={AlertTriangle} tone="amber"/>
-      <Metric label="External access enabled" value={String(counts.public)} detail="Eligible for school discovery" icon={Shield} tone="violet"/>
+  return <div className="sta-page">
+    <header className="sta-header"><div><span className="sta-eyebrow">ANALYTICS / SCHOOL TRAFFIC</span><h1>School Traffic & Analytics</h1><p>Understand request volume, bandwidth, active users and API performance across every school.</p></div><div className="sta-actions"><button className="sta-btn secondary" onClick={refresh} disabled={refreshing}><RefreshCw size={14}/>{refreshing?"Refreshing…":"Refresh"}</button><button className="sta-btn primary" onClick={exportCsv}><Download size={14}/>Export CSV</button></div></header>
+    <div className="sta-demo"><Activity size={16}/><span><b>DEMO ANALYTICS</b> — All traffic figures are fictional sample data. No school API, Cloudflare Analytics or production metrics pipeline is connected.</span></div>
+    <div className="sta-toolbar"><div className="sta-range-label">REPORTING PERIOD</div><div className="sta-range">{[{v:"24h",l:"24 hours"},{v:"7d",l:"7 days"},{v:"30d",l:"30 days"},{v:"90d",l:"90 days"}].map(o=><button key={o.v} className={range===o.v?"active":""} onClick={()=>setRange(o.v)}>{o.l}</button>)}</div><span className="sta-updated">Sample period · {range==="24h"?"Hourly":range==="7d"?"Daily":range==="30d"?"Daily":"Weekly"} aggregation</span></div>
+    <section className="sta-metrics">
+      <Metric label="Total API requests" value={fmt(requests)} detail="Across all registered schools" trend="+8.4%" icon={Activity}/>
+      <Metric label="Unique active users" value={fmt(totals.users)} detail="Authenticated users · sample" trend="+5.2%" icon={Users} tone="violet"/>
+      <Metric label="Data transferred" value={bandwidth.toFixed(1)+" GB"} detail="Combined inbound + outbound" trend="+3.1%" icon={Globe2} tone="cyan"/>
+      <Metric label="Average API latency" value={averageLatency+" ms"} detail="Mean across reporting schools" icon={Clock3} tone="amber"/>
     </section>
-    <section className="sad-flow-panel"><div className="sad-flow-heading"><div><span className="sad-eyebrow">REQUEST LIFECYCLE</span><h2>How an application reaches a school</h2></div><span className="sad-flow-label"><Lock size={13}/>No direct database exposure</span></div><div className="sad-flow">
-      <div><span className="sad-flow-icon"><Smartphone size={18}/></span><b>Mobile / Web App</b><small>School code + sign-in</small></div><i/><div><span className="sad-flow-icon"><Globe2 size={18}/></span><b>Central Directory</b><small>Resolve enabled hostname</small></div><i/><div><span className="sad-flow-icon"><Cloud size={18}/></span><b>Cloudflare Edge</b><small>HTTPS + tunnel routing</small></div><i/><div><span className="sad-flow-icon"><Server size={18}/></span><b>School API</b><small>Authenticate + authorize</small></div>
-    </div><p className="sad-flow-note"><Info size={14}/>The directory returns only the public API hostname and school identity. User credentials are sent directly to the School API; Cloudflare transports traffic but does not decide school-data permissions.</p></section>
-    <section className="sad-registry">
-      <div className="sad-registry-head"><div><h2>School endpoint registry</h2><p>One active endpoint configuration per school environment. Select a row to inspect routing and access controls.</p></div><span>{filtered.length} OF {rows.length} ENDPOINTS</span></div>
-      <div className="sad-toolbar"><label className="sad-search"><Search size={16}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search school, code, hostname or tunnel…"/></label><select value={filter} onChange={e=>setFilter(e.target.value as typeof filter)} aria-label="Filter endpoint status"><option>All</option><option>Online</option><option>Degraded</option><option>Offline</option><option>Disabled</option><option>Not verified</option></select><select value={environment} onChange={e=>setEnvironment(e.target.value as typeof environment)} aria-label="Filter environment"><option>All</option><option>Production</option><option>Staging</option></select><select value={sort} onChange={e=>setSort(e.target.value)} aria-label="Sort endpoints"><option value="attention">Attention first</option><option value="school">School name</option><option value="latency">Highest latency</option></select><button className="sad-reset" onClick={()=>{setQuery("");setFilter("All");setEnvironment("All");setSort("attention");}}>Reset</button></div>
-      <div className="sad-table-wrap"><table className="sad-table"><thead><tr><th>SCHOOL</th><th>API HOSTNAME</th><th>ENVIRONMENT</th><th>ENDPOINT</th><th>TUNNEL</th><th>LATENCY</th><th>LAST CHECK</th><th/></tr></thead><tbody>{filtered.map(r=><tr key={r.id} onClick={()=>{setSelected(r);setTab("Overview");}}><td><div className="sad-school"><span>{r.code.slice(-2)}</span><div><b>{r.school}</b><small>{r.code} · {r.city}</small></div></div></td><td><code>{r.hostname}</code></td><td><span className="sad-env">{r.environment}</span></td><td><StateBadge state={r.state}/></td><td><span className="sad-tunnel"><i className={r.state==="Online"||r.state==="Degraded"?"connected":""}/>{r.tunnelName}</span></td><td>{r.latency===null?"—":`${r.latency} ms`}</td><td className="sad-muted">{r.lastCheck}</td><td><button className="sad-open" aria-label={`Open ${r.school}`}><ChevronRight size={17}/></button></td></tr>)}</tbody></table>{filtered.length===0&&<div className="sad-empty"><Search size={22}/><b>No endpoints match</b><span>Change the search or filters.</span><button onClick={()=>{setQuery("");setFilter("All");setEnvironment("All");}}>Clear filters</button></div>}</div>
-      <footer className="sad-table-footer"><span>Showing {filtered.length} of {rows.length} endpoint records</span><span>Health state is based on the last accepted check, not a live guarantee.</span></footer>
-    </section>
-    <section className="sad-bottom-grid"><div className="sad-info-card"><div><Network size={17}/><h3>Routing boundaries</h3></div><ul><li>School code resolves to an enabled school record.</li><li>Only the public HTTPS hostname is returned to client apps.</li><li>Cloudflare Tunnel maps the hostname to a private local origin.</li><li>PostgreSQL and internal service ports are never published.</li></ul></div><div className="sad-info-card"><div><ShieldCheck size={17}/><h3>Security responsibilities</h3></div><ul><li>Directory checks school and external-access eligibility.</li><li>School API validates credentials and issues short-lived sessions.</li><li>School API enforces role, relationship and resource-level permissions.</li><li>Administrative changes and discovery outcomes are audited.</li></ul></div></section>
-
-    {selected&&<div className="sad-overlay" onMouseDown={()=>setSelected(null)}><aside className="sad-drawer" role="dialog" aria-modal="true" aria-label={`${selected.school} endpoint details`} onMouseDown={e=>e.stopPropagation()}>
-      <header><div><span className="sad-eyebrow">SCHOOL ACCESS RECORD · {selected.id}</span><h2>{selected.school}</h2><p>{selected.code} · {selected.city} · {selected.environment}</p></div><button className="sad-close" onClick={()=>setSelected(null)} aria-label="Close details"><X size={19}/></button></header>
-      <div className="sad-drawer-summary"><div><small>Endpoint state</small><StateBadge state={selected.state}/></div><div><small>API latency</small><strong>{selected.latency===null?"—":`${selected.latency} ms`}</strong></div><div><small>External access</small><strong className={selected.external?"sad-enabled":"sad-disabled"}>{selected.external?"Enabled":"Disabled"}</strong></div></div>
-      <nav>{(["Overview","Routing","Access policy","Activity"] as AccessTab[]).map(t=><button key={t} className={tab===t?"active":""} onClick={()=>setTab(t)}>{t}</button>)}</nav>
-      {tab==="Overview"&&<div className="sad-drawer-body"><section><h3>Public endpoint</h3><div className="sad-copy-row"><code>https://{selected.hostname}</code><button onClick={()=>copyValue(`https://${selected.hostname}`)}><Copy size={14}/>Copy</button></div><dl><div><dt>School code</dt><dd>{selected.code}</dd></div><div><dt>Endpoint ID</dt><dd>{selected.id}</dd></div><div><dt>Environment</dt><dd>{selected.environment}</dd></div><div><dt>Last health check</dt><dd>{selected.lastCheck}</dd></div><div><dt>TLS certificate</dt><dd>{selected.tls}</dd></div><div><dt>Last configuration update</dt><dd>{selected.updated}</dd></div></dl></section><section><h3>Connected application clients</h3><div className="sad-client-list">{selected.clients.length?selected.clients.map(c=><span key={c}><Laptop size={14}/>{c}</span>):<small>No application clients enabled</small>}</div></section><section className="sad-note"><Info size={15}/><p>{selected.notes}. The API hostname is a routing address, not a user credential or a permission grant.</p></section></div>}
-      {tab==="Routing"&&<div className="sad-drawer-body"><section><h3>Cloudflare Tunnel route</h3><dl><div><dt>Tunnel name</dt><dd>{selected.tunnelName}</dd></div><div><dt>Tunnel reference</dt><dd>{selected.tunnelId}</dd></div><div><dt>Public hostname</dt><dd>{selected.hostname}</dd></div><div><dt>Private origin service</dt><dd>{selected.origin}</dd></div><div><dt>Transport</dt><dd>HTTPS edge → encrypted tunnel → HTTP localhost origin</dd></div><div><dt>Environment</dt><dd>{selected.environment}</dd></div></dl></section><section className="sad-note"><Lock size={15}/><p>The origin address is internal configuration. It must never be exposed in the public School Directory response. Never route database ports through this endpoint.</p></section><button className="sad-btn secondary" onClick={()=>runCheck(selected)} disabled={checking===selected.id}><Activity size={14}/>{checking===selected.id?"Checking…":"Run endpoint health check"}</button></div>}
-      {tab==="Access policy"&&<div className="sad-drawer-body"><section><h3>External access policy</h3><div className="sad-policy-row"><div><b>External directory resolution</b><small>Allow apps to resolve this school code to its hostname</small></div><button className={selected.external?"sad-switch on":"sad-switch"} onClick={()=>toggleExternal(selected)} aria-pressed={selected.external}>{selected.external?<ToggleRight size={23}/>:<ToggleLeft size={23}/>}<span>{selected.external?"Enabled":"Disabled"}</span></button></div><div className="sad-policy-row"><div><b>Mobile applications</b><small>Parent, student and teacher mobile clients</small></div><span className={selected.mobile?"sad-policy-on":"sad-policy-off"}>{selected.mobile?"Allowed":"Blocked"}</span></div><div className="sad-policy-row"><div><b>Web applications</b><small>Teacher and director browser clients</small></div><span className={selected.web?"sad-policy-on":"sad-policy-off"}>{selected.web?"Allowed":"Blocked"}</span></div><div className="sad-policy-row"><div><b>Rate limit</b><small>Per school API key / client policy · illustrative value</small></div><strong>{selected.rateLimit} requests / min</strong></div></section><section className="sad-note"><Shield size={15}/><p>These are application-level connection policies. Student, parent, teacher and director data permissions must still be checked by the School API on every request. Emergency director access is not a bypass of school authorization.</p></section><button className="sad-btn secondary" onClick={()=>openEdit(selected)}><KeyRound size={14}/>Edit access configuration</button></div>}
-      {tab==="Activity"&&<div className="sad-drawer-body"><div className="sad-event-list">{events.filter(e=>e.school===selected.school).map(e=><div key={e.id}><i className={e.level}/><section><b>{e.action}</b><p>{e.detail}</p><small>{e.time}</small></section></div>)}{events.filter(e=>e.school===selected.school).length===0&&<div className="sad-empty small">No activity recorded for this school yet.</div>}</div><p className="sad-muted">Demo activity is held in local component state. Production audit events must be immutable and server-generated.</p></div>}
-      <footer><button className="sad-btn secondary" onClick={()=>runCheck(selected)} disabled={checking===selected.id}><RefreshCw size={14}/>{checking===selected.id?"Checking…":"Test endpoint"}</button><button className="sad-btn secondary" onClick={()=>openEdit(selected)}>Edit configuration</button><button className="sad-btn primary" onClick={()=>toggleExternal(selected)}>{selected.external?"Disable external access":"Enable external access"}</button></footer>
-    </aside></div>}
-
-    {formOpen&&<div className="sad-overlay modal" onMouseDown={()=>setFormOpen(false)}><section className="sad-modal" role="dialog" aria-modal="true" aria-labelledby="sad-form-title" onMouseDown={e=>e.stopPropagation()}><header><div><span className="sad-eyebrow">ENDPOINT REGISTRY</span><h2 id="sad-form-title">{editing?"Edit endpoint configuration":"Register school endpoint"}</h2><p>{editing?"Update routing and external access settings.":"Create a directory record for an existing school API."}</p></div><button className="sad-close" onClick={()=>setFormOpen(false)} aria-label="Close"><X size={19}/></button></header><div className="sad-form-note"><Info size={15}/>Registration does not create a Cloudflare Tunnel, deploy an API or verify that the origin is reachable. Those steps must be completed separately.</div><div className="sad-form-grid"><label>School name *<input value={form.school} onChange={e=>setForm({...form,school:e.target.value})} placeholder="Registered school name"/></label><label>School code *<input value={form.code} onChange={e=>setForm({...form,code:e.target.value.toUpperCase()})} placeholder="e.g. ATS-009" disabled={editing}/></label><label>City<input value={form.city} onChange={e=>setForm({...form,city:e.target.value})} placeholder="City"/></label><label>Environment<select value={form.environment} onChange={e=>setForm({...form,environment:e.target.value as Environment})}><option>Production</option><option>Staging</option></select></label><label className="wide">Public API hostname *<input value={form.hostname} onChange={e=>setForm({...form,hostname:e.target.value.toLowerCase()})} placeholder="school-api.schools.example.com"/></label><label>Cloudflare Tunnel ID/reference *<input value={form.tunnelId} onChange={e=>setForm({...form,tunnelId:e.target.value})} placeholder="cf-tun-..."/></label><label>Tunnel name<input value={form.tunnelName} onChange={e=>setForm({...form,tunnelName:e.target.value})} placeholder="school-prod-tunnel"/></label><label className="wide">Private origin service<input value={form.origin} onChange={e=>setForm({...form,origin:e.target.value})} placeholder="http://127.0.0.1:8080"/></label><label>Rate limit (requests/min)<input type="number" min="1" max="5000" value={form.rateLimit} onChange={e=>setForm({...form,rateLimit:e.target.value})}/></label><label>Notes<input value={form.notes} onChange={e=>setForm({...form,notes:e.target.value})} placeholder="Operational notes"/></label></div><div className="sad-form-toggles"><label><input type="checkbox" checked={form.mobile} onChange={e=>setForm({...form,mobile:e.target.checked})}/>Mobile app clients</label><label><input type="checkbox" checked={form.web} onChange={e=>setForm({...form,web:e.target.checked})}/>Web app clients</label><label><input type="checkbox" checked={form.external} onChange={e=>setForm({...form,external:e.target.checked})}/>External directory access</label></div><footer><button className="sad-btn secondary" onClick={()=>setFormOpen(false)}>Cancel</button><button className="sad-btn primary" disabled={!form.school.trim()||!form.code.trim()||!form.hostname.trim()||!form.tunnelId.trim()} onClick={saveEndpoint}><Check size={14}/>{editing?"Save configuration":"Register endpoint"}</button></footer></section></div>}
+    <div className="sta-main-grid">
+      <section className="sta-panel sta-chart-panel"><div className="sta-panel-head"><div><h2>Traffic over time</h2><p>Requests received across the school fleet</p></div><span className="sta-live-label"><i/>Sample trend</span></div><TrafficChart rows={rows} range={range}/></section>
+      <section className="sta-panel sta-breakdown"><div className="sta-panel-head"><div><h2>Application sources</h2><p>Request split by client type</p></div></div><div className="sta-donut-wrap"><div className="sta-donut"><div><strong>{fmt(requests)}</strong><small>requests</small></div></div><div className="sta-legend"><span><i className="mobile"/>Mobile app <b>{Math.round(rows.reduce((n,r)=>n+r.mobile,0)/totals.requests*100)}%</b></span><span><i className="web"/>Web portal <b>{Math.round(rows.reduce((n,r)=>n+r.web,0)/totals.requests*100)}%</b></span></div></div><div className="sta-success"><div><span>Successful request estimate</span><b>{successful.toFixed(1)}%</b></div><div className="sta-progress"><i style={{width:successful+"%"}}/></div><small>Derived from illustrative aggregate error rates, not actual HTTP responses.</small></div></section>
+    </div>
+    <section className="sta-panel sta-schools"><div className="sta-panel-head"><div><h2>Traffic by school</h2><p>Compare usage and service performance. Select a school for its traffic breakdown.</p></div><span className="sta-count">{visible.length} SCHOOLS</span></div><div className="sta-table-tools"><label><Search size={15}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search school or code…"/></label><select value={sort} onChange={e=>setSort(e.target.value)} aria-label="Sort schools"><option value="requests">Most requests</option><option value="users">Most active users</option><option value="latency">Highest latency</option><option value="errors">Highest error rate</option></select></div><div className="sta-table-wrap"><table className="sta-table"><thead><tr><th>SCHOOL</th><th>REQUESTS</th><th>ACTIVE USERS</th><th>BANDWIDTH</th><th>AVG. LATENCY</th><th>ERROR RATE</th><th>STATUS</th><th/></tr></thead><tbody>{visible.map(r=><tr key={r.id} onClick={()=>setSelected(r)}><td><div className="sta-school"><span>{r.code.slice(-2)}</span><div><b>{r.school}</b><small>{r.code} · {r.city}</small></div></div></td><td className="sta-number">{fmt(Math.round(r.requests*factor))}</td><td>{fmt(r.users)}</td><td>{(r.bandwidth*factor).toFixed(1)} GB</td><td>{r.requests?r.latency+" ms":"—"}</td><td><span className={r.errors>3?"sta-error-high":""}>{r.requests?r.errors.toFixed(1)+"%":"—"}</span></td><td><Status value={r.status}/></td><td><button className="sta-open" aria-label={"View "+r.school}><BarChart3 size={15}/></button></td></tr>)}</tbody></table>{visible.length===0&&<div className="sta-empty">No schools match this search.</div>}</div><footer className="sta-table-foot"><span>Showing {visible.length} of {rows.length} demo schools</span><span>Unique users are deduplicated identities, not request counts.</span></footer></section>
+    <section className="sta-bottom-grid"><article className="sta-panel"><div className="sta-panel-head"><div><h2>HTTP response health</h2><p>Illustrative request outcome distribution</p></div></div><div className="sta-http"><div><span className="ok"/>2xx Successful <b>96.8%</b></div><div><span className="redirect"/>3xx Redirects <b>1.4%</b></div><div><span className="client"/>4xx Client errors <b>1.1%</b></div><div><span className="server"/>5xx Server errors <b>0.7%</b></div></div></article><article className="sta-panel"><div className="sta-panel-head"><div><h2>Traffic collection</h2><p>How production analytics should work</p></div></div><ol className="sta-collection"><li>School API or reverse proxy records request metadata.</li><li>Metrics are aggregated by school, route, status and time window.</li><li>Only approved operational aggregates are sent to the central metrics API.</li><li>Central Platform stores and visualizes fleet-wide traffic without collecting request bodies.</li></ol></article></section>
+    {selected&&<div className="sta-overlay" onMouseDown={()=>setSelected(null)}><aside className="sta-drawer" role="dialog" aria-modal="true" aria-label="School traffic details" onMouseDown={e=>e.stopPropagation()}><header><div><small>SCHOOL TRAFFIC DETAILS</small><h2>{selected.school}</h2><p>{selected.code} · {selected.city} · {range} reporting period</p></div><button className="sta-close" onClick={()=>setSelected(null)} aria-label="Close"><X size={18}/></button></header><div className="sta-drawer-body"><div className="sta-drawer-metrics"><div><small>Requests</small><b>{fmt(Math.round(selected.requests*factor))}</b></div><div><small>Unique users</small><b>{fmt(selected.users)}</b></div><div><small>Bandwidth</small><b>{(selected.bandwidth*factor).toFixed(1)} GB</b></div><div><small>Average latency</small><b>{selected.requests?selected.latency+" ms":"—"}</b></div></div><div className="sta-detail-status"><span>School API traffic status</span><Status value={selected.status}/></div><h3>Client source split</h3><div className="sta-source-bars"><div><span><Smartphone size={14}/>Mobile app</span><b>{selected.requests?Math.round(selected.mobile/selected.requests*100):0}%</b><i><em style={{width:(selected.requests?selected.mobile/selected.requests*100:0)+"%"}}/></i></div><div><span><Monitor size={14}/>Web portal</span><b>{selected.requests?Math.round(selected.web/selected.requests*100):0}%</b><i><em style={{width:(selected.requests?selected.web/selected.requests*100:0)+"%"}}/></i></div></div><h3>Most requested API endpoints</h3>{selected.endpoints.length?<div className="sta-endpoints"><div className="sta-endpoint-head"><span>METHOD / ROUTE</span><span>REQUESTS</span><span>LATENCY</span><span>ERRORS</span></div>{selected.endpoints.map(e=><div className="sta-endpoint-row" key={e.path}><span><i>{e.method}</i><code>{e.path}</code></span><b>{fmt(Math.round(e.requests*factor))}</b><span>{e.latency} ms</span><span>{e.errors.toFixed(1)}%</span></div>)}</div>:<p className="sta-no-data">No traffic reported in this sample period.</p>}<div className="sta-privacy-note">Traffic analytics should store route templates and aggregate counts only. Do not collect passwords, request bodies, student names or sensitive query parameters.</div></div><footer><button className="sta-btn secondary" onClick={()=>setSelected(null)}>Close details</button></footer></aside></div>}
   </div>;
 }
