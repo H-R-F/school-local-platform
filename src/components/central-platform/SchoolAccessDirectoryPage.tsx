@@ -99,7 +99,7 @@ export function SchoolAccessDirectoryPage({notify}:{notify:(message:string)=>voi
       logEvent(updated.school,"Endpoint configuration updated","Hostname, routing or access policy changed in local demo");
       notify("Endpoint configuration updated in this demo.");
     }else{
-      const created:EndpointRecord={...form,id:`EP-DEMO-${String(rows.length+1).padStart(3,"0")}`,rateLimit:Math.max(1,Number(form.rateLimit)||100),state:"Not verified",lastCheck:"Never",latency:null,tls:"Pending first verification",clients:[...(form.mobile?["Parent & Student App"]:[]),...(form.web?["Teacher & Director Web"]:[])],created:"Just now",updated:"Just now · local demo"};
+      const created:EndpointRecord={...form,external:false,id:`EP-DEMO-${String(rows.length+1).padStart(3,"0")}`,rateLimit:Math.max(1,Number(form.rateLimit)||100),state:"Not verified",lastCheck:"Never",latency:null,tls:"Pending first verification",clients:[...(form.mobile?["Parent & Student App"]:[]),...(form.web?["Teacher & Director Web"]:[])],created:"Just now",updated:"Just now · local demo"};
       setRows(old=>[created,...old]);setSelected(created);setTab("Overview");
       logEvent(created.school,"Endpoint registered","New endpoint created; health verification is still required");
       notify("Endpoint registered locally. Run a health check before enabling external access.");
