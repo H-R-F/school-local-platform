@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import {
-  Activity, ArrowDownRight, ArrowUpRight, BarChart3, Clock3, Download,
+  Activity, ArrowUpRight, BarChart3, Clock3, Download,
   Globe2, Monitor, RefreshCw, Search, Smartphone, Users, X
 } from "lucide-react";
 import "./school-access-directory.css";
