@@ -90,10 +90,11 @@ export function SchoolAccessDirectoryPage({notify}:{notify:(message:string)=>voi
   };
   const saveEndpoint=()=>{
     if(!form.school.trim()||!form.code.trim()||!form.hostname.trim()||!form.tunnelId.trim())return;
-    const existing=rows.find(r=>r.code.toLowerCase()===form.code.trim().toLowerCase()&&(!editing||r.id!==selected?.id));
-    if(existing){notify("That school code already has an endpoint record.");return;}
+    const existing=rows.find(r=>r.code.toLowerCase()===form.code.trim().toLowerCase()&&r.environment===form.environment&&(!editing||r.id!==selected?.id));
+    if(existing){notify("That school already has an endpoint for this environment.");return;}
+    if(form.external&&(!editing||selected?.state!=="Online")){notify("External access can only be enabled after a successful endpoint health check.");return;}
     if(editing&&selected){
-      const updated={...selected,...form,rateLimit:Math.max(1,Number(form.rateLimit)||100),updated:"Just now · local demo"};
+      const updated={...selected,...form,clients:[...(form.mobile?["Parent & Student App"]:[]),...(form.web?["Teacher & Director Web"]:[])],rateLimit:Math.max(1,Number(form.rateLimit)||100),updated:"Just now · local demo"};
       setRows(old=>old.map(r=>r.id===selected.id?updated:r));setSelected(updated);
       logEvent(updated.school,"Endpoint configuration updated","Hostname, routing or access policy changed in local demo");
       notify("Endpoint configuration updated in this demo.");
