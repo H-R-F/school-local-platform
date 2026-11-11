@@ -228,6 +228,7 @@ function Dashboard({ setPage, notify, setSearch }: { setPage: (page: PageKey) =>
         <div className="ov-chart-legend"><span><i className="online-key"/>Online schools</span><span><i className="subscription-key"/>Active subscriptions</span></div>
         <div className="ov-line-chart-wrap">
           <svg className="ov-line-chart" viewBox="0 0 660 218" role="img" aria-labelledby="ov-line-chart-title ov-line-chart-desc">
+            <defs><linearGradient id="ov-chart-area-gradient" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stopColor="#0f9b83" stopOpacity=".2"/><stop offset="100%" stopColor="#0f9b83" stopOpacity="0"/></linearGradient></defs>
             <title id="ov-line-chart-title">Fleet performance trend</title>
             <desc id="ov-line-chart-desc">Illustrative trend showing online schools increasing to 103 and active subscriptions increasing to 112.</desc>
             {[32, 64, 96, 128].map(tick => <g key={tick}><line x1="48" x2="620" y1={174 - (tick / 128) * 142} y2={174 - (tick / 128) * 142} className="ov-chart-gridline"/><text x="37" y={178 - (tick / 128) * 142} className="ov-chart-y-label" textAnchor="end">{tick}</text></g>)}
