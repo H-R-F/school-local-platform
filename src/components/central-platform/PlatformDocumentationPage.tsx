@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { BookOpen, Search, Server, Network, ShieldCheck, Database, GitBranch, Workflow, ChevronRight, Copy, Info } from "lucide-react";
+import { BookOpen, Search, ShieldCheck, ChevronRight, Info } from "lucide-react";
 import "./platform-documentation-page.css";
 
 type DocSection = { id: string; number: string; title: string; summary: string; keywords: string; body: React.ReactNode };
@@ -21,7 +21,7 @@ const sections: DocSection[] = [
       <tr><td>Overview</td><td>Fleet summary, alerts and recent activity</td><td>Replacing detailed operational pages</td></tr>
       <tr><td>All Schools / Register School</td><td>Tenant registry and onboarding identity</td><td>Creating local student records</td></tr>
       <tr><td>Installations</td><td>Technician work orders, assignment, checklist and handover</td><td>Automated software update jobs</td></tr>
-      <tr><td>Servers</td><td>Server inventory, hardware/OS health and incidents</td><td>School user access management</td></tr>
+      <tr><td>Servers / School Workspace</td><td>Server inventory and one school-level view of installation, services, tunnel, connectivity, monitoring, incidents and logs</td><td>Replacing specialist fleet-wide pages</td></tr>
       <tr><td>School Access & Directory</td><td>Resolve school code to approved public endpoint and policy</td><td>Proxying all school data or storing passwords</td></tr>
       <tr><td>Plans / Subscriptions / Payments / Licenses</td><td>Commercial plan, billing and entitlement lifecycle</td><td>Server health or installation progress</td></tr>
       <tr><td>Releases</td><td>Build metadata, validate and publish signed packages</td><td>Installing releases on school servers</td></tr>
@@ -64,15 +64,22 @@ const sections: DocSection[] = [
       <tr><td><code>monitoring_agents</code></td><td>id, server_id, agent_version, credential_hash, enrolled_at, revoked_at</td><td>Agent identity and credential lifecycle.</td></tr>
       <tr><td><code>server_metrics</code></td><td>id, server_id, captured_at, cpu_pct, memory_pct, disk_pct, load</td><td>Time-stamped measurements; partition by date at scale.</td></tr>
       <tr><td><code>service_checks</code></td><td>id, server_id, service, status, latency_ms, checked_at, detail_code</td><td>API/DB/tunnel/agent health checks.</td></tr>
+      <tr><td><code>cloudflare_tunnels</code></td><td>id, school_id, tunnel_ref, name, status, connector_seen_at</td><td>Tunnel metadata; never store plaintext tunnel tokens.</td></tr>
+      <tr><td><code>backup_checks</code></td><td>id, server_id, backup_type, status, size_bytes, verified_at, object_ref</td><td>Backup freshness and verification metadata.</td></tr>
       <tr><td><code>server_incidents</code></td><td>id, server_id, severity, state, opened_at, resolved_at</td><td>Alert lifecycle and acknowledgement.</td></tr>
-      <tr><td><code>installations</code></td><td>id, school_id, technician_id, status, scheduled_at, completed_at</td><td>Technician work orders and checklist.</td></tr>
+      <tr><td><code>installations</code></td><td>id, school_id, assigned_technician_id, status, scheduled_at, completed_at</td><td>Technician work orders and checklist.</td></tr>
+      <tr><td><code>installation_events</code></td><td>id, installation_id, actor_id, event_type, note, created_at</td><td>Assignment, checklist and handover history.</td></tr>
       <tr><td><code>releases</code></td><td>id, version, channel, status, object_key, sha256, signature_ref</td><td>Published package metadata; binary stored outside DB.</td></tr>
       <tr><td><code>update_jobs</code></td><td>id, school_id, server_id, release_id, status, requested_by, started_at, finished_at</td><td>One update operation per attempt/job.</td></tr>
+      <tr><td><code>update_attempts</code></td><td>id, job_id, attempt_no, status, started_at, finished_at, error_code</td><td>Retry history without overwriting previous attempts.</td></tr>
       <tr><td><code>update_job_events</code></td><td>id, job_id, stage, event_type, message_code, created_at</td><td>Append-only timeline and diagnostics.</td></tr>
+      <tr><td><code>plans</code></td><td>id, name, billing_period, limits_json, active</td><td>Commercial product catalogue.</td></tr>
       <tr><td><code>subscriptions</code> / <code>licenses</code></td><td>id, school_id, plan_id, status, starts_at, ends_at</td><td>Commercial entitlement, isolated from server health.</td></tr>
+      <tr><td><code>payments</code></td><td>id, school_id, subscription_id, amount, currency, status, paid_at</td><td>Payment records and provider references; no card secrets.</td></tr>
+      <tr><td><code>platform_users</code> / <code>roles</code></td><td>id, email, password_hash or identity_subject, role_id, status</td><td>Central operators and least-privilege access.</td></tr>
       <tr><td><code>audit_logs</code></td><td>id, actor_id, school_id, action, target_type, target_id, created_at</td><td>Who changed what and when.</td></tr>
     </tbody></table></div>
-    <p><b>Relationships:</b> one school has many endpoints, servers, installations, subscriptions and update jobs. A server has one or more agent enrollments, many metrics, service checks and incidents. A release can be referenced by many update jobs. Every tenant-owned row carries a <code>school_id</code> directly or through a foreign key.</p>
+    <p><b>Relationships:</b> one school has many endpoints, servers, installations, subscriptions and update jobs. A server has one or more agent enrollments, many metrics, service checks and incidents. A release can be referenced by many update jobs. Every tenant-owned row carries a <code>school_id</code> directly or through a foreign key. Keep central operator identities separate from school-local student, parent and teacher identities.</p>
     <p><b>Indexes:</b> unique <code>schools(code)</code>; unique <code>school_endpoints(school_id, environment)</code>; indexes on <code>servers(school_id)</code>, <code>server_metrics(server_id, captured_at DESC)</code>, <code>update_jobs(school_id, created_at DESC)</code> and <code>audit_logs(school_id, created_at DESC)</code>. Add foreign keys, check constraints and tenant-aware authorization.</p>
   </> },
   { id:"api", number:"08", title:"Core APIs and data flow", summary:"Small authenticated APIs connect the control plane to local agents and clients.", keywords:"api endpoints monitoring heartbeat directory report upload download", body:<>
