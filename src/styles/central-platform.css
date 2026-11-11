@@ -773,3 +773,61 @@
 .central-platform-root .overview-page .ov-demo-tag{font-size:9px}
 @media(max-width:1200px){.central-platform-root .overview-page .ov-kpi-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.central-platform-root .overview-page .ov-kpi:nth-child(3){border-right:0}.central-platform-root .overview-page .ov-kpi:nth-child(n+4){border-top:1px solid var(--cp-border)}.central-platform-root .overview-page .ov-service-grid{grid-template-columns:1fr}}
 @media(max-width:700px){.central-platform-root .overview-page .ov-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.central-platform-root .overview-page .ov-kpi:nth-child(odd){border-right:1px solid var(--cp-border)}.central-platform-root .overview-page .ov-kpi:nth-child(even){border-right:0}.central-platform-root .overview-page .ov-kpi:nth-child(n+3){border-top:1px solid var(--cp-border)}.central-platform-root .overview-page .ov-services{padding:13px}.central-platform-root .overview-page .ov-service{align-items:flex-start;flex-wrap:wrap}.central-platform-root .overview-page .ov-service-state{margin-left:43px}.central-platform-root .overview-page .ov-page-head h1{font-size:26px}}
+
+
+/* Overview charts */
+.central-platform-root .overview-page .ov-chart-grid{
+  display:grid;grid-template-columns:minmax(0,1.8fr) minmax(280px,.85fr);gap:16px;align-items:stretch;
+}
+.central-platform-root .overview-page .ov-chart-grid>.ov-panel{min-width:0;padding:19px 20px}
+.central-platform-root .overview-page .ov-chart-period{
+  flex:0 0 auto;padding:6px 9px;border:1px solid var(--cp-border);border-radius:6px;
+  color:var(--cp-ink-secondary);background:var(--cp-surface-subtle);font-size:10px;font-weight:650;
+}
+.central-platform-root .overview-page .ov-chart-legend{
+  display:flex;align-items:center;gap:18px;margin:16px 0 2px;color:var(--cp-ink-secondary);font-size:10px;
+}
+.central-platform-root .overview-page .ov-chart-legend span,.central-platform-root .overview-page .ov-chart-foot span{
+  display:inline-flex;align-items:center;gap:7px;
+}
+.central-platform-root .overview-page .online-key,.central-platform-root .overview-page .subscription-key{
+  width:17px;height:3px;display:inline-block;border-radius:5px;background:#0f9b83;
+}
+.central-platform-root .overview-page .subscription-key{background:#6875d9}
+.central-platform-root .overview-page .ov-line-chart-wrap{width:100%;overflow:hidden}
+.central-platform-root .overview-page .ov-line-chart{display:block;width:100%;height:auto;min-height:170px;overflow:visible}
+.central-platform-root .overview-page .ov-chart-gridline{stroke:#e8edf3;stroke-width:1;stroke-dasharray:3 5}
+.central-platform-root .overview-page .ov-chart-y-label,.central-platform-root .overview-page .ov-chart-x-label{
+  fill:#8995a5;font:10px Inter,system-ui,sans-serif;
+}
+.central-platform-root .overview-page .ov-chart-area{fill:url(#ov-chart-area-gradient);fill:#0f9b8310}
+.central-platform-root .overview-page .ov-chart-line{fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.central-platform-root .overview-page .online-line{stroke:#0f9b83}
+.central-platform-root .overview-page .subscription-line{stroke:#6875d9;stroke-dasharray:5 4}
+.central-platform-root .overview-page .ov-chart-point{stroke:#fff;stroke-width:2;vector-effect:non-scaling-stroke}
+.central-platform-root .overview-page .online-point{fill:#0f9b83}
+.central-platform-root .overview-page .subscription-point{fill:#6875d9}
+.central-platform-root .overview-page .ov-chart-foot{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+  border-top:1px solid var(--cp-border);padding-top:12px;margin-top:2px;color:var(--cp-ink-secondary);font-size:10px;
+}
+.central-platform-root .overview-page .ov-chart-foot .online-key,.central-platform-root .overview-page .ov-chart-foot .subscription-key{width:7px;height:7px;border-radius:50%}
+.central-platform-root .overview-page .ov-coverage-visual{display:grid;place-items:center;padding:12px 0 8px}
+.central-platform-root .overview-page .ov-coverage-visual svg{width:170px;max-width:100%;height:auto;overflow:visible}
+.central-platform-root .overview-page .ov-donut-track,.central-platform-root .overview-page .ov-donut-value{
+  fill:none;stroke-width:13;
+}
+.central-platform-root .overview-page .ov-donut-track{stroke:#edf1f5}
+.central-platform-root .overview-page .ov-donut-value{stroke:#0f9b83;stroke-linecap:round;transform:rotate(-90deg);transform-origin:80px 80px}
+.central-platform-root .overview-page .ov-donut-number{fill:var(--cp-ink);font:700 25px Inter,system-ui,sans-serif;letter-spacing:-1px}
+.central-platform-root .overview-page .ov-donut-caption{fill:var(--cp-ink-tertiary);font:10px Inter,system-ui,sans-serif}
+.central-platform-root .overview-page .ov-coverage-stats{display:flex;flex-direction:column;gap:12px;border-top:1px solid var(--cp-border);padding-top:14px}
+.central-platform-root .overview-page .ov-coverage-stats>div{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.central-platform-root .overview-page .ov-coverage-stats>div>span{display:flex;align-items:center;gap:7px;color:var(--cp-ink-secondary);font-size:10px}
+.central-platform-root .overview-page .ov-coverage-stats strong{font:650 13px Inter,system-ui,sans-serif;color:var(--cp-ink);white-space:nowrap}
+.central-platform-root .overview-page .ov-coverage-stats strong small{margin-left:4px;color:var(--cp-ink-tertiary);font-size:9px;font-weight:500}
+.central-platform-root .overview-page .ov-coverage-dot{width:8px;height:8px;display:inline-block;border-radius:50%;background:#0f9b83}
+.central-platform-root .overview-page .ov-coverage-dot.inactive{background:#cbd5e1}
+.central-platform-root .overview-page .ov-coverage-note{margin:13px 0 0;color:var(--cp-ink-tertiary);font-size:9px;line-height:1.5}
+@media(max-width:1000px){.central-platform-root .overview-page .ov-chart-grid{grid-template-columns:minmax(0,1fr)}.central-platform-root .overview-page .ov-coverage-panel{display:grid;grid-template-columns:1fr 1.2fr;column-gap:20px}.central-platform-root .overview-page .ov-coverage-panel>.ov-section-head{grid-column:1/-1}.central-platform-root .overview-page .ov-coverage-visual{grid-row:2/4}.central-platform-root .overview-page .ov-coverage-note{grid-column:1/-1}}
+@media(max-width:560px){.central-platform-root .overview-page .ov-chart-grid>.ov-panel{padding:15px 12px}.central-platform-root .overview-page .ov-chart-legend{gap:10px;flex-wrap:wrap}.central-platform-root .overview-page .ov-chart-foot{justify-content:flex-start;flex-direction:column;align-items:flex-start}.central-platform-root .overview-page .ov-coverage-panel{display:block}.central-platform-root .overview-page .ov-coverage-visual{padding:8px 0}}
