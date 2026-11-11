@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import {
   Archive, Check, ChevronRight, CircleAlert, Clock3, Copy, Download,
-  FileArchive, FileCheck2, GitBranch, HardDrive, LoaderCircle, MoreHorizontal, Package, Plus,
+  BookOpen, FileArchive, FileCheck2, GitBranch, HardDrive, LoaderCircle, MoreHorizontal, Package, Plus,
   Rocket, Search, ShieldCheck, Upload, X, Zap,
 } from "lucide-react";
 import { getReleaseDownloadUrl, uploadReleaseArtifact } from "../../services/release-artifacts";
@@ -77,6 +77,7 @@ export function ReleasesPage() {
   const [artifactFile, setArtifactFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
+  const [documentationOpen, setDocumentationOpen] = useState(false);
 
   const notify = (message: string) => { setToast(message); window.setTimeout(() => setToast(""), 3000); };
   const visible = useMemo(() => releases.filter(r =>
@@ -183,7 +184,7 @@ export function ReleasesPage() {
   return <div className="releases-page">
     <header className="rel-header">
       <div><div className="rel-eyebrow">SOFTWARE DELIVERY / RELEASE MANAGEMENT</div><h1>Releases</h1><p>Prepare, validate and publish application packages for your school fleet.</p></div>
-      <button className="rel-primary" onClick={openCreate}><Plus size={16}/>Create release</button>
+      <div className="rel-header-actions"><button className="rel-doc-trigger" onClick={() => setDocumentationOpen(true)} aria-label="Open Releases documentation" title="Page documentation"><BookOpen size={16}/><span>Documentation</span></button><button className="rel-primary" onClick={openCreate}><Plus size={16}/>Create release</button></div>
     </header>
     <div className="rel-demo"><span/>DEMO RECORDS <i>Release registry and rollout figures are sample data. Package uploads require the secured R2 API; no R2 credentials are exposed in this browser.</i></div>
     <div className="rel-storage-banner"><div className="rel-storage-icon"><HardDrive size={17}/></div><div><strong>Artifact storage · Cloudflare R2 integration</strong><span>Private bucket · Short-lived signed upload URLs · Server-side checksum and signature verification</span></div><span className="rel-storage-state"><i/>API integration required</span></div>
@@ -284,6 +285,41 @@ export function ReleasesPage() {
     </aside></div>}
 
     {confirm&&<div className="rel-confirm-backdrop"><section className="rel-confirm" role="dialog" aria-modal="true"><h2>Deprecate v{confirm.version}?</h2><p>This removes the release from future rollout recommendations. Existing school installations remain unchanged. This is a local demo action.</p><div><button className="rel-secondary" onClick={()=>setConfirm(null)}>Cancel</button><button className="rel-primary rel-danger-button" onClick={()=>deprecate(confirm)}>Deprecate release</button></div></section></div>}
+    {documentationOpen && <div className="rel-doc-backdrop" onMouseDown={e => { if (e.target === e.currentTarget) setDocumentationOpen(false); }}>
+      <section className="rel-doc-modal" role="dialog" aria-modal="true" aria-labelledby="rel-doc-title">
+        <header className="rel-doc-head">
+          <div><span className="rel-eyebrow">CENTRAL PLATFORM / HELP CENTER</span><h2 id="rel-doc-title"><BookOpen size={20}/> Releases documentation</h2><p>What this page manages, how a release reaches Cloudflare R2, and how schools install it.</p></div>
+          <button className="rel-icon-btn" onClick={() => setDocumentationOpen(false)} aria-label="Close documentation"><X size={18}/></button>
+        </header>
+        <div className="rel-doc-body">
+          <section className="rel-doc-intro"><h3>Purpose of this page</h3><p>The Releases page is the central control point for preparing and publishing complete application versions. It stores release metadata, tracks package integrity, and makes approved versions available to eligible schools. It does <strong>not</strong> install software on school servers.</p></section>
+          <section className="rel-doc-section"><h3>How the process works</h3>
+            <div className="rel-doc-flow" role="img" aria-label="Release operator uploads a package through the central API to private Cloudflare R2. School update agent requests an authorized download, verifies the package, backs up and installs it, then reports the result.">
+              <div className="rel-doc-flow-row"><div className="rel-doc-node rel-doc-node--operator"><span>01</span><b>Release operator</b><small>Builds a full version and uploads its package</small></div><i>→</i><div className="rel-doc-node rel-doc-node--api"><span>02</span><b>Central Releases API</b><small>Authenticates upload and issues a temporary URL</small></div><i>→</i><div className="rel-doc-node rel-doc-node--storage"><span>03</span><b>Private Cloudflare R2</b><small>Stores the package, checksum and signature</small></div></div>
+              <div className="rel-doc-flow-down"><span>Release is published and becomes eligible for schools</span><b>↓</b></div>
+              <div className="rel-doc-flow-row rel-doc-flow-row--school"><div className="rel-doc-node rel-doc-node--school"><span>04</span><b>School Local Platform</b><small>Checks whether an update is available</small></div><i>→</i><div className="rel-doc-node rel-doc-node--agent"><span>05</span><b>School Update Agent</b><small>Requests authorization and a short-lived download URL</small></div><i>→</i><div className="rel-doc-node rel-doc-node--install"><span>06</span><b>Verify &amp; install</b><small>Checks signature, backs up data, installs and health-checks</small></div></div>
+              <div className="rel-doc-flow-result"><span>↓</span><b>Installation result is reported to Central Platform</b></div>
+            </div>
+            <p className="rel-doc-caption">The school server initiates the download over HTTPS. Central Platform does not SSH into school servers or push commands to them.</p>
+          </section>
+          <section className="rel-doc-section"><h3>What each stage means</h3>
+            <ol className="rel-doc-steps">
+              <li><b>Draft</b><span>Enter version, release name, channel, compatibility requirements and release notes. Upload the complete build package.</span></li>
+              <li><b>Testing</b><span>Run release checks: package exists, metadata is complete, checksum and digital signature are verified, and compatibility is reviewed.</span></li>
+              <li><b>Published</b><span>Make this version available to eligible schools according to the rollout policy. Publishing does not start installation.</span></li>
+              <li><b>Deprecated</b><span>Stop recommending this version for new updates. Existing school installations are not automatically changed.</span></li>
+            </ol>
+          </section>
+          <section className="rel-doc-section rel-doc-grid">
+            <div><h3>What is stored in R2?</h3><p>The actual release archive, for example <code>school-platform-2.9.0.tar.gz</code>. Keep the bucket private. PostgreSQL stores metadata and the R2 object key, not the binary itself.</p></div>
+            <div><h3>What stays in the database?</h3><p>Version, channel, release status, notes, compatibility, object key, file size, SHA-256 checksum, signature verification, publication history and per-school update results.</p></div>
+          </section>
+          <section className="rel-doc-section"><h3>Security checks before installation</h3><ul className="rel-doc-checks"><li><ShieldCheck size={15}/>Authenticate the operator and authorize each school.</li><li><ShieldCheck size={15}/>Use short-lived signed upload and download URLs.</li><li><ShieldCheck size={15}/>Verify SHA-256 checksum and cryptographic signature.</li><li><ShieldCheck size={15}/>Check compatibility, disk space and database health.</li><li><ShieldCheck size={15}/>Create and verify a backup before applying changes.</li><li><ShieldCheck size={15}/>Run post-install health checks and report success or failure.</li></ul></section>
+          <div className="rel-doc-demo-note"><CircleAlert size={16}/><p><b>Current implementation status:</b> this screen currently uses sample release records. The upload/download UI is wired to a backend API contract, but a working backend, R2 bucket configuration, signature verification service and school-side Update Agent are still required. A successful demo publish does not update any school.</p></div>
+        </div>
+        <footer className="rel-doc-footer"><span>Release management · Operational documentation</span><button className="rel-primary" onClick={() => setDocumentationOpen(false)}>Got it</button></footer>
+      </section>
+    </div>}
     {toast&&<div className="rel-toast"><Check size={15}/>{toast}</div>}
   </div>;
 }
