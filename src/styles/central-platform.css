@@ -833,28 +833,39 @@
 @media(max-width:560px){.central-platform-root .overview-page .ov-chart-grid>.ov-panel{padding:15px 12px}.central-platform-root .overview-page .ov-chart-legend{gap:10px;flex-wrap:wrap}.central-platform-root .overview-page .ov-chart-foot{justify-content:flex-start;flex-direction:column;align-items:flex-start}.central-platform-root .overview-page .ov-coverage-panel{display:block}.central-platform-root .overview-page .ov-coverage-visual{padding:8px 0}}
 
 
-/* Full-width page headers and content canvas — keep the main column aligned
-   to the sidebar instead of letting its calculated width overlap the sidebar. */
+/* Fixed top header: starts immediately after the sidebar and ends at the viewport's right edge. */
 .central-platform-root .main{
-  flex:1 1 0;
+  flex:1 1 auto;
   min-width:0;
   width:auto;
-  margin-left:248px;
+  margin-left:254px;
 }
-.central-platform-root .sidebar.collapsed + .main{
+.central-platform-root .main.sidebar-collapsed{
   margin-left:70px;
 }
 .central-platform-root .topbar{
-  display:flex;
-  width:100%;
+  position:fixed;
+  top:0;
+  left:254px;
+  right:0;
+  width:auto;
+  height:68px;
   min-width:0;
-  flex:0 0 64px;
+  display:flex;
+  z-index:9;
+  box-sizing:border-box;
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+}
+.central-platform-root .main.sidebar-collapsed .topbar{
+  left:70px;
 }
 .central-platform-root .content{
   display:block;
   width:100%;
   max-width:none;
   margin:0;
+  padding-top:98px;
 }
 .central-platform-root .content .page-head,
 .central-platform-root .content .ov-page-head,
@@ -867,14 +878,14 @@
 .central-platform-root .content .page-head{
   align-items:center;
 }
-@media(max-width:1100px){
-  .central-platform-root .main{
-    margin-left:70px;
-    width:auto;
-  }
-}
 @media(max-width:760px){
-  .central-platform-root .topbar{
+  .central-platform-root .main,
+  .central-platform-root .main.sidebar-collapsed{
+    margin-left:70px;
+  }
+  .central-platform-root .topbar,
+  .central-platform-root .main.sidebar-collapsed .topbar{
+    left:70px;
     padding-left:16px;
     padding-right:16px;
     gap:12px;
@@ -882,6 +893,7 @@
   .central-platform-root .content{
     padding-left:16px;
     padding-right:16px;
+    padding-top:90px;
   }
   .central-platform-root .content .page-head,
   .central-platform-root .content .ov-page-head,
