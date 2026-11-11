@@ -47,7 +47,7 @@ const nav: { label: PageKey; icon: typeof LayoutDashboard; section: string; coun
   { label: "Register School", icon: Plus, section: "Schools" },
   { label: "Installations", icon: Database, section: "Schools" },
   { label: "Servers", icon: Server, section: "Infrastructure" },
-  { label: "School Traffic & Analytics", icon: Network, section: "Access & Routing" },
+  { label: "School Traffic & Analytics", icon: Network, section: "Infrastructure" },
   { label: "Plans", icon: Layers, section: "Subscriptions & Billing" },
   { label: "Subscriptions", icon: Receipt, section: "Subscriptions & Billing" },
   { label: "Payments", icon: CreditCard, section: "Subscriptions & Billing" },
