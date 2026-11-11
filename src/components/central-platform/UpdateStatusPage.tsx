@@ -84,8 +84,8 @@ export function UpdateStatusPage() {
   |          |                                       |
   |          v                                       |
   | Local Update Agent                               |
-  |   download -> verify -> backup -> install        |
-  |                    -> health checks -> report    |
+  |   download -&gt; verify -&gt; backup -&gt; install        |
+  |                    -&gt; health checks -&gt; report    |
   |          |                                       |
   |          v                                       |
   | Local API / database / application services      |
@@ -94,33 +94,33 @@ export function UpdateStatusPage() {
 School Admin       Local Agent        Central API       Database
      |                  |                  |                |
      | Approve update   |                  |                |
-     |----------------->|                  |                |
+     |-----------------&gt;|                  |                |
      |                  | create job       |                |
-     |                  |----------------->| validate       |
-     |                  |                  |--------------->|
+     |                  |-----------------&gt;| validate       |
+     |                  |                  |---------------&gt;|
      |                  |&lt;-----------------| job accepted   |
      |                  |                  |                |
      |                  | stage report     |                |
-     |                  |----------------->| authenticate   |
-     |                  |                  |--------------->|
+     |                  |-----------------&gt;| authenticate   |
+     |                  |                  |---------------&gt;|
      |                  |                  | persist event  |
      |                  |&lt;-----------------| ACK             |
      |                  |                  |                |
      |                  | ... stage reports / heartbeat ... |
      |                  |                  |                |
      |                  | final result     |                |
-     |                  |----------------->| persist result |
-     |                  |                  |--------------->|
+     |                  |-----------------&gt;| persist result |
+     |                  |                  |---------------&gt;|
      |                  |&lt;-----------------| ACK             |
      |                  |                  |                |
      |                  |                  | UI reads job   |
      |                  |                  |&lt;---------------|
       </pre></section>
      <section id="us-doc-lifecycle"><span className="us-doc-kicker">03 / DOMAIN WORKFLOW</span><h3>Job lifecycle and state machine</h3><p>Recommended execution stages, in order:</p><ol><li><b>Queued:</b> approval is recorded; the job waits for maintenance window and agent availability.</li><li><b>Downloading:</b> agent obtains a short-lived authorized package URL and downloads to a staging directory.</li><li><b>Verifying:</b> agent verifies SHA-256 and trusted release signature before executing package content.</li><li><b>Backing up:</b> create a pre-update backup and verify its integrity/restorability according to policy.</li><li><b>Installing:</b> apply the release and database migrations using a controlled, versioned procedure.</li><li><b>Health checks:</b> verify local API, database connectivity, required services and application readiness.</li><li><b>Reporting result:</b> submit final outcome and installed version evidence to Central.</li></ol><pre>
-QUEUED -> DOWNLOADING -> VERIFYING -> BACKING_UP
-      -> INSTALLING -> HEALTH_CHECKS -> COMPLETED
-         guarded stage failure ------------> FAILED
-      safe pre-install cancellation -------> CANCELLED
+QUEUED -&gt; DOWNLOADING -&gt; VERIFYING -&gt; BACKING_UP
+      -&gt; INSTALLING -&gt; HEALTH_CHECKS -&gt; COMPLETED
+         guarded stage failure ------------&gt; FAILED
+      safe pre-install cancellation -------&gt; CANCELLED
 
 Reporting freshness is a SEPARATE dimension:
   fresh report | stale report | connection lost
