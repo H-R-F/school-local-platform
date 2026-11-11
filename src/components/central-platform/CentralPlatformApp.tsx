@@ -141,6 +141,18 @@ function Dashboard({ setPage, notify, setSearch }: { setPage: (page: PageKey) =>
   const [sortDirection,setSortDirection] = useState<"asc"|"desc">("asc");
   const [openMenu,setOpenMenu] = useState<string|null>(null);
   const [snapshot,setSnapshot] = useState(0);
+  const trendSeries = dateRange === "24h"
+    ? { labels: ["00:00", "04:00", "08:00", "12:00", "16:00", "20:00", "Now"], online: [94, 95, 97, 96, 99, 101, 103], subscriptions: [109, 109, 110, 110, 111, 112, 112] }
+    : dateRange === "30d"
+      ? { labels: ["Oct 13", "Oct 18", "Oct 23", "Oct 28", "Nov 02", "Nov 07", "Now"], online: [88, 91, 90, 94, 96, 99, 103], subscriptions: [101, 103, 104, 106, 108, 110, 112] }
+      : { labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], online: [96, 97, 95, 99, 98, 101, 103], subscriptions: [108, 108, 109, 110, 110, 111, 112] };
+  const trendCoords = (values: number[]) => values.map((value, index) => ({ x: 54 + index * 94, y: 174 - (value / 128) * 142 }));
+  const onlineCoords = trendCoords(trendSeries.online);
+  const subscriptionCoords = trendCoords(trendSeries.subscriptions);
+  const onlineLine = onlineCoords.map(point => `${point.x},${point.y}`).join(" ");
+  const subscriptionLine = subscriptionCoords.map(point => `${point.x},${point.y}`).join(" ");
+  const onlineArea = `M ${onlineCoords[0].x} 174 L ${onlineCoords.map(point => `${point.x} ${point.y}`).join(" L ")} L ${onlineCoords[onlineCoords.length - 1].x} 174 Z`;
+  const subscriptionCoverage = Math.round((112 / 128) * 100);
   const cutoff = dateCutoff(dateRange);
   const visibleAlerts = overviewAlerts.filter(a=>a.sort>=cutoff).sort((a,b)=>b.sort-a.sort);
   const visibleActivity = overviewActivities.filter(a=>a.sort>=cutoff).sort((a,b)=>b.sort-a.sort);
@@ -206,6 +218,45 @@ function Dashboard({ setPage, notify, setSearch }: { setPage: (page: PageKey) =>
         <article className="ov-service"><span className="ov-service-icon database"><Database size={16}/></span><div><b>PostgreSQL</b><small>Central registry and operational records</small></div><span className="ov-service-state healthy"><i/>Healthy</span></article>
         <article className="ov-service"><span className="ov-service-icon jobs"><GitBranch size={16}/></span><div><b>Background jobs</b><small>Notifications and scheduled processing</small></div><span className="ov-service-state warning"><i/>Delayed</span></article>
       </div>
+    </section>
+    <section className="ov-chart-grid" aria-label="Platform performance charts">
+      <article className="ov-panel ov-trend-panel" aria-labelledby="ov-trend-title">
+        <div className="ov-section-head">
+          <div><h2 id="ov-trend-title">Fleet performance</h2><p>Online schools and active subscriptions over the selected period <span className="ov-demo-tag">ILLUSTRATIVE DATA</span></p></div>
+          <span className="ov-chart-period">{dateRange === "24h" ? "24-hour trend" : dateRange === "30d" ? "30-day trend" : "7-day trend"}</span>
+        </div>
+        <div className="ov-chart-legend"><span><i className="online-key"/>Online schools</span><span><i className="subscription-key"/>Active subscriptions</span></div>
+        <div className="ov-line-chart-wrap">
+          <svg className="ov-line-chart" viewBox="0 0 660 218" role="img" aria-labelledby="ov-line-chart-title ov-line-chart-desc">
+            <title id="ov-line-chart-title">Fleet performance trend</title>
+            <desc id="ov-line-chart-desc">Illustrative trend showing online schools increasing to 103 and active subscriptions increasing to 112.</desc>
+            {[32, 64, 96, 128].map(tick => <g key={tick}><line x1="48" x2="620" y1={174 - (tick / 128) * 142} y2={174 - (tick / 128) * 142} className="ov-chart-gridline"/><text x="37" y={178 - (tick / 128) * 142} className="ov-chart-y-label" textAnchor="end">{tick}</text></g>)}
+            <path d={onlineArea} className="ov-chart-area"/>
+            <polyline points={onlineLine} className="ov-chart-line online-line"/>
+            <polyline points={subscriptionLine} className="ov-chart-line subscription-line"/>
+            {onlineCoords.map((point,index)=><circle key={"online-"+index} cx={point.x} cy={point.y} r="3.5" className="ov-chart-point online-point"><title>{trendSeries.labels[index]}: {trendSeries.online[index]} online schools</title></circle>)}
+            {subscriptionCoords.map((point,index)=><circle key={"subs-"+index} cx={point.x} cy={point.y} r="3.5" className="ov-chart-point subscription-point"><title>{trendSeries.labels[index]}: {trendSeries.subscriptions[index]} active subscriptions</title></circle>)}
+            {trendSeries.labels.map((label,index)=><text key={label} x={54 + index * 94} y="202" className="ov-chart-x-label" textAnchor="middle">{label}</text>)}
+          </svg>
+        </div>
+        <div className="ov-chart-foot"><span><i className="online-key"/>103 online schools now</span><span><i className="subscription-key"/>112 active subscriptions now</span></div>
+      </article>
+      <article className="ov-panel ov-coverage-panel" aria-labelledby="ov-coverage-title">
+        <div className="ov-section-head"><div><h2 id="ov-coverage-title">Subscription coverage</h2><p>Registered schools with an active subscription <span className="ov-demo-tag">DEMO DATA</span></p></div></div>
+        <div className="ov-coverage-visual">
+          <svg viewBox="0 0 160 160" role="img" aria-label={`${subscriptionCoverage}% active subscription coverage: 112 of 128 schools`}>
+            <circle cx="80" cy="80" r="55" className="ov-donut-track"/>
+            <circle cx="80" cy="80" r="55" className="ov-donut-value" strokeDasharray={`${(112 / 128) * 345.575} 345.575`}/>
+            <text x="80" y="75" className="ov-donut-number" textAnchor="middle">{subscriptionCoverage}%</text>
+            <text x="80" y="94" className="ov-donut-caption" textAnchor="middle">coverage</text>
+          </svg>
+        </div>
+        <div className="ov-coverage-stats">
+          <div><span><i className="ov-coverage-dot active"/>Active subscriptions</span><strong>112 <small>87.5%</small></strong></div>
+          <div><span><i className="ov-coverage-dot inactive"/>No active subscription</span><strong>16 <small>12.5%</small></strong></div>
+        </div>
+        <p className="ov-coverage-note">The second figure is calculated as registered schools minus active subscriptions. It does not imply that all 16 are suspended.</p>
+      </article>
     </section>
     <div className="ov-top-grid">
       <section className="ov-panel ov-connectivity-panel" aria-labelledby="ov-connectivity-title">
