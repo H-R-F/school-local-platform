@@ -281,3 +281,49 @@
 .central-platform-root .sidebar.collapsed .nav-section{margin-bottom:10px}
 .central-platform-root .sidebar.collapsed .nav-section-items{display:flex}
 @media(prefers-reduced-motion:reduce){.central-platform-root .sidebar .nav-heading-chevron{transition:none}}
+
+
+/* Keep the expand control reachable in icon-only and narrow layouts */
+.central-platform-root .sidebar.collapsed .brand{
+  position:relative;
+  height:92px;
+  min-height:92px;
+  flex-direction:column;
+  justify-content:flex-start;
+  align-items:center;
+  gap:3px;
+  padding:8px 0 5px;
+}
+.central-platform-root .sidebar.collapsed .brand-mark{
+  width:32px;
+  height:32px;
+  flex:0 0 32px;
+}
+.central-platform-root .sidebar.collapsed .sidebar-toggle,
+.central-platform-root .sidebar .sidebar-toggle{
+  display:grid !important;
+  visibility:visible !important;
+  opacity:1 !important;
+}
+.central-platform-root .sidebar.collapsed .sidebar-toggle{
+  width:30px;
+  height:28px;
+  margin:0;
+  padding:4px;
+  color:#64748b;
+  background:#f1f5f9;
+  border:1px solid #e2e8f0;
+  border-radius:7px;
+}
+.central-platform-root .sidebar.collapsed .sidebar-toggle:hover{
+  color:#0f766e;
+  background:#e8f5f3;
+  border-color:#cce9e4;
+}
+@media(max-width:1100px){
+  .central-platform-root .sidebar:not(.collapsed) .sidebar-toggle{
+    display:grid !important;
+    visibility:visible !important;
+    opacity:1 !important;
+  }
+}
