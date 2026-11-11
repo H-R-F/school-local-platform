@@ -23,6 +23,7 @@ import { UpdateStatusPage } from "./UpdateStatusPage";
 import { SchoolAccessDirectoryPage } from "./SchoolAccessDirectoryPage";
 import "../connectivity-page.css";
 import "../cloudflare-tunnels.css";
+import "./central-platform-sidebar.css";
 
 
 type PageKey = "Overview" | "Schools" | "All Schools" | "Register School" | "Installations" | "School Access & Directory" | "Endpoints" | "Servers" | "Cloudflare Tunnels" | "Connectivity" | "System Health" | "Plans" | "Subscriptions" | "Payments" | "Licenses" | "Heartbeats" | "Errors" | "Monitoring" | "Releases" | "Versions" | "Update Status" | "Notifications" | "Administrators" | "Permissions" | "Support Access" | "Audit Logs" | "Settings";
