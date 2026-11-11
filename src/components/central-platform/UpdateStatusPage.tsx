@@ -98,23 +98,23 @@ School Admin       Local Agent        Central API       Database
      |                  | create job       |                |
      |                  |----------------->| validate       |
      |                  |                  |--------------->|
-     |                  |<-----------------| job accepted   |
+     |                  |&lt;-----------------| job accepted   |
      |                  |                  |                |
      |                  | stage report     |                |
      |                  |----------------->| authenticate   |
      |                  |                  |--------------->|
      |                  |                  | persist event  |
-     |                  |<-----------------| ACK             |
+     |                  |&lt;-----------------| ACK             |
      |                  |                  |                |
      |                  | ... stage reports / heartbeat ... |
      |                  |                  |                |
      |                  | final result     |                |
      |                  |----------------->| persist result |
      |                  |                  |--------------->|
-     |                  |<-----------------| ACK             |
+     |                  |&lt;-----------------| ACK             |
      |                  |                  |                |
      |                  |                  | UI reads job   |
-     |                  |                  |<---------------|
+     |                  |                  |&lt;---------------|
       </pre></section>
      <section id="us-doc-lifecycle"><span className="us-doc-kicker">03 / DOMAIN WORKFLOW</span><h3>Job lifecycle and state machine</h3><p>Recommended execution stages, in order:</p><ol><li><b>Queued:</b> approval is recorded; the job waits for maintenance window and agent availability.</li><li><b>Downloading:</b> agent obtains a short-lived authorized package URL and downloads to a staging directory.</li><li><b>Verifying:</b> agent verifies SHA-256 and trusted release signature before executing package content.</li><li><b>Backing up:</b> create a pre-update backup and verify its integrity/restorability according to policy.</li><li><b>Installing:</b> apply the release and database migrations using a controlled, versioned procedure.</li><li><b>Health checks:</b> verify local API, database connectivity, required services and application readiness.</li><li><b>Reporting result:</b> submit final outcome and installed version evidence to Central.</li></ol><pre>
 QUEUED -> DOWNLOADING -> VERIFYING -> BACKING_UP
