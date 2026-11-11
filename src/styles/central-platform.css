@@ -709,3 +709,67 @@
 @media(max-width:1050px){.central-platform-root .rs-layout{grid-template-columns:minmax(0,1fr) 270px;gap:12px}.central-platform-root .rs-form-panel{padding:0 15px}.central-platform-root .rs-summary{padding:14px}}
 @media(max-width:800px){.central-platform-root .rs-layout{grid-template-columns:minmax(0,1fr)}.central-platform-root .rs-summary{position:static;grid-row:2}.central-platform-root .rs-form-panel{padding:0 16px}}
 @media(max-width:560px){.central-platform-root .rs-fields{grid-template-columns:minmax(0,1fr)}.central-platform-root .rs-footer-actions{align-items:stretch;flex-direction:column-reverse}.central-platform-root .rs-footer-actions>div{display:grid;grid-template-columns:1fr 1fr}.central-platform-root .rs-footer-actions>div .btn.primary{grid-column:1/-1;grid-row:1}.central-platform-root .rs-footer-actions>div .btn.secondary{grid-row:2}.central-platform-root .rs-success{margin:20px auto;padding:20px}}
+
+/* Overview refresh — clearer operational hierarchy and readable dashboard density. */
+.central-platform-root .overview-page{gap:20px}
+.central-platform-root .overview-page .ov-page-head h1{font-size:30px;letter-spacing:-.04em}
+.central-platform-root .overview-page .ov-page-head p{font-size:14px;line-height:1.65}
+.central-platform-root .overview-page .ov-range{font-size:11px}
+.central-platform-root .overview-page .ov-range select{height:39px;font-size:12px}
+.central-platform-root .overview-page .ov-refresh{height:39px}
+.central-platform-root .overview-page .ov-kpi-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));border:1px solid var(--cp-border);border-radius:10px;background:var(--cp-surface);overflow:hidden}
+.central-platform-root .overview-page .ov-kpi{min-width:0;display:flex;flex-direction:column;gap:7px;padding:15px 16px;border-right:1px solid var(--cp-border)}
+.central-platform-root .overview-page .ov-kpi:last-child{border-right:0}
+.central-platform-root .overview-page .ov-kpi-label{font-size:11px;font-weight:600;color:var(--cp-ink-secondary)}
+.central-platform-root .overview-page .ov-kpi>strong{font:650 29px/1.1 "Geist Mono",ui-monospace,monospace;letter-spacing:-.05em;color:var(--cp-ink);font-variant-numeric:tabular-nums}
+.central-platform-root .overview-page .ov-kpi>strong.positive{color:#16834f}
+.central-platform-root .overview-page .ov-kpi>strong.negative{color:#c24141}
+.central-platform-root .overview-page .ov-kpi>small{display:flex;align-items:center;gap:5px;font-size:10px;line-height:1.45;color:var(--cp-ink-tertiary)}
+.central-platform-root .overview-page .ov-kpi>small svg{flex:0 0 auto}
+.central-platform-root .overview-page .ov-kpi.attention{background:#fffdf8}
+.central-platform-root .overview-page .ov-services{padding:16px 18px;border:1px solid var(--cp-border);border-radius:10px;background:var(--cp-surface)}
+.central-platform-root .overview-page .ov-services-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:13px}
+.central-platform-root .overview-page .ov-services-heading h2{font-size:14px;margin:0 0 4px;color:var(--cp-ink)}
+.central-platform-root .overview-page .ov-services-heading p{font-size:11px;margin:0;color:var(--cp-ink-tertiary)}
+.central-platform-root .overview-page .ov-service-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.central-platform-root .overview-page .ov-service{display:flex;align-items:center;gap:10px;min-width:0;padding:12px;border:1px solid var(--cp-border);border-radius:8px;background:#fff}
+.central-platform-root .overview-page .ov-service-icon{width:33px;height:33px;display:grid;place-items:center;flex:0 0 auto;border-radius:7px}
+.central-platform-root .overview-page .ov-service-icon.api{background:#eef2ff;color:#4f5fb4}
+.central-platform-root .overview-page .ov-service-icon.database{background:#eaf6f1;color:#24835c}
+.central-platform-root .overview-page .ov-service-icon.jobs{background:#fff5e7;color:#a56b13}
+.central-platform-root .overview-page .ov-service>div{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}
+.central-platform-root .overview-page .ov-service>div b{font-size:11px;color:var(--cp-ink)}
+.central-platform-root .overview-page .ov-service>div small{font-size:9px;line-height:1.45;color:var(--cp-ink-tertiary)}
+.central-platform-root .overview-page .ov-service-state{display:flex;align-items:center;gap:5px;font-size:9px;font-weight:650;white-space:nowrap}
+.central-platform-root .overview-page .ov-service-state i{width:6px;height:6px;border-radius:50%;background:currentColor}
+.central-platform-root .overview-page .ov-service-state.healthy{color:#16834f}
+.central-platform-root .overview-page .ov-service-state.warning{color:#a56b13}
+.central-platform-root .overview-page .ov-section-head h2{font-size:15px}
+.central-platform-root .overview-page .ov-section-head p{font-size:11px;line-height:1.55}
+.central-platform-root .overview-page .ov-text-action{font-size:11px}
+.central-platform-root .overview-page .ov-alert-title{font-size:12px}
+.central-platform-root .overview-page .ov-alert-school{font-size:11px}
+.central-platform-root .overview-page .ov-alert-meta time{font-size:10px}
+.central-platform-root .overview-page .ov-view-action{font-size:10px}
+.central-platform-root .overview-page .ov-connectivity-total strong{font-size:28px}
+.central-platform-root .overview-page .ov-connectivity-total span{font-size:12px}
+.central-platform-root .overview-page .ov-connectivity-total small{font-size:11px}
+.central-platform-root .overview-page .ov-monitoring-meta span,.central-platform-root .overview-page .ov-monitoring-meta strong{font-size:11px}
+.central-platform-root .overview-page .ov-monitoring-meta small{font-size:10px}
+.central-platform-root .overview-page .ov-table-toolbar{padding-bottom:14px}
+.central-platform-root .overview-page .ov-search{height:38px}
+.central-platform-root .overview-page .ov-search input{font-size:12px}
+.central-platform-root .overview-page .ov-filter{font-size:11px}
+.central-platform-root .overview-page .ov-filter select{height:38px;font-size:11px}
+.central-platform-root .overview-page .ov-reset{font-size:11px}
+.central-platform-root .overview-page .ov-school-table th{font-size:10px;height:39px}
+.central-platform-root .overview-page .ov-school-table td{height:50px;font-size:12px}
+.central-platform-root .overview-page .ov-school-name{font-size:12px}
+.central-platform-root .overview-page .ov-status{font-size:10px}
+.central-platform-root .overview-page .ov-heartbeat{font-size:10px}
+.central-platform-root .overview-page .ov-table-footer{font-size:10px}
+.central-platform-root .overview-page .ov-activity-copy strong{font-size:12px}
+.central-platform-root .overview-page .ov-activity-copy span,.central-platform-root .overview-page .ov-activity time{font-size:11px}
+.central-platform-root .overview-page .ov-demo-tag{font-size:9px}
+@media(max-width:1200px){.central-platform-root .overview-page .ov-kpi-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.central-platform-root .overview-page .ov-kpi:nth-child(3){border-right:0}.central-platform-root .overview-page .ov-kpi:nth-child(n+4){border-top:1px solid var(--cp-border)}.central-platform-root .overview-page .ov-service-grid{grid-template-columns:1fr}}
+@media(max-width:700px){.central-platform-root .overview-page .ov-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.central-platform-root .overview-page .ov-kpi:nth-child(odd){border-right:1px solid var(--cp-border)}.central-platform-root .overview-page .ov-kpi:nth-child(even){border-right:0}.central-platform-root .overview-page .ov-kpi:nth-child(n+3){border-top:1px solid var(--cp-border)}.central-platform-root .overview-page .ov-services{padding:13px}.central-platform-root .overview-page .ov-service{align-items:flex-start;flex-wrap:wrap}.central-platform-root .overview-page .ov-service-state{margin-left:43px}.central-platform-root .overview-page .ov-page-head h1{font-size:26px}}
