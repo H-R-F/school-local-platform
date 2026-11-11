@@ -833,21 +833,25 @@
 @media(max-width:560px){.central-platform-root .overview-page .ov-chart-grid>.ov-panel{padding:15px 12px}.central-platform-root .overview-page .ov-chart-legend{gap:10px;flex-wrap:wrap}.central-platform-root .overview-page .ov-chart-foot{justify-content:flex-start;flex-direction:column;align-items:flex-start}.central-platform-root .overview-page .ov-coverage-panel{display:block}.central-platform-root .overview-page .ov-coverage-visual{padding:8px 0}}
 
 
-/* Full-width page headers and content canvas */
+/* Full-width page headers and content canvas — keep the main column aligned
+   to the sidebar instead of letting its calculated width overlap the sidebar. */
 .central-platform-root .main{
-  flex:1 1 auto;
+  flex:1 1 0;
   min-width:0;
-  width:calc(100% - 254px);
+  width:auto;
+  margin-left:248px;
 }
 .central-platform-root .sidebar.collapsed + .main{
-  width:calc(100% - 70px);
+  margin-left:70px;
 }
 .central-platform-root .topbar{
+  display:flex;
   width:100%;
   min-width:0;
-  flex:0 0 68px;
+  flex:0 0 64px;
 }
 .central-platform-root .content{
+  display:block;
   width:100%;
   max-width:none;
   margin:0;
@@ -862,6 +866,12 @@
 }
 .central-platform-root .content .page-head{
   align-items:center;
+}
+@media(max-width:1100px){
+  .central-platform-root .main{
+    margin-left:70px;
+    width:auto;
+  }
 }
 @media(max-width:760px){
   .central-platform-root .topbar{
