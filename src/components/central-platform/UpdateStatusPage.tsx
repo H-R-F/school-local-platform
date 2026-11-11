@@ -1,8 +1,7 @@
 import { useMemo, useState } from "react";
 import {
-  Activity, AlertCircle, ArrowDownToLine, Check, CheckCircle2, ChevronRight,
-  Clock3, Download, FileCheck2, HardDrive, Info, ListFilter, Pause, Play,
-  RefreshCw, Search, ShieldCheck, Terminal, X, XCircle, Zap
+  Activity, AlertCircle, Check, CheckCircle2, ChevronRight,
+  Clock3, Info, Play, RefreshCw, Search, ShieldCheck, X, XCircle, Zap
 } from "lucide-react";
 import "./update-status-page.css";
 
